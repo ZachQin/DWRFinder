@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */; };
+		8723584F1E704363002D19B8 /* radar_image_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 8723584D1E704363002D19B8 /* radar_image_process.c */; };
 		873C063F1E6F9E34004DE01C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C063E1E6F9E34004DE01C /* main.cpp */; };
+		873C064F1E6F9E44004DE01C /* dijkstra.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C06461E6F9E44004DE01C /* dijkstra.cpp */; };
+		873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C06481E6F9E44004DE01C /* airway_graph.cpp */; };
+		873C06511E6F9E44004DE01C /* dynamic_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +28,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_radar_airway_graph.cpp; sourceTree = "<group>"; };
+		8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_radar_airway_graph.hpp; sourceTree = "<group>"; };
+		8723584D1E704363002D19B8 /* radar_image_process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = radar_image_process.c; sourceTree = "<group>"; };
+		8723584E1E704363002D19B8 /* radar_image_process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = radar_image_process.h; sourceTree = "<group>"; };
 		873C063B1E6F9E34004DE01C /* DWRFinder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DWRFinder; sourceTree = BUILT_PRODUCTS_DIR; };
 		873C063E1E6F9E34004DE01C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		873C06451E6F9E44004DE01C /* airway_type.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_type.hpp; sourceTree = "<group>"; };
+		873C06461E6F9E44004DE01C /* dijkstra.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dijkstra.cpp; sourceTree = "<group>"; };
+		873C06471E6F9E44004DE01C /* dijkstra.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dijkstra.hpp; sourceTree = "<group>"; };
+		873C06481E6F9E44004DE01C /* airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = airway_graph.cpp; sourceTree = "<group>"; };
+		873C06491E6F9E44004DE01C /* airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_graph.hpp; sourceTree = "<group>"; };
+		873C064A1E6F9E44004DE01C /* graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_airway_graph.cpp; sourceTree = "<group>"; };
+		873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_airway_graph.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +74,29 @@
 		873C063D1E6F9E34004DE01C /* DWRFinder */ = {
 			isa = PBXGroup;
 			children = (
+				873C07A31E6FCA5C004DE01C /* DWR */,
 				873C063E1E6F9E34004DE01C /* main.cpp */,
 			);
 			path = DWRFinder;
+			sourceTree = "<group>";
+		};
+		873C07A31E6FCA5C004DE01C /* DWR */ = {
+			isa = PBXGroup;
+			children = (
+				873C06451E6F9E44004DE01C /* airway_type.hpp */,
+				873C06461E6F9E44004DE01C /* dijkstra.cpp */,
+				873C06471E6F9E44004DE01C /* dijkstra.hpp */,
+				873C06481E6F9E44004DE01C /* airway_graph.cpp */,
+				873C06491E6F9E44004DE01C /* airway_graph.hpp */,
+				873C064A1E6F9E44004DE01C /* graph.h */,
+				873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */,
+				873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */,
+				8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */,
+				8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.hpp */,
+				8723584D1E704363002D19B8 /* radar_image_process.c */,
+				8723584E1E704363002D19B8 /* radar_image_process.h */,
+			);
+			name = DWR;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -121,6 +158,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				873C063F1E6F9E34004DE01C /* main.cpp in Sources */,
+				873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */,
+				873C064F1E6F9E44004DE01C /* dijkstra.cpp in Sources */,
+				8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */,
+				8723584F1E704363002D19B8 /* radar_image_process.c in Sources */,
+				873C06511E6F9E44004DE01C /* dynamic_airway_graph.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +291,7 @@
 				873C06441E6F9E34004DE01C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
