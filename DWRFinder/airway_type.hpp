@@ -23,6 +23,8 @@ struct AirwayPoint {
     double longitude;
     double latitude;
     
+    bool userWaypoint;
+    
     AirwayPoint() {};
     AirwayPoint(int airwayPointID, std::string name, double x, double y, double lon, double lat):airwayPointID(airwayPointID), name(name), x(x), y(y), longitude(lon), latitude(lat) {};
     
@@ -30,5 +32,7 @@ struct AirwayPoint {
         return sqrt((this->x - to.x) * (this->x - to.x) + (this->y - to.y) * (this->y - to.y));
     }
 }__attribute__ ((aligned (8)));;
+
+
 
 #endif /* AirwayPoint_h */

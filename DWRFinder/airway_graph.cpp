@@ -121,6 +121,7 @@ bool AirwayGraph::LoadFromFile(std::string path) {
         inf.read((char *)&point.y, sizeof(double));
         inf.read((char *)&point.longitude, sizeof(double));
         inf.read((char *)&point.latitude, sizeof(double));
+        point.userWaypoint = false;
         airwayPointVector_.push_back(point);
     }
     uint32_t n3;

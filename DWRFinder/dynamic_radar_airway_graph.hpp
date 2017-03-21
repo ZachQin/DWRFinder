@@ -13,6 +13,7 @@
 #include <map>
 #include "graph.h"
 #include "dynamic_airway_graph.hpp"
+#include "graphics_utils.hpp"
 
 struct WorldFileInfo {
     double A;
@@ -25,18 +26,6 @@ struct WorldFileInfo {
     WorldFileInfo(const char *path);
 };
 
-struct Pixel {
-    int x;
-    int y;
-    
-    Pixel() {};
-    Pixel(int x, int y): x(x), y(y) {};
-    
-    bool operator < (const Pixel &p) const {
-        return this->x < p.x ? true : (this->x > p.x ? false : this->y < p.y);
-    }
-};
-
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
     std::map<Pixel, Edge> pixelToEdgeTable_;
     
@@ -44,7 +33,7 @@ public:
     void prebuild(const WorldFileInfo &worldFileInfo);
     // mask包含0或1，1表示有阻塞，0表示无阻塞
     void UpdateBlock(const char *mask, size_t width, size_t height);
-    
+//    void GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
     //Debug
 //    void LogBlockAirpointSegment();
 };
