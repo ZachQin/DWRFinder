@@ -14,6 +14,9 @@
 
 typedef int32_t AirwayPointID;
 
+const AirwayPointID kNoAirwaypointID = -1;
+const double kNoCoordinate = std::numeric_limits<double>::infinity();
+
 struct AirwayPoint {
     AirwayPointID airwayPointID;
     std::string name;
@@ -31,6 +34,11 @@ struct AirwayPoint {
     double distance(AirwayPoint &to) {
         return sqrt((this->x - to.x) * (this->x - to.x) + (this->y - to.y) * (this->y - to.y));
     }
+    
+    bool operator < (const AirwayPoint &p) const {
+        return airwayPointID < p.airwayPointID;
+    }
+    
 }__attribute__ ((aligned (8)));;
 
 

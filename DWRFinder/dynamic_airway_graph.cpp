@@ -20,6 +20,6 @@ void DynamicAirwayGraph::GetDynamicPath(AirwayPointID sourceIdentity, AirwayPoin
 
 void DynamicAirwayGraph::ForEachBlock(std::function<void (AirwayPoint, AirwayPoint)> &traverseFunction) {
     for (auto &blockEdge: blockSet_) {
-        traverseFunction(airwayPointVector_[blockEdge.small], airwayPointVector_[blockEdge.big]);
+        traverseFunction(airwayPointVector_[blockEdge.first], airwayPointVector_[blockEdge.second]);
     }
 }

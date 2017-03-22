@@ -22,18 +22,21 @@ struct WorldFileInfo {
     double E;
     double C;
     double F;
-    
+    WorldFileInfo() {};
     WorldFileInfo(const char *path);
 };
 
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
     std::map<Pixel, Edge> pixelToEdgeTable_;
-    
+    const char *radarMask_;
+    int radarWidth_;
+    int radarHeight_;
+    WorldFileInfo worldFileInfo_;
 public:
     void prebuild(const WorldFileInfo &worldFileInfo);
     // mask包含0或1，1表示有阻塞，0表示无阻塞
-    void UpdateBlock(const char *mask, size_t width, size_t height);
-//    void GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
+    void UpdateBlock(const char *mask, int width, int height);
+    void GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
     //Debug
 //    void LogBlockAirpointSegment();
 };

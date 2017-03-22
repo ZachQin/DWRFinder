@@ -13,11 +13,15 @@
 
 #include "radar_image_process.h"
 
+#include <time.h>
+
 using namespace std;
 
 int main(int argc, const char * argv[]) {
     // insert code here...
 
+    
+    
     DynamicRadarAirwayGraph g;
     g.LoadFromFile("/Users/ZkTsin/Desktop/bysj/AirwayGraph.ag");
     WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.wld");
@@ -32,9 +36,24 @@ int main(int argc, const char * argv[]) {
     free(mask);
     // Raster end
 //    g.LogBlockAirpointSegment();
+
     {
         std::vector<AirwayPoint> path;
+        clock_t tStart = clock();
+        g.GetPath(1835, 5269, path);
+        printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+        for (auto &i: path) {
+            std::cout << i.name << "->";
+        }
+        std::cout << "🔚";
+        std::cout << std::endl;
+    }
+    {
+        
+        std::vector<AirwayPoint> path;
+        clock_t tStart = clock();
         g.GetDynamicPath(1835, 5269, path);
+        printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
         for (auto &i: path) {
             std::cout << i.name << "->";
         }
@@ -43,7 +62,9 @@ int main(int argc, const char * argv[]) {
     }
     {
         std::vector<AirwayPoint> path;
-        g.GetPath(1835, 5269, path);
+        clock_t tStart = clock();
+        g.GetDynamicFullPath(1835, 5269, path);
+        printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
         for (auto &i: path) {
             std::cout << i.name << "->";
         }
