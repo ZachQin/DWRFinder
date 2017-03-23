@@ -10,6 +10,7 @@
 #define graph_h
 
 #include <vector>
+#include <set>
 
 typedef int32_t Vertex;
 typedef double Weight;
@@ -36,9 +37,12 @@ struct Neighbor {
     Neighbor() {};
     Neighbor(Vertex arg_target, Weight arg_weight)
     : target(arg_target), weight(arg_weight) { }
+    
+    bool operator < (const Neighbor &n) const {
+        return target < n.target;
+    }
 };
 
-typedef std::vector<std::vector<Neighbor> > adjacency_list_t;
-typedef std::pair<Weight, Vertex> weight_vertex_pair_t;
+typedef std::vector<std::set<Neighbor> > adjacency_list_t;
 
 #endif /* graph_h */

@@ -11,6 +11,8 @@
 
 const Weight max_weight = std::numeric_limits<double>::infinity();
 
+typedef std::pair<Weight, Vertex> weight_vertex_pair_t;
+
 void DijkstraComputePaths(Vertex source, Vertex dest,
                           const adjacency_list_t &adjacency_list,
                           std::vector<Weight> &min_distance,
@@ -45,16 +47,13 @@ void DijkstraComputePaths(Vertex source, Vertex dest,
             continue;
         
         // Visit each edge exiting u
-        const std::vector<Neighbor> &neighbors = adjacency_list[u];
-        for (std::vector<Neighbor>::const_iterator neighbor_iter = neighbors.begin();
-             neighbor_iter != neighbors.end();
-             neighbor_iter++)
+        for (auto &neighbor: adjacency_list[u])
         {
-            Vertex v = neighbor_iter->target;
+            Vertex v = neighbor.target;
             if (!canSearch(Edge(u, v), previous)) {
                 continue;
             }
-            Weight weight = neighbor_iter->weight;
+            Weight weight = neighbor.weight;
             Weight distance_through_u = dist + weight;
             if (distance_through_u < min_distance[v]) {
                 min_distance[v] = distance_through_u;

@@ -70,8 +70,7 @@ void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
     worldFileInfo_ = worldFileInfo;
     for (Vertex startVertex = 0; startVertex < adjacencyList_.size(); startVertex++) {
         auto neighbors = adjacencyList_[startVertex];
-        for (int index = 0; index < neighbors.size(); index++) {
-            auto neighbor = neighbors[index];
+        for (auto &neighbor: neighbors) {
             Vertex endVertex = neighbor.target;
             auto startAirwayPoint = airwayPointVector_[startVertex];
             auto endAirwayPoint = airwayPointVector_[endVertex];
@@ -129,9 +128,6 @@ void DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, A
             // 去掉首尾
             infos.pop_back();
             infos.pop_front();
-            if (userWaypointMap.find(std::make_pair(ap1, ap2)) != userWaypointMap.end()) {
-                printf("ha");
-            }
             userWaypointMap[std::make_pair(ap1, ap2)] = infos;
             return true;
         }

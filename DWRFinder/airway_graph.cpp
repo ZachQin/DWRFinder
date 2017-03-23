@@ -22,7 +22,7 @@ void AirwayGraph::AddAirwayPoint(AirwayPointID identity, std::string name, doubl
     AirwayPoint point(identity, name, x, y, lon, lat);
     airwayPointMap_.insert(std::make_pair(identity, airwayPointVector_.size()));
     airwayPointVector_.push_back(point);
-    adjacencyList_.push_back(std::vector<Neighbor>());
+    adjacencyList_.push_back(std::set<Neighbor>());
 }
 
 void AirwayGraph::AddAirwaySegment(AirwayPointID identity1, AirwayPointID identity2) {
@@ -32,8 +32,8 @@ void AirwayGraph::AddAirwaySegment(AirwayPointID identity1, AirwayPointID identi
     
     Neighbor nb1(vertex2, distance);
     Neighbor nb2(vertex1, distance);
-    adjacencyList_[vertex1].push_back(nb1);
-    adjacencyList_[vertex2].push_back(nb2);
+    adjacencyList_[vertex1].insert(nb1);
+    adjacencyList_[vertex2].insert(nb2);
 }
 
 void AirwayGraph::GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path, const std::function<bool(Edge, std::vector<Vertex> &)> &canSearch) {
@@ -130,12 +130,12 @@ bool AirwayGraph::LoadFromFile(std::string path) {
     for (uint32_t i = 0; i < n3; i++) {
         uint32_t nn;
         inf.read((char *)&nn, sizeof(uint32_t));
-        std::vector<Neighbor> vnb;
+        std::set<Neighbor> vnb;
         for (uint32_t j = 0; j < nn; j++) {
             Neighbor nb;
             inf.read((char *)&nb.target, sizeof(Vertex));
             inf.read((char *)&nb.weight, sizeof(Weight));
-            vnb.push_back(nb);
+            vnb.insert(nb);
         }
         adjacencyList_.push_back(vnb);
     }
@@ -146,8 +146,7 @@ bool AirwayGraph::LoadFromFile(std::string path) {
 void AirwayGraph::ForEach(std::function<void (AirwayPoint, AirwayPoint, double)> &traverseFunction) {
     for (Vertex startVertex = 0; startVertex < adjacencyList_.size(); startVertex++) {
         auto neighbors = adjacencyList_[startVertex];
-        for (int index = 0; index < neighbors.size(); index++) {
-            auto neighbor = neighbors[index];
+        for (auto &neighbor: neighbors) {
             auto endVertex = neighbor.target;
             auto startAirwayPoint = airwayPointVector_[startVertex];
             auto endAirwayPoint = airwayPointVector_[endVertex];
