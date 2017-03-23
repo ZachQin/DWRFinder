@@ -109,7 +109,7 @@ void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int heigh
 }
 
 void DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path) {
-    std::map<AirwayPoint, std::list<NodeInfo>> userWaypointMap;
+    std::map<std::pair<AirwayPoint, AirwayPoint>, std::list<NodeInfo>> userWaypointMap;
     auto canSearch = [&](Edge edge, std::vector<Vertex> &previes) {
         if (blockSet_.find(edge) == blockSet_.end()) {
             return true;
@@ -129,22 +129,30 @@ void DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, A
             // 去掉首尾
             infos.pop_back();
             infos.pop_front();
-            userWaypointMap[ap1] = infos;
+            if (userWaypointMap.find(std::make_pair(ap1, ap2)) != userWaypointMap.end()) {
+                printf("ha");
+            }
+            userWaypointMap[std::make_pair(ap1, ap2)] = infos;
             return true;
         }
     };
     std::vector<AirwayPoint> partialPath;
     GetPath(sourceIdentity, destinIdentity, partialPath, canSearch);
     path.clear();
-    for (auto &ap: partialPath) {
-        path.push_back(ap);
-        auto it = userWaypointMap.find(ap);
+    if (partialPath.size() > 0) {
+        path.push_back(partialPath[0]);
+    }
+    for (int i = 1; i < partialPath.size(); i++) {
+        auto &start = partialPath[i - 1];
+        auto &end = partialPath[i];
+        auto it = userWaypointMap.find(std::make_pair(start, end));
         if (it != userWaypointMap.end()) {
             for (auto &up: it->second) {
                 const auto &ap = NodeInfoToAirwayPoint(up, worldFileInfo_);
                 path.push_back(ap);
             }
         }
+        path.push_back(end);
     }
 };
 

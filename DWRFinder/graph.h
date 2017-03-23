@@ -11,7 +11,7 @@
 
 #include <vector>
 
-typedef uint32_t Vertex;
+typedef int32_t Vertex;
 typedef double Weight;
 typedef std::pair<Vertex, Vertex> Edge;
 
@@ -36,7 +36,7 @@ struct Neighbor {
     Neighbor() {};
     Neighbor(Vertex arg_target, Weight arg_weight)
     : target(arg_target), weight(arg_weight) { }
-}__attribute__ ((aligned (8)));;
+};
 
 typedef std::vector<std::vector<Neighbor> > adjacency_list_t;
 typedef std::pair<Weight, Vertex> weight_vertex_pair_t;

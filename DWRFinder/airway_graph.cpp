@@ -84,7 +84,8 @@ bool AirwayGraph::SaveToFile(std::string path) {
         uint32_t nn = (uint32_t)c.size();
         of.write((char *)&nn, sizeof(uint32_t));
         for (auto &cc: c) {
-            of.write((char *)&cc, sizeof(Neighbor));
+            of.write((char *)&cc.target, sizeof(Vertex));
+            of.write((char *)&cc.weight, sizeof(Weight));
         }
     }
     of.flush();
@@ -132,7 +133,8 @@ bool AirwayGraph::LoadFromFile(std::string path) {
         std::vector<Neighbor> vnb;
         for (uint32_t j = 0; j < nn; j++) {
             Neighbor nb;
-            inf.read((char *)&nb, sizeof(Neighbor));
+            inf.read((char *)&nb.target, sizeof(Vertex));
+            inf.read((char *)&nb.weight, sizeof(Weight));
             vnb.push_back(nb);
         }
         adjacencyList_.push_back(vnb);
