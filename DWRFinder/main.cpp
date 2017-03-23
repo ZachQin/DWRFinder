@@ -32,7 +32,7 @@ int main(int argc, const char * argv[]) {
     size_t width, height;
     char *mask = CreateMaskFromCGImage(image, &width, &height);
     g.UpdateBlock(mask, width, height);
-    free(mask);
+//    free(mask);
     // Raster end
 //    g.LogBlockAirpointSegment();
 
@@ -62,7 +62,7 @@ int main(int argc, const char * argv[]) {
     {
         std::vector<AirwayPoint> path;
         clock_t tStart = clock();
-        g.GetDynamicFullPath(1835, 5269, path);
+        g.GetDynamicFullPath(21690, 1436, path);
         printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
         for (auto &i: path) {
             std::cout << i.name << "->";

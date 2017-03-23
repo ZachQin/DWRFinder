@@ -27,7 +27,7 @@ struct WorldFileInfo {
 };
 
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
-    std::map<Pixel, Edge> pixelToEdgeTable_;
+    std::map<Pixel, UndirectedEdge> pixelToEdgeTable_;
     const char *radarMask_;
     int radarWidth_;
     int radarHeight_;

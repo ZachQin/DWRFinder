@@ -15,7 +15,7 @@
 
 class DynamicAirwayGraph: public AirwayGraph {
 protected:
-    std::set<Edge> blockSet_;
+    std::set<UndirectedEdge> blockSet_;
 public:
     void GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
     void ForEachBlock(std::function<void(AirwayPoint, AirwayPoint)> &traverseFunction);

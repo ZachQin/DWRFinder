@@ -16,20 +16,26 @@ typedef int32_t Vertex;
 typedef double Weight;
 typedef std::pair<Vertex, Vertex> Edge;
 
-//struct Edge {
-//    Vertex small;
-//    Vertex big;
-//    
-//    Edge(Vertex v1, Vertex v2) {
-//        small = v1;
-//        big = v2;
-//        if (small > big) {std::swap(small, big);}
-//    };
-//    
-//    bool operator < (const Edge &p) const {
-//        return this->small < p.small ? true : (this->small > p.small ? false : this->big < p.big);
-//    }
-//};
+struct UndirectedEdge {
+    Vertex small;
+    Vertex big;
+    
+    UndirectedEdge(Edge &edge) {
+        small = edge.first;
+        big = edge.second;
+        if (small > big) {std::swap(small, big);}
+    }
+    
+    UndirectedEdge(Vertex v1, Vertex v2) {
+        small = v1;
+        big = v2;
+        if (small > big) {std::swap(small, big);}
+    };
+    
+    bool operator < (const UndirectedEdge &p) const {
+        return this->small < p.small ? true : (this->small > p.small ? false : this->big < p.big);
+    }
+};
 
 struct Neighbor {
     Vertex target;

@@ -63,6 +63,7 @@ AirwayPoint NodeInfoToAirwayPoint(const NodeInfo &info, const WorldFileInfo &w) 
     MercToLonLat(x, y, &lon, &lat);
     auto name = lonlatToString(lon, lat);
     AirwayPoint userWaypoint(kNoAirwaypointID, name, x, y, lon, lat);
+    userWaypoint.userWaypoint = true;
     return userWaypoint;
 }
 
@@ -80,7 +81,7 @@ void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
             std::vector<Pixel> linePixels;
             BresenhamLine(startPixel, endPixel, linePixels);
             for (auto &point: linePixels) {
-                Edge e = Edge(startVertex, endVertex);
+                UndirectedEdge e = UndirectedEdge(startVertex, endVertex);
                 pixelToEdgeTable_.insert(std::make_pair(point, e));
             }
             //结束遍历
@@ -110,7 +111,8 @@ void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int heigh
 void DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path) {
     std::map<std::pair<AirwayPoint, AirwayPoint>, std::list<NodeInfo>> userWaypointMap;
     auto canSearch = [&](Edge edge, std::vector<Vertex> &previes) {
-        if (blockSet_.find(edge) == blockSet_.end()) {
+        UndirectedEdge udEdge = UndirectedEdge(edge);
+        if (blockSet_.find(udEdge) == blockSet_.end()) {
             return true;
         }
         RasterGraph rasterGraph(radarMask_, radarWidth_, radarHeight_);

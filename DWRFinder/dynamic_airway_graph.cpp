@@ -13,13 +13,13 @@
 
 void DynamicAirwayGraph::GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path) {
     auto canSearch = [&](Edge edge, std::vector<Vertex> &previes) {
-        return blockSet_.find(edge) == blockSet_.end();
+        return blockSet_.find(UndirectedEdge(edge)) == blockSet_.end();
     };
     GetPath(sourceIdentity, destinIdentity, path, canSearch);
 }
 
 void DynamicAirwayGraph::ForEachBlock(std::function<void (AirwayPoint, AirwayPoint)> &traverseFunction) {
     for (auto &blockEdge: blockSet_) {
-        traverseFunction(airwayPointVector_[blockEdge.first], airwayPointVector_[blockEdge.second]);
+        traverseFunction(airwayPointVector_[blockEdge.small], airwayPointVector_[blockEdge.big]);
     }
 }
