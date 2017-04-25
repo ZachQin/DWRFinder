@@ -13,12 +13,16 @@
 #include <stdio.h>
 #include <set>
 
+namespace dwr {
+
 class DynamicAirwayGraph: public AirwayGraph {
-protected:
-    std::set<UndirectedEdge> blockSet_;
 public:
     void GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
     void ForEachBlock(std::function<void(AirwayPoint, AirwayPoint)> &traverseFunction);
+    
+protected:
+    std::set<UndirectedEdge> blockSet_;
 };
 
+}
 #endif /* dynamic_airway_graph_hpp */

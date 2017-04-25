@@ -14,6 +14,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+namespace dwr {
+    
 typedef double Distance;
 
 struct Pixel {
@@ -50,5 +52,7 @@ struct Pixel {
 
 void BresenhamLine(Pixel startPoint, Pixel endPoint, std::vector<Pixel> &pixels);
 void VerticalEquantLine(Pixel startPoint, Pixel endPoint, int segmentNumber, int radius, std::vector<std::vector<Pixel>> &segments);
+    
+}
 
 #endif /* graphics_utils_hpp */

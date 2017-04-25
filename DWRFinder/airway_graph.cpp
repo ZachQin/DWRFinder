@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <fstream>
 
+namespace dwr {
+    
 AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
@@ -163,4 +165,6 @@ AirwayPoint AirwayGraph:: AirwayPointFromID(AirwayPointID identity) {
     } else {
         return AirwayPoint();
     }
+}
+    
 }

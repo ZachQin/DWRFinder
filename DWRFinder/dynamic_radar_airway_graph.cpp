@@ -14,6 +14,8 @@
 #include "raster_graph.hpp"
 #include "coordinate_convert.h"
 
+namespace dwr {
+
 #define RAD_TO_DEG	57.29577951308232
 #define DEG_TO_RAD	.0174532925199432958
 
@@ -159,3 +161,5 @@ void DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, A
 //        std::cout << "from:" << airwayPointVector_[block.small].airwayPointID << "  to:" << airwayPointVector_[block.big].airwayPointID << std::endl;
 //    }
 //}
+
+}

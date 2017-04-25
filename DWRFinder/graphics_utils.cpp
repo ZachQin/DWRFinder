@@ -7,7 +7,7 @@
 //
 
 #include "graphics_utils.hpp"
-
+namespace dwr {
 void BresenhamLine(Pixel startPoint, Pixel endPoint, std::vector<Pixel> &pixels) {
     pixels.clear();
     int x0 = startPoint.x, x1 = endPoint.x;
@@ -65,4 +65,6 @@ void VerticalEquantLine(Pixel startPoint, Pixel endPoint, int segmentNumber, int
         BresenhamLine(verticalStartPoint, verticalEndPoint, verticalLine);
         segments.push_back(verticalLine);
     }
+};
+    
 }

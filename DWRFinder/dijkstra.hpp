@@ -15,6 +15,7 @@
 #include <functional>
 #include "graph.h"
 
+namespace dwr {
 
 void DijkstraComputePaths(Vertex source, Vertex dest,
                           const adjacency_list_t &adjacency_list,
@@ -23,4 +24,5 @@ void DijkstraComputePaths(Vertex source, Vertex dest,
                           const std::function<bool(Edge, std::vector<Vertex> &)> &canSearch = [](Edge edge, std::vector<Vertex> &previes){return true;});
 std::list<Vertex> DijkstraGetShortestPath(Vertex vertex, const std::vector<Vertex> &previous);
 
+}
 #endif /* dijkstra_hpp */

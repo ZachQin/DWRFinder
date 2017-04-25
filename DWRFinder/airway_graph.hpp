@@ -14,13 +14,9 @@
 #include "graph.h"
 #include "airway_type.hpp"
 
+namespace dwr {
 
 class AirwayGraph {
-protected:
-    std::map<AirwayPointID, Vertex> airwayPointMap_;
-    // 下标是Vertex
-    std::vector<AirwayPoint> airwayPointVector_;
-    adjacency_list_t adjacencyList_;
 public:
     AirwayGraph(){};
     AirwayGraph(const char *path);
@@ -31,6 +27,13 @@ public:
     bool LoadFromFile(std::string path);
     void ForEach(std::function<void(AirwayPoint, AirwayPoint, double)> &traverseFunction);
     AirwayPoint AirwayPointFromID(AirwayPointID identity);
+
+protected:
+    std::map<AirwayPointID, Vertex> airwayPointMap_;
+    // 下标是Vertex
+    std::vector<AirwayPoint> airwayPointVector_;
+    adjacency_list_t adjacencyList_;
 };
 
+}
 #endif /* AirwayGraph_hpp */

@@ -11,6 +11,8 @@
 #include "dijkstra.hpp"
 #include <set>
 
+namespace dwr {
+    
 void DynamicAirwayGraph::GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path) {
     auto canSearch = [&](Edge edge, std::vector<Vertex> &previes) {
         return blockSet_.find(UndirectedEdge(edge)) == blockSet_.end();
@@ -22,4 +24,6 @@ void DynamicAirwayGraph::ForEachBlock(std::function<void (AirwayPoint, AirwayPoi
     for (auto &blockEdge: blockSet_) {
         traverseFunction(airwayPointVector_[blockEdge.small], airwayPointVector_[blockEdge.big]);
     }
+}
+
 }

@@ -14,6 +14,8 @@
 #include <functional>
 #include "graphics_utils.hpp"
 
+namespace dwr {
+
 typedef int Level;
 
 const Distance max_distance = std::numeric_limits<Distance>::max();
@@ -35,16 +37,18 @@ struct NodeInfo {
 };
 
 class RasterGraph {
-private:
-    const char *rasterData_;
-    int width_;
-    int height_;
-    bool CheckLine(Pixel startPoint, Pixel endPoint);
 public:
     RasterGraph(const char *rasterData, int width, int height): rasterData_(rasterData), width_(width), height_(height) {};
     void ResetRaster(const char *rasterData, int width, int height) {rasterData_ = rasterData; width_ = width; height_ = height;};
     void GetNodes(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodes, int segmentNumber, double verticalFactor = 0.5);
     void GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodeLevels, std::list<NodeInfo> &nodeInfos, std::function<bool(const NodeInfo &info)> canSearch = [](const NodeInfo &info){return true;});
+
+private:
+    const char *rasterData_;
+    int width_;
+    int height_;
+    bool CheckLine(Pixel startPoint, Pixel endPoint);
 };
 
+}
 #endif /* raster_graph_hpp */

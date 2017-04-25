@@ -8,7 +8,8 @@
 
 #include "dijkstra.hpp"
 #include <queue>
-
+namespace dwr {
+    
 const Weight max_weight = std::numeric_limits<double>::infinity();
 
 typedef std::pair<Weight, Vertex> weight_vertex_pair_t;
@@ -70,4 +71,6 @@ std::list<Vertex> DijkstraGetShortestPath(Vertex vertex, const std::vector<Verte
     for ( ; vertex != -1; vertex = previous[vertex])
         path.push_front(vertex);
     return path;
+};
+
 }

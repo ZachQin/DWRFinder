@@ -10,7 +10,8 @@
 #include "graphics_utils.hpp"
 #include <queue>
 #include <map>
-
+namespace dwr {
+    
 void RasterGraph::GetNodes(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodes, int segmentNumber, double verticalFactor) {
     std::vector<Pixel> pixels;
     BresenhamLine(source, destin, pixels);
@@ -99,4 +100,6 @@ void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pi
         nodeInfos.push_front(*curNode);
         curNode = curNode->previous;
     }
+}
+
 }

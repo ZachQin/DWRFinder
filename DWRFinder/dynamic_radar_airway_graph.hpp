@@ -15,6 +15,8 @@
 #include "dynamic_airway_graph.hpp"
 #include "graphics_utils.hpp"
 
+namespace dwr {
+
 struct WorldFileInfo {
     double A;
     double D;
@@ -27,11 +29,6 @@ struct WorldFileInfo {
 };
 
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
-    std::map<Pixel, UndirectedEdge> pixelToEdgeTable_;
-    const char *radarMask_;
-    int radarWidth_;
-    int radarHeight_;
-    WorldFileInfo worldFileInfo_;
 public:
     void prebuild(const WorldFileInfo &worldFileInfo);
     // mask包含0或1，1表示有阻塞，0表示无阻塞
@@ -39,5 +36,14 @@ public:
     void GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
     //Debug
 //    void LogBlockAirpointSegment();
+
+private:
+    std::map<Pixel, UndirectedEdge> pixelToEdgeTable_;
+    const char *radarMask_;
+    int radarWidth_;
+    int radarHeight_;
+    WorldFileInfo worldFileInfo_;
 };
+    
+}
 #endif /* dynamic_radar_airway_graph_hpp */

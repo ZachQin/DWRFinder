@@ -12,6 +12,8 @@
 #include <vector>
 #include <set>
 
+namespace dwr {
+
 typedef int32_t Vertex;
 typedef double Weight;
 typedef std::pair<Vertex, Vertex> Edge;
@@ -51,4 +53,5 @@ struct Neighbor {
 
 typedef std::vector<std::set<Neighbor> > adjacency_list_t;
 
+}
 #endif /* graph_h */

@@ -12,6 +12,8 @@
 #ifndef airway_type_h
 #define airway_type_h
 
+namespace dwr {
+
 typedef int32_t AirwayPointID;
 
 const AirwayPointID kNoAirwaypointID = -1;
@@ -41,6 +43,6 @@ struct AirwayPoint {
     
 }__attribute__ ((aligned (8)));;
 
-
+}
 
 #endif /* AirwayPoint_h */

@@ -20,10 +20,10 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     // insert code here...
     
-    DynamicRadarAirwayGraph g;
+    dwr::DynamicRadarAirwayGraph g;
     g.LoadFromFile("/Users/ZkTsin/Desktop/bysj/AirwayGraph.ag");
     
-    WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.wld");
+    dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.wld");
     g.prebuild(worldInfo);
     
     // Raster start
@@ -60,7 +60,7 @@ int main(int argc, const char * argv[]) {
 //        std::cout << std::endl;
 //    }
     {
-        std::vector<AirwayPoint> path;
+        std::vector<dwr::AirwayPoint> path;
         clock_t tStart = clock();
         g.GetDynamicFullPath(21690, 1436, path);
         printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
