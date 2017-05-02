@@ -52,7 +52,7 @@ void AirwayGraph::GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIden
     }
 }
 
-bool AirwayGraph::SaveToFile(std::string path) {
+bool AirwayGraph::SaveToFile(const std::string &path) {
     uint32_t n = (uint32_t)airwayPointMap_.size();
     uint32_t n2 = (uint32_t)airwayPointVector_.size();
     uint32_t n3 = (uint32_t)adjacencyList_.size();
@@ -94,7 +94,7 @@ bool AirwayGraph::SaveToFile(std::string path) {
     return true;
 }
 
-bool AirwayGraph::LoadFromFile(std::string path) {
+bool AirwayGraph::LoadFromFile(const std::string &path) {
     std::ifstream inf(path, std::ios::binary);
     if (!inf.is_open()) {
         return false;

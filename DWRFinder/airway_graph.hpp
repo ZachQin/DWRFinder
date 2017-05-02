@@ -23,8 +23,8 @@ public:
     void AddAirwayPoint(AirwayPointID identity, std::string name, double x, double y, double lon, double lat);
     void AddAirwaySegment(AirwayPointID identity1, AirwayPointID identity2);
     void GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path, const std::function<bool(Edge, std::vector<Vertex> &)> &canSearch = [](Edge edge, std::vector<Vertex> &previes){return true;});
-    bool SaveToFile(std::string path);
-    bool LoadFromFile(std::string path);
+    bool SaveToFile(const std::string &path);
+    bool LoadFromFile(const std::string &path);
     void ForEach(std::function<void(AirwayPoint, AirwayPoint, double)> &traverseFunction);
     AirwayPoint AirwayPointFromID(AirwayPointID identity);
 
