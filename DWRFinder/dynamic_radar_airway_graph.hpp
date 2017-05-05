@@ -13,6 +13,7 @@
 #include <map>
 #include "dynamic_airway_graph.hpp"
 #include "graphics_utils.hpp"
+#include "raster_graph.hpp"
 
 namespace dwr {
 
@@ -38,9 +39,7 @@ public:
 
 private:
     std::map<Pixel, UndirectedAirwayPointPair> pixelToEdgeTable_;
-    const char *radarMask_;
-    int radarWidth_;
-    int radarHeight_;
+    RasterGraph rasterGraph_;
     WorldFileInfo worldFileInfo_;
 };
     

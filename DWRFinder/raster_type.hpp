@@ -34,14 +34,6 @@ struct Pixel {
         return !((*this < p) || (*this == p));
     }
     
-    char getPixelValue(const char *mask, int width, int height) const {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
-            return mask[y * width + x];
-        } else {
-            return 0;
-        }
-    };
-    
     static PixelDistance Distance(const Pixel &p1, const Pixel &p2) {
         return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }

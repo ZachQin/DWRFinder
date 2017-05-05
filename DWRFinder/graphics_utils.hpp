@@ -9,13 +9,12 @@
 #ifndef graphics_utils_hpp
 #define graphics_utils_hpp
 
-#include <stdio.h>
 #include <vector>
 #include "raster_type.hpp"
 
 namespace dwr {
-void BresenhamLine(const Pixel &startPoint, const Pixel &endPoint, std::vector<Pixel> &pixels);
-void VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segmentNumber, int radius, std::vector<std::vector<Pixel>> &segments);
+std::vector<Pixel> BresenhamLine(const Pixel &startPoint, const Pixel &endPoint);
+std::vector<std::vector<Pixel>> VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segmentNumber, int radius);
 }
 
 #endif /* graphics_utils_hpp */

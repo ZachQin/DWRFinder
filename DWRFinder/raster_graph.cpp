@@ -9,43 +9,53 @@
 #include "raster_graph.hpp"
 #include "graphics_utils.hpp"
 #include <queue>
+#include <algorithm>
 
 namespace dwr {
-    
-void RasterGraph::GetNodes(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodes, int segmentNumber, double verticalFactor) {
-    std::vector<Pixel> pixels;
-    BresenhamLine(source, destin, pixels);
+
+std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &source, const Pixel &destin, int segmentNumber, double verticalFactor) const {
+    std::vector<std::vector<Pixel>> result;
+    std::vector<Pixel> pixels = BresenhamLine(source, destin);
     int head = 0, tail = (int)pixels.size() - 1;
-    while (head < pixels.size() && pixels[head].getPixelValue(rasterData_, width_, height_) == 0) {
+    while (head < pixels.size() && GetPixelValue(pixels[head]) == 0) {
         head++;
     }
-    while (tail >= 0 && pixels[tail].getPixelValue(rasterData_, width_, height_) == 0) {
+    while (tail >= 0 && GetPixelValue(pixels[tail]) == 0) {
         tail--;
     }
     if (head >= tail) {
-        return;
+        return result;
     }
     PixelDistance directDistance = Pixel::Distance(source, destin);
-    VerticalEquantLine(pixels[head], pixels[tail], segmentNumber, directDistance * verticalFactor, nodes);
-    for (auto &node: nodes) {
+    result = VerticalEquantLine(pixels[head], pixels[tail], segmentNumber, directDistance * verticalFactor);
+    for (auto &node: result) {
         node.erase(std::remove_if(node.begin(), node.end(), [=](Pixel &p){
-            return p.getPixelValue(rasterData_, width_, height_) > 0;
+            return GetPixelValue(p) > 0;
         }), node.end());
     }
+    return result;
 }
 
-bool RasterGraph::CheckLine(Pixel startPoint, Pixel endPoint) {
-    std::vector<Pixel> pixels;
-    BresenhamLine(startPoint, endPoint, pixels);
+bool RasterGraph::CheckLine(const Pixel &startPoint, const Pixel &endPoint) {
+    std::vector<Pixel> pixels = BresenhamLine(startPoint, endPoint);
     for (int i = 0; i < pixels.size(); i++) {
-        if (pixels[i].getPixelValue(rasterData_, width_, height_) > 0) {
+        if (GetPixelValue(pixels[i]) > 0) {
             return false;
         }
     }
     return true;
 }
+    
+char RasterGraph::GetPixelValue(const Pixel &pixel) const {
+    if (pixel.x >= 0 && pixel.x < width_ && pixel.y >= 0 && pixel.y < height_) {
+        return rasterData_.get()[pixel.y * width_ + pixel.x];
+    } else {
+        return 0;
+    }
+}
 
-void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodeLevels, std::list<NodeInfo> &nodeInfos, std::function<bool(const NodeInfo &info)> canSearch) {
+std::vector<NodeInfo> RasterGraph::GetPath(Pixel source, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch) {
+    std::vector<NodeInfo> result;
     int levelSize = (int)nodeLevels.size();
     std::vector<std::vector<NodeInfo>> nodeInfoLevels(levelSize + 2);
     nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(source, destin),0, source, nullptr)};
@@ -89,16 +99,17 @@ void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pi
         }
     }
     
-    nodeInfos.clear();
     NodeInfo *curNode = &nodeInfoLevels[levelSize + 1][0];
     // 如果找不到路径 直接返回空
     if (curNode->previous == nullptr) {
-        return;
+        return result;
     }
     while (curNode != nullptr) {
-        nodeInfos.push_front(*curNode);
+        result.push_back(*curNode);
         curNode = curNode->previous;
     }
+    std::reverse(result.begin(), result.end());
+    return result;
 }
 
 }

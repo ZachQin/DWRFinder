@@ -9,8 +9,8 @@
 #include "graphics_utils.hpp"
 
 namespace dwr {
-void BresenhamLine(const Pixel &startPoint, const Pixel &endPoint, std::vector<Pixel> &pixels) {
-    pixels.clear();
+std::vector<Pixel> BresenhamLine(const Pixel &startPoint, const Pixel &endPoint) {
+    std::vector<Pixel> result;
     int x0 = startPoint.x, x1 = endPoint.x;
     int y0 = startPoint.y, y1 = endPoint.y;
     bool steep = abs(y1 - y0) > abs(x1 - x0);
@@ -29,9 +29,9 @@ void BresenhamLine(const Pixel &startPoint, const Pixel &endPoint, std::vector<P
     int ystep = y0 < y1 ? 1 : -1;
     for (int xx = x0; xx <= x1; xx++) {
         if (steep) {
-            pixels.push_back(Pixel(yy, xx));
+            result.push_back(Pixel(yy, xx));
         } else {
-            pixels.push_back(Pixel(xx, yy));
+            result.push_back(Pixel(xx, yy));
         }
         error -= deltay;
         if (error < 0) {
@@ -39,10 +39,11 @@ void BresenhamLine(const Pixel &startPoint, const Pixel &endPoint, std::vector<P
             error += deltax;
         }
     }
+    return result;
 }
 
-void VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segmentNumber, int radius, std::vector<std::vector<Pixel>> &segments) {
-    segments.clear();
+std::vector<std::vector<Pixel>> VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segmentNumber, int radius) {
+    std::vector<std::vector<Pixel>> result;
     int x0 = startPoint.x, x1 = endPoint.x;
     int y0 = startPoint.y, y1 = endPoint.y;
     bool steep = abs(y1 - y0) < abs(x1 - x0);
@@ -60,12 +61,12 @@ void VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segm
     
     for (int i = 1; i < segmentNumber; i++) {
         Pixel point(x0 + segmentDx * i, y0 + segmentDy * i);
-        std::vector<Pixel> verticalLine;
         Pixel verticalStartPoint = steep ? Pixel(point.y - dy, point.x - dx) : Pixel(point.x - dx, point.y - dy);
         Pixel verticalEndPoint = steep ? Pixel(point.y + dy, point.x + dx) : Pixel(point.x + dx, point.y + dy);
-        BresenhamLine(verticalStartPoint, verticalEndPoint, verticalLine);
-        segments.push_back(verticalLine);
+        std::vector<Pixel> verticalLine = BresenhamLine(verticalStartPoint, verticalEndPoint);
+        result.push_back(verticalLine);
     }
+    return result;
 };
     
 }

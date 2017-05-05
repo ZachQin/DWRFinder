@@ -51,7 +51,7 @@ struct AirwayPoint {
     std::vector<Neighbor> neibors;
     
     AirwayPoint() {};
-    AirwayPoint(int airwayPointID, std::string name, double lon, double lat) : airwayPointID(airwayPointID), name(name), location({lon, lat}) {};
+    AirwayPoint(int airwayPointID, const std::string &name, double lon, double lat) : airwayPointID(airwayPointID), name(name), location({lon, lat}) {};
     
     bool operator < (const AirwayPoint &p) const {
         return airwayPointID < p.airwayPointID;

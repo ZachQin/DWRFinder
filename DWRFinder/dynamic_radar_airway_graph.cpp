@@ -101,8 +101,7 @@ void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
         }
         Pixel startPixel = coordinateToPixel(startWpt->coordinate.x, startWpt->coordinate.y, worldFileInfo);
         Pixel endPixel = coordinateToPixel(endWpt->coordinate.x, endWpt->coordinate.y, worldFileInfo);
-        std::vector<Pixel> linePixels;
-        BresenhamLine(startPixel, endPixel, linePixels);
+        std::vector<Pixel> linePixels = BresenhamLine(startPixel, endPixel);
         for (auto &point: linePixels) {
             auto upair = UndirectedAirwayPointPair(startWpt, endWpt);
             pixelToEdgeTable_.insert(std::make_pair(point, upair));
@@ -112,9 +111,7 @@ void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
 }
 
 void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int height) {
-    radarMask_ = mask;
-    radarWidth_ = width;
-    radarHeight_ = height;
+    rasterGraph_.SetRasterData(mask, width, height);
     // 更新阻塞集合
     blockSet_.clear();
     for (int i = 0; i < height; i++) {
@@ -131,27 +128,22 @@ void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int heigh
 }
 
 std::vector<std::shared_ptr<AirwayPoint>> DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity) {
-    std::map<AirwayPointPair, std::list<NodeInfo>> userWaypointMap;
+    std::map<AirwayPointPair, std::vector<NodeInfo>> userWaypointMap;
     auto canSearch = [&](const AirwayPointPair &pair) {
         if (blockSet_.find(UndirectedAirwayPointPair(pair)) == blockSet_.end()) {
             return true;
         }
-        RasterGraph rasterGraph(radarMask_, radarWidth_, radarHeight_);
         const std::shared_ptr<AirwayPoint> ap1 = pair.first;
         const std::shared_ptr<AirwayPoint> ap2 = pair.second;
         Pixel source = coordinateToPixel(ap1->coordinate.x, ap1->coordinate.y, worldFileInfo_);
         Pixel destin = coordinateToPixel(ap2->coordinate.x, ap2->coordinate.y, worldFileInfo_);
-        std::vector<std::vector<Pixel>> nodes;
-        rasterGraph.GetNodes(source, destin, nodes, 3);
-        std::list<NodeInfo> infos;
-        rasterGraph.GetPath(source, destin, nodes, infos);
+        std::vector<std::vector<Pixel>> nodes = rasterGraph_.GetNodes(source, destin, 3);
+        std::vector<NodeInfo> infos = rasterGraph_.GetPath(source, destin, nodes);
         if (infos.empty()) {
             return false;
         } else {
             // 去掉首尾
-            infos.pop_back();
-            infos.pop_front();
-            userWaypointMap[std::make_pair(ap1, ap2)] = infos;
+            userWaypointMap[std::make_pair(ap1, ap2)] = std::vector<NodeInfo>(infos.begin() + 1, infos.end() - 1);
             return true;
         }
     };
