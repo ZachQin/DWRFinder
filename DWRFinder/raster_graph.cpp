@@ -9,7 +9,7 @@
 #include "raster_graph.hpp"
 #include "graphics_utils.hpp"
 #include <queue>
-#include <map>
+
 namespace dwr {
     
 void RasterGraph::GetNodes(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodes, int segmentNumber, double verticalFactor) {
@@ -25,8 +25,7 @@ void RasterGraph::GetNodes(Pixel source, Pixel destin, std::vector<std::vector<P
     if (head >= tail) {
         return;
     }
-    Distance directDistance = source.DistanceTo(destin);
-    
+    PixelDistance directDistance = Pixel::Distance(source, destin);
     VerticalEquantLine(pixels[head], pixels[tail], segmentNumber, directDistance * verticalFactor, nodes);
     for (auto &node: nodes) {
         node.erase(std::remove_if(node.begin(), node.end(), [=](Pixel &p){
@@ -49,12 +48,12 @@ bool RasterGraph::CheckLine(Pixel startPoint, Pixel endPoint) {
 void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pixel>> &nodeLevels, std::list<NodeInfo> &nodeInfos, std::function<bool(const NodeInfo &info)> canSearch) {
     int levelSize = (int)nodeLevels.size();
     std::vector<std::vector<NodeInfo>> nodeInfoLevels(levelSize + 2);
-    nodeInfoLevels[0] = {NodeInfo(0, source.DistanceTo(destin),0, source, nullptr)};
+    nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(source, destin),0, source, nullptr)};
     nodeInfoLevels[levelSize + 1] = {NodeInfo(max_distance, 0,levelSize, destin, nullptr)};
     
     for (int i = 0; i < nodeLevels.size(); i++) {
         for (auto &px: nodeLevels[i]) {
-            nodeInfoLevels[i + 1].push_back(NodeInfo(max_distance, px.DistanceTo(destin), i + 1, px, nullptr));
+            nodeInfoLevels[i + 1].push_back(NodeInfo(max_distance, Pixel::Distance(px, destin), i + 1, px, nullptr));
         }
     }
     auto nodeComp = [](const NodeInfo *n1, const NodeInfo *n2) {
@@ -64,7 +63,7 @@ void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pi
     nodeQueue.push(&nodeInfoLevels[0][0]);
     while (!nodeQueue.empty()) {
         NodeInfo *currentInfo = nodeQueue.top();
-        Distance dist = currentInfo->distance;
+        PixelDistance dist = currentInfo->distance;
         Level level = currentInfo->level;
         Pixel u = currentInfo->pixel;
         nodeQueue.pop();
@@ -81,7 +80,7 @@ void RasterGraph::GetPath(Pixel source, Pixel destin, std::vector<std::vector<Pi
             if (!CheckLine(u, v.pixel)) {
                 continue;
             }
-            Distance distance_through_u = dist + u.DistanceTo(v.pixel);
+            PixelDistance distance_through_u = dist + Pixel::Distance(u, v.pixel);
             if (distance_through_u < v.distance) {
                 v.distance = distance_through_u;
                 v.previous = currentInfo;

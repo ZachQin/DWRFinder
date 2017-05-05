@@ -10,7 +10,6 @@
 		8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */; };
 		8723584F1E704363002D19B8 /* radar_image_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 8723584D1E704363002D19B8 /* radar_image_process.c */; };
 		873C063F1E6F9E34004DE01C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C063E1E6F9E34004DE01C /* main.cpp */; };
-		873C064F1E6F9E44004DE01C /* dijkstra.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C06461E6F9E44004DE01C /* dijkstra.cpp */; };
 		873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C06481E6F9E44004DE01C /* airway_graph.cpp */; };
 		873C06511E6F9E44004DE01C /* dynamic_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */; };
 		877E88D31E821C3A001B1F00 /* coordinate_convert.c in Sources */ = {isa = PBXBuildFile; fileRef = 877E88D11E821C3A001B1F00 /* coordinate_convert.c */; };
@@ -38,15 +37,13 @@
 		873C063B1E6F9E34004DE01C /* DWRFinder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DWRFinder; sourceTree = BUILT_PRODUCTS_DIR; };
 		873C063E1E6F9E34004DE01C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		873C06451E6F9E44004DE01C /* airway_type.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_type.hpp; sourceTree = "<group>"; };
-		873C06461E6F9E44004DE01C /* dijkstra.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dijkstra.cpp; sourceTree = "<group>"; };
-		873C06471E6F9E44004DE01C /* dijkstra.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dijkstra.hpp; sourceTree = "<group>"; };
 		873C06481E6F9E44004DE01C /* airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = airway_graph.cpp; sourceTree = "<group>"; };
 		873C06491E6F9E44004DE01C /* airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_graph.hpp; sourceTree = "<group>"; };
-		873C064A1E6F9E44004DE01C /* graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_airway_graph.cpp; sourceTree = "<group>"; };
 		873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_airway_graph.hpp; sourceTree = "<group>"; };
 		877E88D11E821C3A001B1F00 /* coordinate_convert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coordinate_convert.c; sourceTree = "<group>"; };
 		877E88D21E821C3A001B1F00 /* coordinate_convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coordinate_convert.h; sourceTree = "<group>"; };
+		87B85D881EBB09D2008323F4 /* raster_type.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster_type.hpp; sourceTree = "<group>"; };
 		87D402DC1E7A3E5A00041DCA /* graphics_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = graphics_utils.hpp; sourceTree = "<group>"; };
 		87D402DE1E7A40BB00041DCA /* graphics_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphics_utils.cpp; sourceTree = "<group>"; };
 		87D402E31E7AAD5100041DCA /* raster_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = raster_graph.cpp; sourceTree = "<group>"; };
@@ -94,17 +91,15 @@
 			children = (
 				87D402DA1E7A3DC200041DCA /* Utils */,
 				873C06451E6F9E44004DE01C /* airway_type.hpp */,
-				873C06461E6F9E44004DE01C /* dijkstra.cpp */,
-				873C06471E6F9E44004DE01C /* dijkstra.hpp */,
 				873C06481E6F9E44004DE01C /* airway_graph.cpp */,
 				873C06491E6F9E44004DE01C /* airway_graph.hpp */,
-				873C064A1E6F9E44004DE01C /* graph.h */,
 				873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */,
 				873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */,
 				8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */,
 				8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.hpp */,
 				87D402E31E7AAD5100041DCA /* raster_graph.cpp */,
 				87D402E41E7AAD5100041DCA /* raster_graph.hpp */,
+				87B85D881EBB09D2008323F4 /* raster_type.hpp */,
 			);
 			name = DWR;
 			sourceTree = "<group>";
@@ -148,7 +143,7 @@
 		873C06331E6F9E34004DE01C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = Zach;
 				TargetAttributes = {
 					873C063A1E6F9E34004DE01C = {
@@ -184,7 +179,6 @@
 				873C063F1E6F9E34004DE01C /* main.cpp in Sources */,
 				873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */,
 				87D402E51E7AAD5100041DCA /* raster_graph.cpp in Sources */,
-				873C064F1E6F9E44004DE01C /* dijkstra.cpp in Sources */,
 				877E88D31E821C3A001B1F00 /* coordinate_convert.c in Sources */,
 				8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */,
 				8723584F1E704363002D19B8 /* radar_image_process.c in Sources */,
@@ -199,7 +193,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -247,7 +240,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -287,7 +279,6 @@
 		873C06431E6F9E34004DE01C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				DEVELOPMENT_TEAM = 9MLY55Y69S;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -296,7 +287,6 @@
 		873C06441E6F9E34004DE01C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				DEVELOPMENT_TEAM = 9MLY55Y69S;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -10,10 +10,10 @@
 #include <ImageIO/ImageIO.h>
 
 
-char *CreateMaskFromCGImage(CGImageRef image, size_t *width, size_t *height) {
+char *CreateMaskFromCGImage(CGImageRef image, int *width, int *height) {
     
-    size_t imageWidth = CGImageGetWidth(image);
-    size_t imageHeight = CGImageGetHeight(image);
+    int imageWidth = (int)CGImageGetWidth(image);
+    int imageHeight = (int)CGImageGetHeight(image);
     *width = imageWidth;
     *height = imageHeight;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();

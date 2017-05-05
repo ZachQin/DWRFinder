@@ -12,29 +12,10 @@
 #include <stdio.h>
 #include <list>
 #include <functional>
-#include "graphics_utils.hpp"
+#include <math.h>
+#include "raster_type.hpp"
 
 namespace dwr {
-
-typedef int Level;
-
-const Distance max_distance = std::numeric_limits<Distance>::max();
-
-struct NodeInfo {
-    Distance distance;
-    Distance heuristic;
-    Level level;
-    Pixel pixel;
-    NodeInfo *previous;
-    
-    NodeInfo(Distance dist, Distance heur, Level l, Pixel px, NodeInfo *pre): distance(dist), heuristic(heur), level(l), pixel(px), previous(pre){};
-    
-    bool operator > (const NodeInfo &p) const {
-        if (distance == max_distance) {return true;}
-        if (p.distance == max_distance) {return false;}
-        return distance + heuristic > p.distance + p.heuristic;
-    }
-};
 
 class RasterGraph {
 public:

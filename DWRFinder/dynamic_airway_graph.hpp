@@ -15,13 +15,25 @@
 
 namespace dwr {
 
+struct UndirectedAirwayPointPair {
+    std::shared_ptr<AirwayPoint> first;
+    std::shared_ptr<AirwayPoint> second;
+    
+    UndirectedAirwayPointPair(const AirwayPointPair &pair) : first(std::min(pair.first, pair.second)), second(std::max(pair.first, pair.second)) {};
+    UndirectedAirwayPointPair(const std::shared_ptr<AirwayPoint> &ap1, const std::shared_ptr<AirwayPoint> &ap2) : first(std::min(ap1, ap2)), second(std::max(ap1, ap2)) {};
+        
+    bool operator < (const UndirectedAirwayPointPair &p) const {
+        return this->first < p.first ? true : (this->first > p.first ? false : this->second < p.second);
+    };
+};
+    
 class DynamicAirwayGraph: public AirwayGraph {
 public:
-    void GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
-    void ForEachBlock(std::function<void(AirwayPoint, AirwayPoint)> &traverseFunction);
+    std::vector<std::shared_ptr<AirwayPoint>> GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity);
+    void ForEachBlock(std::function<void(const AirwayPoint &, const AirwayPoint &)> &traverseFunction);
     
 protected:
-    std::set<UndirectedEdge> blockSet_;
+    std::set<UndirectedAirwayPointPair> blockSet_;
 };
 
 }

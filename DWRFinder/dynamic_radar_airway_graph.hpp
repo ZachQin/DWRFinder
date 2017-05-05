@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 #include <map>
-#include "graph.h"
 #include "dynamic_airway_graph.hpp"
 #include "graphics_utils.hpp"
 
@@ -33,12 +32,12 @@ public:
     void prebuild(const WorldFileInfo &worldFileInfo);
     // mask包含0或1，1表示有阻塞，0表示无阻塞
     void UpdateBlock(const char *mask, int width, int height);
-    void GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path);
+    std::vector<std::shared_ptr<AirwayPoint>> GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity);
     //Debug
 //    void LogBlockAirpointSegment();
 
 private:
-    std::map<Pixel, UndirectedEdge> pixelToEdgeTable_;
+    std::map<Pixel, UndirectedAirwayPointPair> pixelToEdgeTable_;
     const char *radarMask_;
     int radarWidth_;
     int radarHeight_;

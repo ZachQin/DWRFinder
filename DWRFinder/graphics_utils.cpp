@@ -5,10 +5,11 @@
 //  Created by ZachQin on 2017/3/16.
 //  Copyright © 2017年 Zach. All rights reserved.
 //
-
+#include <stdlib.h>
 #include "graphics_utils.hpp"
+
 namespace dwr {
-void BresenhamLine(Pixel startPoint, Pixel endPoint, std::vector<Pixel> &pixels) {
+void BresenhamLine(const Pixel &startPoint, const Pixel &endPoint, std::vector<Pixel> &pixels) {
     pixels.clear();
     int x0 = startPoint.x, x1 = endPoint.x;
     int y0 = startPoint.y, y1 = endPoint.y;
@@ -40,7 +41,7 @@ void BresenhamLine(Pixel startPoint, Pixel endPoint, std::vector<Pixel> &pixels)
     }
 }
 
-void VerticalEquantLine(Pixel startPoint, Pixel endPoint, int segmentNumber, int radius, std::vector<std::vector<Pixel>> &segments) {
+void VerticalEquantLine(const Pixel &startPoint, const Pixel &endPoint, int segmentNumber, int radius, std::vector<std::vector<Pixel>> &segments) {
     segments.clear();
     int x0 = startPoint.x, x1 = endPoint.x;
     int y0 = startPoint.y, y1 = endPoint.y;

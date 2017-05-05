@@ -11,28 +11,27 @@
 
 #include <stdio.h>
 #include <map>
-#include "graph.h"
+#include <vector>
 #include "airway_type.hpp"
 
 namespace dwr {
 
+typedef std::pair<const std::shared_ptr<AirwayPoint>, const std::shared_ptr<AirwayPoint>> AirwayPointPair;
+    
 class AirwayGraph {
 public:
     AirwayGraph(){};
     AirwayGraph(const char *path);
-    void AddAirwayPoint(AirwayPointID identity, std::string name, double x, double y, double lon, double lat);
+    void AddAirwayPoint(AirwayPointID identity, std::string name, double lon, double lat);
     void AddAirwaySegment(AirwayPointID identity1, AirwayPointID identity2);
-    void GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, std::vector<AirwayPoint> &path, const std::function<bool(Edge, std::vector<Vertex> &)> &canSearch = [](Edge edge, std::vector<Vertex> &previes){return true;});
-    bool SaveToFile(const std::string &path);
+    std::vector<std::shared_ptr<AirwayPoint>> GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, const std::function<bool(const AirwayPointPair &)> canSearch = [](const AirwayPointPair &p){return true;});
+    bool SaveToFile(const std::string &path) const;
     bool LoadFromFile(const std::string &path);
-    void ForEach(std::function<void(AirwayPoint, AirwayPoint, double)> &traverseFunction);
-    AirwayPoint AirwayPointFromID(AirwayPointID identity);
+    void ForEach(std::function<void(const std::shared_ptr<AirwayPoint> &, const std::shared_ptr<AirwayPoint> &, GeoDistance)> traverseFunction);
+    std::shared_ptr<AirwayPoint> AirwayPointFromID(AirwayPointID identity);
 
 protected:
-    std::map<AirwayPointID, Vertex> airwayPointMap_;
-    // 下标是Vertex
-    std::vector<AirwayPoint> airwayPointVector_;
-    adjacency_list_t adjacencyList_;
+    std::map<AirwayPointID, std::shared_ptr<AirwayPoint>> airwayPointMap_;
 };
 
 }

@@ -19,7 +19,7 @@ extern "C" {
 
 
 CGImageRef CreateCGImageFromFile(const char *path);
-char *CreateMaskFromCGImage(CGImageRef image, size_t *width, size_t *height);
+char *CreateMaskFromCGImage(CGImageRef image, int *width, int *height);
 
 #ifdef __cplusplus
 }

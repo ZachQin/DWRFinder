@@ -8,12 +8,11 @@
 
 #include <iostream>
 #include "airway_graph.hpp"
-#include <unordered_map>
 #include "dynamic_radar_airway_graph.hpp"
-
 #include "radar_image_process.h"
 
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -29,7 +28,7 @@ int main(int argc, const char * argv[]) {
     // Raster start
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.png");
     CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
-    size_t width, height;
+    int width, height;
     char *mask = CreateMaskFromCGImage(image, &width, &height);
     g.UpdateBlock(mask, width, height);
 //    free(mask);
@@ -60,12 +59,13 @@ int main(int argc, const char * argv[]) {
 //        std::cout << std::endl;
 //    }
     {
-        std::vector<dwr::AirwayPoint> path;
+        
         clock_t tStart = clock();
-        g.GetDynamicFullPath(21690, 1436, path);
+        std::vector<std::shared_ptr<dwr::AirwayPoint>> path = g.GetDynamicFullPath(8071, 20631);
+//        std::vector<std::shared_ptr<dwr::AirwayPoint>> path = g.GetPath(8071, 20631);
         printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
         for (auto &i: path) {
-            std::cout << i.name << "->";
+            std::cout << i->name << "->";
         }
         std::cout << "🔚";
         std::cout << std::endl;
