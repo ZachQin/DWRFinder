@@ -1,5 +1,5 @@
 //
-//  AirwayPoint.h
+//  Waypoint.h
 //  DWRFinder
 //
 //  Created by ZachQin on 2017/3/1.
@@ -15,16 +15,16 @@
 
 namespace dwr {
 
-typedef int AirwayPointID;
+typedef int WaypointID;
 typedef double GeoDistance;
 typedef double GeoRad;
 
-struct AirwayPoint;
+struct Waypoint;
 struct Neighbor {
-    std::weak_ptr<AirwayPoint> target;
+    std::weak_ptr<Waypoint> target;
     GeoDistance distance;
     Neighbor() {};
-    Neighbor(const std::shared_ptr<AirwayPoint> &arg_target, GeoDistance arg_distance)
+    Neighbor(const std::shared_ptr<Waypoint> &arg_target, GeoDistance arg_distance)
     : target(arg_target), distance(arg_distance) { }
 };
     
@@ -38,27 +38,27 @@ struct GeoProj {
     GeoDistance y;
 };
     
-const AirwayPointID kNoAirwaypointID = -1;
+const WaypointID kNoAirwaypointID = -1;
 const GeoDistance kEarthRadius = 6378137.0;
 const GeoDistance kNoCoordinate = std::numeric_limits<GeoDistance>::infinity();
     
-struct AirwayPoint {
-    AirwayPointID airwayPointID;
+struct Waypoint {
+    WaypointID waypointID;
     std::string name;
     GeoPoint location;
     
     bool userWaypoint = false;
     std::vector<Neighbor> neibors;
     
-    AirwayPoint() {};
-    AirwayPoint(int airwayPointID, const std::string &name, double lon, double lat) : airwayPointID(airwayPointID), name(name), location({lon, lat}) {};
+    Waypoint() {};
+    Waypoint(int waypointID, const std::string &name, double lon, double lat) : waypointID(waypointID), name(name), location({lon, lat}) {};
     
-    bool operator < (const AirwayPoint &p) const {
-        return airwayPointID < p.airwayPointID;
+    bool operator < (const Waypoint &p) const {
+        return waypointID < p.waypointID;
     }
     
     // Cache
-    std::weak_ptr<AirwayPoint> previous;
+    std::weak_ptr<Waypoint> previous;
     GeoDistance actualDistance = std::numeric_limits<GeoDistance>::max();
     GeoDistance heuristicDistance = std::numeric_limits<GeoDistance>::max();
     GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
@@ -69,7 +69,7 @@ struct AirwayPoint {
         previous.reset();
     };
     
-    static GeoDistance Distance(const AirwayPoint &p1, const AirwayPoint &p2) {
+    static GeoDistance Distance(const Waypoint &p1, const Waypoint &p2) {
         double FI1 = p1.location.latitude;
         double FI2 = p2.location.latitude;
         double deltFI = FI2 - FI1;
@@ -79,6 +79,7 @@ struct AirwayPoint {
         return kEarthRadius * c;
     };
 };
+
 } //Namespace dwr
 
-#endif /* AirwayPoint_h */
+#endif /* Waypoint_h */

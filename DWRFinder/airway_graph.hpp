@@ -16,22 +16,73 @@
 
 namespace dwr {
 
-typedef std::pair<const std::shared_ptr<AirwayPoint>, const std::shared_ptr<AirwayPoint>> AirwayPointPair;
+typedef std::pair<const std::shared_ptr<Waypoint>, const std::shared_ptr<Waypoint>> WaypointPair;
     
 class AirwayGraph {
 public:
     AirwayGraph(){};
     AirwayGraph(const char *path);
-    void AddAirwayPoint(AirwayPointID identity, std::string name, double lon, double lat);
-    void AddAirwaySegment(AirwayPointID identity1, AirwayPointID identity2);
-    std::vector<std::shared_ptr<AirwayPoint>> GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, const std::function<bool(const AirwayPointPair &)> canSearch = [](const AirwayPointPair &p){return true;});
+    
+    /**
+     Add a waypoint to the graph.
+     
+     @param identity Waypoint ID.
+     @param name Waypoint name.
+     @param lon Waypoint longitude.
+     @param lat Waypoint latitude.
+     */
+    void AddWaypoint(WaypointID identity, std::string name, double lon, double lat);
+    
+    /**
+     Add the connection between two waypoint.
+     
+     @param identity1 First waypoint.
+     @param identity2 Second waypoint.
+     */
+    void AddAirwaySegment(WaypointID identity1, WaypointID identity2);
+    
+    /**
+     Get the path using A* algorithm.
+     
+     @param originIdentity Origin waypoint ID
+     @param destinIdentity Destination waypoint ID
+     @param canSearch The Lambda expression using to determine whether the edge can be access.
+     @return The shortest path.
+     */
+    std::vector<std::shared_ptr<Waypoint>> GetPath(WaypointID originIdentity, WaypointID destinIdentity, const std::function<bool(const WaypointPair &)> canSearch = [](const WaypointPair &p){return true;});
+    
+    /**
+     Save the graph as a file.
+     
+     @param path File path.
+     @return True when succeed, otherwise false.
+     */
     bool SaveToFile(const std::string &path) const;
+    
+    /**
+     Load the graph from a file.
+     
+     @param path File path.
+     @return True when succeed, otherwise false.
+     */
     bool LoadFromFile(const std::string &path);
-    void ForEach(std::function<void(const std::shared_ptr<AirwayPoint> &, const std::shared_ptr<AirwayPoint> &, GeoDistance)> traverseFunction);
-    std::shared_ptr<AirwayPoint> AirwayPointFromID(AirwayPointID identity);
+    /**
+     Applies the given Lambda expression to all edge in the graph.
+     
+     @param  traverseFunction The Lambda expression applied to all edge in the graph.
+     */
+    void ForEach(std::function<void(const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> traverseFunction);
+    
+    /**
+     Get waypoint from waypoint ID.
+     
+     @param identity Waypoint ID.
+     @return Waypoint pointer.
+     */
+    std::shared_ptr<Waypoint> WaypointFromID(WaypointID identity);
 
 protected:
-    std::map<AirwayPointID, std::shared_ptr<AirwayPoint>> airwayPointMap_;
+    std::map<WaypointID, std::shared_ptr<Waypoint>> waypointMap_;
 };
 
 }

@@ -29,14 +29,14 @@ int main(int argc, const char * argv[]) {
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.png");
     CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
     int width, height;
-    char *mask = CreateMaskFromCGImage(image, &width, &height);
+    std::shared_ptr<const char> mask(CreateMaskFromCGImage(image, &width, &height));
     g.UpdateBlock(mask, width, height);
 //    free(mask);
     // Raster end
 //    g.LogBlockAirpointSegment();
 
 //    {
-//        std::vector<AirwayPoint> path;
+//        std::vector<Waypoint> path;
 //        clock_t tStart = clock();
 //        g.GetPath(1835, 5269, path);
 //        printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]) {
 //    }
 //    {
 //        
-//        std::vector<AirwayPoint> path;
+//        std::vector<Waypoint> path;
 //        clock_t tStart = clock();
 //        g.GetDynamicPath(1835, 5269, path);
 //        printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
@@ -61,7 +61,7 @@ int main(int argc, const char * argv[]) {
     {
         std::string resultStr;
         clock_t tStart = clock();
-        std::vector<std::shared_ptr<dwr::AirwayPoint>> path = g.GetDynamicFullPath(8071, 20631);
+        std::vector<std::shared_ptr<dwr::Waypoint>> path = g.GetDynamicFullPath(8071, 20631);
         printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
         for (auto &i: path) {
             resultStr.append(i->name);

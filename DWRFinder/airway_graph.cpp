@@ -17,58 +17,51 @@ AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
 
-void AirwayGraph::AddAirwayPoint(AirwayPointID identity, std::string name, double lon, double lat) {
-    std::shared_ptr<AirwayPoint> point(new AirwayPoint(identity, name, lon, lat));
-    airwayPointMap_.insert(std::make_pair(identity, point));
+void AirwayGraph::AddWaypoint(WaypointID identity, std::string name, double lon, double lat) {
+    std::shared_ptr<Waypoint> point(new Waypoint(identity, name, lon, lat));
+    waypointMap_.insert(std::make_pair(identity, point));
 }
 
-void AirwayGraph::AddAirwaySegment(AirwayPointID identity1, AirwayPointID identity2) {
-    auto wpt1 = airwayPointMap_[identity1];
-    auto wpt2 = airwayPointMap_[identity2];
-    GeoDistance d = AirwayPoint::Distance(*wpt1, *wpt2);
+
+void AirwayGraph::AddAirwaySegment(WaypointID identity1, WaypointID identity2) {
+    auto wpt1 = waypointMap_[identity1];
+    auto wpt2 = waypointMap_[identity2];
+    GeoDistance d = Waypoint::Distance(*wpt1, *wpt2);
     Neighbor neib1(wpt2, d);
     Neighbor neib2(wpt1, d);
     wpt1->neibors.push_back(neib1);
     wpt2->neibors.push_back(neib2);
 }
-    
-/**
- 使用A*算法获取路径
 
- @param sourceIdentity 源航路点ID
- @param destinIdentity 目的航路点ID
- @param canSearch 可达性判断
- @return 航路点路径
- */
-std::vector<std::shared_ptr<AirwayPoint>> AirwayGraph::GetPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity, const std::function<bool(const AirwayPointPair &)> canSearch) {
-    std::vector<std::shared_ptr<AirwayPoint>> result;
-    auto sourceIt = airwayPointMap_.find(sourceIdentity);
-    auto destinIt = airwayPointMap_.find(destinIdentity);
-    if (sourceIt == airwayPointMap_.end() || destinIt == airwayPointMap_.end()) {
+std::vector<std::shared_ptr<Waypoint>> AirwayGraph::GetPath(WaypointID originIdentity, WaypointID destinIdentity, const std::function<bool(const WaypointPair &)> canSearch) {
+    std::vector<std::shared_ptr<Waypoint>> result;
+    auto originIt = waypointMap_.find(originIdentity);
+    auto destinIt = waypointMap_.find(destinIdentity);
+    if (originIt == waypointMap_.end() || destinIt == waypointMap_.end()) {
         return result;
     }
-    auto sourceWpt = sourceIt->second;
+    auto originWpt = originIt->second;
     auto destinWpt = destinIt->second;
-    // 初始化Cache，主要用于清除所有AirwayPoint的actualDistance和heuristicDistance
-    for (auto &p : airwayPointMap_) {
+    // Init Cache for waypoint.actualDistance and waypoint.heuristicDistance.
+    for (auto &p : waypointMap_) {
         p.second->ResetCache();
     }
-    // 初始化优先队列
-    auto wptComp = [](const std::shared_ptr<AirwayPoint> &wpt1, const std::shared_ptr<AirwayPoint> &wpt2) {
+    // Init priority queue.
+    auto wptComp = [](const std::shared_ptr<Waypoint> &wpt1, const std::shared_ptr<Waypoint> &wpt2) {
         return wpt1->actualDistance + wpt1->heuristicDistance > wpt2->actualDistance + wpt2->heuristicDistance;
     };
-    std::priority_queue<std::shared_ptr<AirwayPoint>, std::vector<std::shared_ptr<AirwayPoint>>, decltype(wptComp)> wptQueue(wptComp);
-    sourceWpt->actualDistance = 0;
-    sourceWpt->heuristicDistance = AirwayPoint::Distance(*sourceWpt, *destinWpt);
-    wptQueue.push(sourceWpt);
+    std::priority_queue<std::shared_ptr<Waypoint>, std::vector<std::shared_ptr<Waypoint>>, decltype(wptComp)> wptQueue(wptComp);
+    originWpt->actualDistance = 0;
+    originWpt->heuristicDistance = Waypoint::Distance(*originWpt, *destinWpt);
+    wptQueue.push(originWpt);
     while (!wptQueue.empty()) {
-        std::shared_ptr<AirwayPoint> currentWpt = wptQueue.top();
+        std::shared_ptr<Waypoint> currentWpt = wptQueue.top();
         wptQueue.pop();
         if (currentWpt == destinWpt) {
             break;
         }
         for (auto &neibor : currentWpt->neibors) {
-            std::shared_ptr<AirwayPoint> neiborWpt = neibor.target.lock();
+            std::shared_ptr<Waypoint> neiborWpt = neibor.target.lock();
             if (!canSearch(std::make_pair(currentWpt, neiborWpt))) {
                 continue;
             }
@@ -76,7 +69,7 @@ std::vector<std::shared_ptr<AirwayPoint>> AirwayGraph::GetPath(AirwayPointID sou
             if (distanceThroughCurrent < neiborWpt->actualDistance) {
                 neiborWpt->actualDistance = distanceThroughCurrent;
                 neiborWpt->previous = currentWpt;
-                neiborWpt->heuristicDistance = AirwayPoint::Distance(*neiborWpt, *destinWpt);
+                neiborWpt->heuristicDistance = Waypoint::Distance(*neiborWpt, *destinWpt);
                 wptQueue.push(neiborWpt);
             }
         }
@@ -96,13 +89,13 @@ bool AirwayGraph::SaveToFile(const std::string &path) const {
         return false;
     }
     // 序列化航路点数量
-    uint32_t n = static_cast<uint32_t>(airwayPointMap_.size());
+    uint32_t n = static_cast<uint32_t>(waypointMap_.size());
     of.write(reinterpret_cast<char *>(&n), sizeof(n));
     // 序列化航路点基本信息
-    for (auto &airwayPointPair : airwayPointMap_) {
-        const AirwayPoint &wpt = *airwayPointPair.second;
+    for (auto &waypointPair : waypointMap_) {
+        const Waypoint &wpt = *waypointPair.second;
         // 序列化ID
-        uint32_t identity = static_cast<uint32_t>(wpt.airwayPointID);
+        uint32_t identity = static_cast<uint32_t>(wpt.waypointID);
         of.write(reinterpret_cast<char *>(&identity), sizeof(identity));
         // 序列化名称
         uint32_t nameSize = static_cast<uint32_t>(wpt.name.size());
@@ -116,17 +109,17 @@ bool AirwayGraph::SaveToFile(const std::string &path) const {
         of.write(reinterpret_cast<char *>(&latitude), sizeof(latitude));
     }
     // 序列化航路点邻接信息
-    for (auto &airwayPointPair : airwayPointMap_) {
-        const AirwayPoint &wpt = *airwayPointPair.second;
+    for (auto &waypointPair : waypointMap_) {
+        const Waypoint &wpt = *waypointPair.second;
         // 序列化ID
-        uint32_t identity = static_cast<uint32_t>(wpt.airwayPointID);
+        uint32_t identity = static_cast<uint32_t>(wpt.waypointID);
         of.write(reinterpret_cast<char *>(&identity), sizeof(identity));
         // 序列化邻接个数
         uint32_t neiborSize = static_cast<uint32_t>(wpt.neibors.size());
         of.write(reinterpret_cast<char *>(&neiborSize), sizeof(neiborSize));
         for (auto &neibor : wpt.neibors) {
             // 序列化相邻航路点ID
-            uint32_t neiborID = static_cast<uint32_t>(neibor.target.lock()->airwayPointID);
+            uint32_t neiborID = static_cast<uint32_t>(neibor.target.lock()->waypointID);
             of.write(reinterpret_cast<char *>(&neiborID), sizeof(neiborID));
             // 序列化相邻航路点距离
             double neiborDistance = static_cast<double>(neibor.distance);
@@ -144,11 +137,11 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
     uint32_t n = 0;
     inf.read(reinterpret_cast<char *>(&n), sizeof(n));
     for (int i = 0; i < n; i++) {
-        std::shared_ptr<AirwayPoint> wpt(new AirwayPoint);
+        std::shared_ptr<Waypoint> wpt(new Waypoint);
         // 反序列化ID
         uint32_t identity = 0;
         inf.read(reinterpret_cast<char *>(&identity), sizeof(identity));
-        wpt->airwayPointID = static_cast<AirwayPointID>(identity);
+        wpt->waypointID = static_cast<WaypointID>(identity);
         // 反序列化名称
         uint32_t nameSize = 0;
         inf.read(reinterpret_cast<char *>(&nameSize), sizeof(nameSize));
@@ -164,13 +157,13 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
         double latitude = 0.0;
         inf.read(reinterpret_cast<char *>(&latitude), sizeof(latitude));
         wpt->location.latitude = static_cast<double>(latitude);
-        airwayPointMap_.insert(std::make_pair(identity, wpt));
+        waypointMap_.insert(std::make_pair(identity, wpt));
     }
     for (int i = 0; i < n; i++) {
         // 反序列化ID
         uint32_t identity = 0;
         inf.read(reinterpret_cast<char *>(&identity), sizeof(identity));
-        std::shared_ptr<AirwayPoint> wpt = airwayPointMap_[static_cast<AirwayPointID>(identity)];
+        std::shared_ptr<Waypoint> wpt = waypointMap_[static_cast<WaypointID>(identity)];
         // 反序列化邻接个数
         uint32_t neiborSize = 0;
         inf.read(reinterpret_cast<char *>(&neiborSize), sizeof(neiborSize));
@@ -182,15 +175,15 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
             double distance = 0.0;
             inf.read(reinterpret_cast<char *>(&distance), sizeof(distance));
             
-            Neighbor neibor(airwayPointMap_[neiborID], static_cast<GeoDistance>(distance));
+            Neighbor neibor(waypointMap_[neiborID], static_cast<GeoDistance>(distance));
             wpt->neibors.push_back(neibor);
         }
     }
     return true;
 }
 
-void AirwayGraph::ForEach(std::function<void (const std::shared_ptr<AirwayPoint> &, const std::shared_ptr<AirwayPoint> &, GeoDistance)> traverseFunction) {
-    for (auto &pair : airwayPointMap_) {
+void AirwayGraph::ForEach(std::function<void (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> traverseFunction) {
+    for (auto &pair : waypointMap_) {
         auto wpt = pair.second;
         for (auto &neibor : wpt->neibors) {
             traverseFunction(wpt, neibor.target.lock(), neibor.distance);
@@ -198,9 +191,9 @@ void AirwayGraph::ForEach(std::function<void (const std::shared_ptr<AirwayPoint>
     }
 }
 
-std::shared_ptr<AirwayPoint> AirwayGraph:: AirwayPointFromID(AirwayPointID identity) {
-    auto iterator = airwayPointMap_.find(identity);
-    if (iterator != airwayPointMap_.end()) {
+std::shared_ptr<Waypoint> AirwayGraph:: WaypointFromID(WaypointID identity) {
+    auto iterator = waypointMap_.find(identity);
+    if (iterator != waypointMap_.end()) {
         return iterator->second;
     } else {
         return nullptr;

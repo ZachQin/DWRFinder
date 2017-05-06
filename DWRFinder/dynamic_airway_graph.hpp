@@ -15,25 +15,25 @@
 
 namespace dwr {
 
-struct UndirectedAirwayPointPair {
-    std::shared_ptr<AirwayPoint> first;
-    std::shared_ptr<AirwayPoint> second;
+struct UndirectedWaypointPair {
+    std::shared_ptr<Waypoint> first;
+    std::shared_ptr<Waypoint> second;
     
-    UndirectedAirwayPointPair(const AirwayPointPair &pair) : first(std::min(pair.first, pair.second)), second(std::max(pair.first, pair.second)) {};
-    UndirectedAirwayPointPair(const std::shared_ptr<AirwayPoint> &ap1, const std::shared_ptr<AirwayPoint> &ap2) : first(std::min(ap1, ap2)), second(std::max(ap1, ap2)) {};
+    UndirectedWaypointPair(const WaypointPair &pair) : first(std::min(pair.first, pair.second)), second(std::max(pair.first, pair.second)) {};
+    UndirectedWaypointPair(const std::shared_ptr<Waypoint> &ap1, const std::shared_ptr<Waypoint> &ap2) : first(std::min(ap1, ap2)), second(std::max(ap1, ap2)) {};
         
-    bool operator < (const UndirectedAirwayPointPair &p) const {
+    bool operator < (const UndirectedWaypointPair &p) const {
         return this->first < p.first ? true : (this->first > p.first ? false : this->second < p.second);
     };
 };
     
 class DynamicAirwayGraph: public AirwayGraph {
 public:
-    std::vector<std::shared_ptr<AirwayPoint>> GetDynamicPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity);
-    void ForEachBlock(std::function<void(const AirwayPoint &, const AirwayPoint &)> &traverseFunction);
+    std::vector<std::shared_ptr<Waypoint>> GetDynamicPath(WaypointID originIdentity, WaypointID destinIdentity);
+    void ForEachBlock(std::function<void(const Waypoint &, const Waypoint &)> &traverseFunction);
     
 protected:
-    std::set<UndirectedAirwayPointPair> blockSet_;
+    std::set<UndirectedWaypointPair> blockSet_;
 };
 
 }

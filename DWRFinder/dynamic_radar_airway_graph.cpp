@@ -60,38 +60,19 @@ std::string lonlatToString(double lon, double lat) {
     return textStream.str();
 }
 
-std::shared_ptr<AirwayPoint> NodeInfoToAirwayPoint(const NodeInfo &info, const WorldFileInfo &w) {
+std::shared_ptr<Waypoint> NodeInfoToWaypoint(const NodeInfo &info, const WorldFileInfo &w) {
     GeoProj xy = pixelToCoordinate(info.pixel, w);
     double lon, lat;
     MercToLonLat(xy.x, xy.y, &lon, &lat);
     auto name = lonlatToString(lon, lat);
-    std::shared_ptr<AirwayPoint> userWaypoint(new AirwayPoint(kNoAirwaypointID, name, lon, lat));
+    std::shared_ptr<Waypoint> userWaypoint(new Waypoint(kNoAirwaypointID, name, lon, lat));
     userWaypoint->userWaypoint = true;
     return userWaypoint;
 }
 
 void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
     worldFileInfo_ = worldFileInfo;
-//    for (Vertex startVertex = 0; startVertex < adjacencyList_.size(); startVertex++) {
-//        auto neighbors = adjacencyList_[startVertex];
-//        for (auto &neighbor: neighbors) {
-//            Vertex endVertex = neighbor.target;
-//            auto startAirwayPoint = airwayPointVector_[startVertex];
-//            auto endAirwayPoint = airwayPointVector_[endVertex];
-//            // 开始遍历
-//            Pixel startPixel = coordinateToPixel(startAirwayPoint.x, startAirwayPoint.y, worldFileInfo);
-//            Pixel endPixel = coordinateToPixel(endAirwayPoint.x, endAirwayPoint.y, worldFileInfo);
-//            std::vector<Pixel> linePixels;
-//            BresenhamLine(startPixel, endPixel, linePixels);
-//            for (auto &point: linePixels) {
-//                UndirectedEdge e = UndirectedEdge(startVertex, endVertex);
-//                pixelToEdgeTable_.insert(std::make_pair(point, e));
-//            }
-//            //结束遍历
-//        }
-//    }
-    
-    auto traverseFunction = [&](const std::shared_ptr<AirwayPoint> &startWpt, const std::shared_ptr<AirwayPoint> &endWpt, GeoDistance d) {
+    auto traverseFunction = [&](const std::shared_ptr<Waypoint> &startWpt, const std::shared_ptr<Waypoint> &endWpt, GeoDistance d) {
         // 更新坐标
         if (startWpt->coordinate.x == kNoCoordinate) {
             LonLatToMerc(startWpt->location.longitude, startWpt->location.latitude, &startWpt->coordinate.x, &startWpt->coordinate.y);
@@ -103,20 +84,20 @@ void DynamicRadarAirwayGraph::prebuild(const WorldFileInfo &worldFileInfo) {
         Pixel endPixel = coordinateToPixel(endWpt->coordinate.x, endWpt->coordinate.y, worldFileInfo);
         std::vector<Pixel> linePixels = BresenhamLine(startPixel, endPixel);
         for (auto &point: linePixels) {
-            auto upair = UndirectedAirwayPointPair(startWpt, endWpt);
+            auto upair = UndirectedWaypointPair(startWpt, endWpt);
             pixelToEdgeTable_.insert(std::make_pair(point, upair));
         }
     };
     this->ForEach(traverseFunction);
 }
 
-void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int height) {
+void DynamicRadarAirwayGraph::UpdateBlock(const std::shared_ptr<const char> &mask, int width, int height) {
     rasterGraph_.SetRasterData(mask, width, height);
     // 更新阻塞集合
     blockSet_.clear();
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            if (mask[i * width + j] > 0) {
+            if (mask.get()[i * width + j] > 0) {
                 Pixel pixel = Pixel(j, i);
                 auto edgeIter = pixelToEdgeTable_.find(pixel);
                 if (edgeIter != pixelToEdgeTable_.end()) {
@@ -127,18 +108,18 @@ void DynamicRadarAirwayGraph::UpdateBlock(const char *mask, int width, int heigh
     }
 }
 
-std::vector<std::shared_ptr<AirwayPoint>> DynamicRadarAirwayGraph::GetDynamicFullPath(AirwayPointID sourceIdentity, AirwayPointID destinIdentity) {
-    std::map<AirwayPointPair, std::vector<NodeInfo>> userWaypointMap;
-    auto canSearch = [&](const AirwayPointPair &pair) {
-        if (blockSet_.find(UndirectedAirwayPointPair(pair)) == blockSet_.end()) {
+std::vector<std::shared_ptr<Waypoint>> DynamicRadarAirwayGraph::GetDynamicFullPath(WaypointID originIdentity, WaypointID destinIdentity) {
+    std::map<WaypointPair, std::vector<NodeInfo>> userWaypointMap;
+    auto canSearch = [&](const WaypointPair &pair) {
+        if (blockSet_.find(UndirectedWaypointPair(pair)) == blockSet_.end()) {
             return true;
         }
-        const std::shared_ptr<AirwayPoint> ap1 = pair.first;
-        const std::shared_ptr<AirwayPoint> ap2 = pair.second;
-        Pixel source = coordinateToPixel(ap1->coordinate.x, ap1->coordinate.y, worldFileInfo_);
+        const std::shared_ptr<Waypoint> ap1 = pair.first;
+        const std::shared_ptr<Waypoint> ap2 = pair.second;
+        Pixel origin = coordinateToPixel(ap1->coordinate.x, ap1->coordinate.y, worldFileInfo_);
         Pixel destin = coordinateToPixel(ap2->coordinate.x, ap2->coordinate.y, worldFileInfo_);
-        std::vector<std::vector<Pixel>> nodes = rasterGraph_.GetNodes(source, destin, 3);
-        std::vector<NodeInfo> infos = rasterGraph_.GetPath(source, destin, nodes);
+        std::vector<std::vector<Pixel>> nodes = rasterGraph_.GetNodes(origin, destin, 3);
+        std::vector<NodeInfo> infos = rasterGraph_.GetPath(origin, destin, nodes);
         if (infos.empty()) {
             return false;
         } else {
@@ -147,8 +128,8 @@ std::vector<std::shared_ptr<AirwayPoint>> DynamicRadarAirwayGraph::GetDynamicFul
             return true;
         }
     };
-    std::vector<std::shared_ptr<AirwayPoint>> fullPath;
-    std::vector<std::shared_ptr<AirwayPoint>> partialPath = GetPath(sourceIdentity, destinIdentity, canSearch);
+    std::vector<std::shared_ptr<Waypoint>> fullPath;
+    std::vector<std::shared_ptr<Waypoint>> partialPath = GetPath(originIdentity, destinIdentity, canSearch);
     if (partialPath.size() > 0) {
         fullPath.push_back(partialPath[0]);
     }
@@ -158,7 +139,7 @@ std::vector<std::shared_ptr<AirwayPoint>> DynamicRadarAirwayGraph::GetDynamicFul
         auto it = userWaypointMap.find(std::make_pair(start, end));
         if (it != userWaypointMap.end()) {
             for (auto &up: it->second) {
-                auto ap = NodeInfoToAirwayPoint(up, worldFileInfo_);
+                auto ap = NodeInfoToWaypoint(up, worldFileInfo_);
                 fullPath.push_back(ap);
             }
         }
@@ -169,7 +150,7 @@ std::vector<std::shared_ptr<AirwayPoint>> DynamicRadarAirwayGraph::GetDynamicFul
 
 //void DynamicRadarAirwayGraph::LogBlockAirpointSegment() {
 //    for (auto &block: blockSet_) {
-//        std::cout << "from:" << airwayPointVector_[block.small].airwayPointID << "  to:" << airwayPointVector_[block.big].airwayPointID << std::endl;
+//        std::cout << "from:" << waypointVector_[block.small].waypointID << "  to:" << waypointVector_[block.big].waypointID << std::endl;
 //    }
 //}
 

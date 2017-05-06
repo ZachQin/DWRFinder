@@ -13,9 +13,9 @@
 
 namespace dwr {
 
-std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &source, const Pixel &destin, int segmentNumber, double verticalFactor) const {
+std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &origin, const Pixel &destin, int segmentNumber, double verticalFactor) const {
     std::vector<std::vector<Pixel>> result;
-    std::vector<Pixel> pixels = BresenhamLine(source, destin);
+    std::vector<Pixel> pixels = BresenhamLine(origin, destin);
     int head = 0, tail = (int)pixels.size() - 1;
     while (head < pixels.size() && GetPixelValue(pixels[head]) == 0) {
         head++;
@@ -26,7 +26,7 @@ std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &source, const
     if (head >= tail) {
         return result;
     }
-    PixelDistance directDistance = Pixel::Distance(source, destin);
+    PixelDistance directDistance = Pixel::Distance(origin, destin);
     result = VerticalEquantLine(pixels[head], pixels[tail], segmentNumber, directDistance * verticalFactor);
     for (auto &node: result) {
         node.erase(std::remove_if(node.begin(), node.end(), [=](Pixel &p){
@@ -36,7 +36,7 @@ std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &source, const
     return result;
 }
 
-bool RasterGraph::CheckLine(const Pixel &startPoint, const Pixel &endPoint) {
+bool RasterGraph::CheckLine(const Pixel &startPoint, const Pixel &endPoint) const {
     std::vector<Pixel> pixels = BresenhamLine(startPoint, endPoint);
     for (int i = 0; i < pixels.size(); i++) {
         if (GetPixelValue(pixels[i]) > 0) {
@@ -54,11 +54,11 @@ char RasterGraph::GetPixelValue(const Pixel &pixel) const {
     }
 }
 
-std::vector<NodeInfo> RasterGraph::GetPath(Pixel source, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch) {
+std::vector<NodeInfo> RasterGraph::GetPath(Pixel origin, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch) const {
     std::vector<NodeInfo> result;
     int levelSize = (int)nodeLevels.size();
     std::vector<std::vector<NodeInfo>> nodeInfoLevels(levelSize + 2);
-    nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(source, destin),0, source, nullptr)};
+    nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(origin, destin),0, origin, nullptr)};
     nodeInfoLevels[levelSize + 1] = {NodeInfo(max_distance, 0,levelSize, destin, nullptr)};
     
     for (int i = 0; i < nodeLevels.size(); i++) {
