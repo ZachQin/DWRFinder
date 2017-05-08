@@ -31,7 +31,7 @@ public:
      @param lon Waypoint longitude.
      @param lat Waypoint latitude.
      */
-    void AddWaypoint(WaypointID identity, std::string name, double lon, double lat);
+    void AddWaypoint(WaypointID identity, std::string name, GeoRad lon, GeoRad lat);
     
     /**
      Add the connection between two waypoint.

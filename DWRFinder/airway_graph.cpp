@@ -17,7 +17,7 @@ AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
 
-void AirwayGraph::AddWaypoint(WaypointID identity, std::string name, double lon, double lat) {
+void AirwayGraph::AddWaypoint(WaypointID identity, std::string name, GeoRad lon, GeoRad lat) {
     std::shared_ptr<Waypoint> point(new Waypoint(identity, name, lon, lat));
     waypointMap_.insert(std::make_pair(identity, point));
 }
