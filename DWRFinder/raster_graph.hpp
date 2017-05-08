@@ -23,6 +23,7 @@ public:
     void ResetRaster(const std::shared_ptr<const char> &rasterData, int width, int height) {rasterData_ = rasterData; width_ = width; height_ = height;};
     std::vector<std::vector<Pixel>> GetNodes(const Pixel &origin, const Pixel &destin, int segmentNumber, double verticalFactor = 0.5) const;
     std::vector<NodeInfo> GetPath(Pixel origin, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch = [](const NodeInfo &info){return true;}) const;
+    char GetPixelValue(const Pixel &pixel) const;
     void SetRasterData(std::shared_ptr<const char> rasterData, int width, int height) {
         rasterData_ = rasterData;
         width_ = width;
@@ -34,7 +35,6 @@ private:
     int width_;
     int height_;
     bool CheckLine(const Pixel &startPoint, const Pixel &endPoint) const;
-    char GetPixelValue(const Pixel &pixel) const;
 };
 
 }
