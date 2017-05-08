@@ -24,13 +24,16 @@ void AirwayGraph::AddWaypoint(WaypointID identity, std::string name, GeoRad lon,
 
 
 void AirwayGraph::AddAirwaySegment(WaypointID identity1, WaypointID identity2) {
-    auto wpt1 = waypointMap_[identity1];
-    auto wpt2 = waypointMap_[identity2];
-    GeoDistance d = Waypoint::Distance(*wpt1, *wpt2);
-    Neighbor neib1(wpt2, d);
-    Neighbor neib2(wpt1, d);
-    wpt1->neibors.push_back(neib1);
-    wpt2->neibors.push_back(neib2);
+    auto wpt1It = waypointMap_.find(identity1);
+    auto wpt2It = waypointMap_.find(identity2);
+    if (wpt1It == waypointMap_.end() || wpt2It == waypointMap_.end()) {
+        return;
+    }
+    GeoDistance d = Waypoint::Distance(*wpt1It->second, *wpt2It->second);
+    Neighbor neib1(wpt2It->second, d);
+    Neighbor neib2(wpt1It->second, d);
+    wpt1It->second->neibors.push_back(neib1);
+    wpt2It->second->neibors.push_back(neib2);
 }
 
 std::vector<std::shared_ptr<Waypoint>> AirwayGraph::GetPath(WaypointID originIdentity, WaypointID destinIdentity, const std::function<bool(const WaypointPair &)> canSearch) {
