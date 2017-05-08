@@ -21,7 +21,20 @@ void AirwayGraph::AddWaypoint(WaypointID identity, std::string name, GeoRad lon,
     std::shared_ptr<Waypoint> point(new Waypoint(identity, name, lon, lat));
     waypointMap_.insert(std::make_pair(identity, point));
 }
-
+    
+void AirwayGraph::RemoveWaypoint(WaypointID identity) {
+    auto wptIt = waypointMap_.find(identity);
+    if (wptIt == waypointMap_.end()) {
+        return;
+    }
+    auto wpt = wptIt->second;
+    for (auto &neibor : wpt->neibors) {
+        auto target = neibor.target.lock();
+        Neighbor deletedNeibor(wpt, neibor.distance);
+        target->neibors.erase(deletedNeibor);
+    }
+    waypointMap_.erase(identity);
+}
 
 void AirwayGraph::AddAirwaySegment(WaypointID identity1, WaypointID identity2) {
     auto wpt1It = waypointMap_.find(identity1);
@@ -32,8 +45,8 @@ void AirwayGraph::AddAirwaySegment(WaypointID identity1, WaypointID identity2) {
     GeoDistance d = Waypoint::Distance(*wpt1It->second, *wpt2It->second);
     Neighbor neib1(wpt2It->second, d);
     Neighbor neib2(wpt1It->second, d);
-    wpt1It->second->neibors.push_back(neib1);
-    wpt2It->second->neibors.push_back(neib2);
+    wpt1It->second->neibors.insert(neib1);
+    wpt2It->second->neibors.insert(neib2);
 }
 
 std::vector<std::shared_ptr<Waypoint>> AirwayGraph::GetPath(WaypointID originIdentity, WaypointID destinIdentity, const std::function<bool(const WaypointPair &)> canSearch) {
@@ -179,7 +192,7 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
             inf.read(reinterpret_cast<char *>(&distance), sizeof(distance));
             
             Neighbor neibor(waypointMap_[neiborID], static_cast<GeoDistance>(distance));
-            wpt->neibors.push_back(neibor);
+            wpt->neibors.insert(neibor);
         }
     }
     return true;

@@ -10,7 +10,7 @@
 #define airway_type_hpp
 
 #include <string>
-#include <vector>
+#include <set>
 #include <math.h>
 
 namespace dwr {
@@ -26,6 +26,10 @@ struct Neighbor {
     Neighbor() {};
     Neighbor(const std::shared_ptr<Waypoint> &arg_target, GeoDistance arg_distance)
     : target(arg_target), distance(arg_distance) { }
+    
+    bool operator < (const Neighbor &p) const {
+        return target.lock() < p.target.lock();
+    }
 };
     
 struct GeoPoint {
@@ -48,7 +52,7 @@ struct Waypoint {
     GeoPoint location;
     
     bool userWaypoint = false;
-    std::vector<Neighbor> neibors;
+    std::set<Neighbor> neibors;
     
     Waypoint() {};
     Waypoint(int waypointID, const std::string &name, double lon, double lat) : waypointID(waypointID), name(name), location({lon, lat}) {};

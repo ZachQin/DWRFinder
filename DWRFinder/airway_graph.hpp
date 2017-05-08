@@ -34,6 +34,13 @@ public:
     void AddWaypoint(WaypointID identity, std::string name, GeoRad lon, GeoRad lat);
     
     /**
+     Remove a waypoint and all of its connections.
+
+     @param identity Waypoint ID;
+     */
+    void RemoveWaypoint(WaypointID identity);
+    
+    /**
      Add the connection between two waypoint.
      
      @param identity1 First waypoint.
