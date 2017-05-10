@@ -18,7 +18,8 @@ std::vector<Pixel> BresenhamLine(const Pixel &startPoint, const Pixel &endPoint)
         std::swap(x0, y0);
         std::swap(x1, y1);
     }
-    if (x0 > x1) {
+    bool reverse = x0 > x1;
+    if (reverse) {
         std::swap(x0, x1);
         std::swap(y0, y1);
     }
@@ -38,6 +39,9 @@ std::vector<Pixel> BresenhamLine(const Pixel &startPoint, const Pixel &endPoint)
             yy += ystep;
             error += deltax;
         }
+    }
+    if (reverse) {
+        std::reverse(result.begin(), result.end());
     }
     return result;
 }

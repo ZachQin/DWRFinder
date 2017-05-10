@@ -91,6 +91,9 @@ std::vector<std::shared_ptr<Waypoint>> AirwayGraph::GetPath(WaypointID originIde
         }
     }
     auto curWpt = destinWpt;
+    if (curWpt->previous.lock() == nullptr) {
+        return result;
+    }
     while (curWpt != nullptr) {
         result.push_back(curWpt);
         curWpt = curWpt->previous.lock();

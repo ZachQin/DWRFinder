@@ -16,6 +16,7 @@
 
 using namespace std;
 void FullPath(dwr::DynamicRadarAirwayGraph &g);
+void FullPathTest(dwr::DynamicRadarAirwayGraph &g);
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -27,7 +28,7 @@ int main(int argc, const char * argv[]) {
     g.prebuild(worldInfo);
     
     // Raster start
-    CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Desktop/MyPaper/未命名文件夹/radar_2.png");
+    CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Desktop/MyPaper/未命名文件夹/radar_1.png");
     CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
     int width, height;
     
@@ -36,18 +37,18 @@ int main(int argc, const char * argv[]) {
     g.UpdateBlock(mask, width, height);
     printf("Data process Time taken: %.4fms\n", (double)(clock() - tStart) * 1000.0 / CLOCKS_PER_SEC);
     
-    FullPath(g);
+    FullPathTest(g);
     return 0;
 }
 
 void FullPath(dwr::DynamicRadarAirwayGraph &g) {
     // Case I
-//    dwr::WaypointID start = 1644;
-//    dwr::WaypointID end = 21446;
+    dwr::WaypointID start = 1644;
+    dwr::WaypointID end = 21446;
     
     // Case II
-    dwr::WaypointID start = 8071;
-    dwr::WaypointID end = 20631;
+//    dwr::WaypointID start = 8071;
+//    dwr::WaypointID end = 20631;
     
     clock_t tStart = clock();
     std::vector<std::shared_ptr<dwr::Waypoint>> path = g.GetDynamicFullPath(start, end);
@@ -67,7 +68,7 @@ void FullPathTest(dwr::DynamicRadarAirwayGraph &g) {
         resultStr.append(i->name);
         resultStr.append("->");
     }
-    
+//    cout << resultStr << endl;
     string groundStr = "P130->XIVEP->ANPIG->EGEBI->长治->P106->P279->济源->洛阳->P320->P339->南阳->襄阳->112.18E32.01N->112.18E32.01N->P38->临澧->常德->老粮仓->111.52E27.71N->111.42E27.66N->P347->P378->P246->110.70E25.99N->110.51E25.78N->ONEMI->大榕江->奇峰岭->二塘->MUBEL->高要->P50->";
     if (resultStr == groundStr) {
         cout << "Pass!" << endl;
