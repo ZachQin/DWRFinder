@@ -54,12 +54,12 @@ char RasterGraph::GetPixelValue(const Pixel &pixel) const {
     }
 }
 
-std::vector<NodeInfo> RasterGraph::GetPath(Pixel origin, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch) const {
+std::vector<NodeInfo> RasterGraph::GetPath(const Pixel &origin, const Pixel &destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfoPair &pair)> canSearch) const {
     std::vector<NodeInfo> result;
     int levelSize = (int)nodeLevels.size();
     std::vector<std::vector<NodeInfo>> nodeInfoLevels(levelSize + 2);
-    nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(origin, destin),0, origin, nullptr)};
-    nodeInfoLevels[levelSize + 1] = {NodeInfo(max_distance, 0,levelSize, destin, nullptr)};
+    nodeInfoLevels[0] = {NodeInfo(0, Pixel::Distance(origin, destin), 0, origin, nullptr)};
+    nodeInfoLevels[levelSize + 1] = {NodeInfo(max_distance, 0, levelSize + 1, destin, nullptr)};
     
     for (int i = 0; i < nodeLevels.size(); i++) {
         for (auto &px: nodeLevels[i]) {
@@ -84,7 +84,7 @@ std::vector<NodeInfo> RasterGraph::GetPath(Pixel origin, Pixel destin, const std
         
         std::vector<NodeInfo> &nextLevels = nodeInfoLevels[level + 1];
         for (auto &v: nextLevels) {
-            if (!canSearch(v)) {
+            if (!canSearch(std::make_pair(*currentInfo, v))) {
                 continue;
             }
             if (!CheckLine(u, v.pixel)) {
@@ -110,6 +110,31 @@ std::vector<NodeInfo> RasterGraph::GetPath(Pixel origin, Pixel destin, const std
     }
     std::reverse(result.begin(), result.end());
     return result;
+}
+
+double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &next) {
+    double pc_x = current.x - previous.x;
+    double pc_y = current.y - previous.y;
+    double cn_x = next.x - current.x;
+    double cn_y = next.y - current.y;
+    return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
+}
+
+std::vector<NodeInfo> RasterGraph::GetPathWithAngle(const Pixel &origin, const Pixel &destin, const Pixel &previousOrigin) const {
+    auto canSearch = [&](const NodeInfoPair &pair){
+        // 搜索第一个节点需要判断参数中传入的节点位置
+        if (pair.first.previous == nullptr) {
+            if (previousOrigin.x == kNoPixel) {
+                return true;
+            } else {
+                return CosinTurnAngle(previousOrigin, pair.first.pixel, pair.second.pixel) > 0;
+            }
+        } else {
+            return CosinTurnAngle(pair.first.previous->pixel, pair.first.pixel, pair.second.pixel) > 0;
+        }
+    };
+    std::vector<std::vector<Pixel>> nodes = GetNodes(origin, destin, 3);
+    return GetPath(origin, destin, nodes, canSearch);
 }
 
 }

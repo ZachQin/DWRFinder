@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
     g.LoadFromFile("/Users/ZkTsin/Desktop/bysj/AirwayGraph.ag");
     
     dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/qgis/test.wld");
-    g.prebuild(worldInfo);
+    g.Prebuild(worldInfo);
     
     // Raster start
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Desktop/MyPaper/未命名文件夹/radar_1.png");
@@ -68,7 +68,7 @@ void FullPathTest(dwr::DynamicRadarAirwayGraph &g) {
         resultStr.append(i->name);
         resultStr.append("->");
     }
-//    cout << resultStr << endl;
+    cout << resultStr << endl;
     string groundStr = "P130->XIVEP->ANPIG->EGEBI->长治->P106->P279->济源->洛阳->P320->P339->南阳->襄阳->112.18E32.01N->112.18E32.01N->P38->临澧->常德->老粮仓->111.52E27.71N->111.42E27.66N->P347->P378->P246->110.70E25.99N->110.51E25.78N->ONEMI->大榕江->奇峰岭->二塘->MUBEL->高要->P50->";
     if (resultStr == groundStr) {
         cout << "Pass!" << endl;

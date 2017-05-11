@@ -26,37 +26,37 @@ public:
     /**
      Add a waypoint to the graph.
      
-     @param identity Waypoint ID.
+     @param identifier Waypoint ID.
      @param name Waypoint name.
      @param lon Waypoint longitude.
      @param lat Waypoint latitude.
      */
-    void AddWaypoint(WaypointID identity, std::string name, GeoRad lon, GeoRad lat);
+    void AddWaypoint(WaypointID identifier, std::string name, GeoRad lon, GeoRad lat);
     
     /**
      Remove a waypoint and all of its connections.
 
-     @param identity Waypoint ID;
+     @param identifier Waypoint ID;
      */
-    void RemoveWaypoint(WaypointID identity);
+    void RemoveWaypoint(WaypointID identifier);
     
     /**
      Add the connection between two waypoint.
      
-     @param identity1 First waypoint.
-     @param identity2 Second waypoint.
+     @param identifier1 First waypoint.
+     @param identifier2 Second waypoint.
      */
-    void AddAirwaySegment(WaypointID identity1, WaypointID identity2);
+    void AddAirwaySegment(WaypointID identifier1, WaypointID identifier2);
     
     /**
      Get the path using A* algorithm.
      
-     @param originIdentity Origin waypoint ID
-     @param destinIdentity Destination waypoint ID
+     @param originIdentifier Origin waypoint ID
+     @param destinIdentifier Destination waypoint ID
      @param canSearch The Lambda expression using to determine whether the edge can be access.
      @return The shortest path.
      */
-    std::vector<std::shared_ptr<Waypoint>> GetPath(WaypointID originIdentity, WaypointID destinIdentity, const std::function<bool(const WaypointPair &)> canSearch = [](const WaypointPair &p){return true;});
+    std::vector<std::shared_ptr<Waypoint>> GetPath(WaypointID originIdentifier, WaypointID destinIdentifier, const std::function<bool(const WaypointPair &, std::vector<std::shared_ptr<Waypoint>> &)> canSearch = [](const WaypointPair &p, std::vector<std::shared_ptr<Waypoint>> &insertedWaypoints){return true;});
     
     /**
      Save the graph as a file.
@@ -83,10 +83,10 @@ public:
     /**
      Get waypoint from waypoint ID.
      
-     @param identity Waypoint ID.
+     @param identifier Waypoint ID.
      @return Waypoint pointer.
      */
-    std::shared_ptr<Waypoint> WaypointFromID(WaypointID identity);
+    std::shared_ptr<Waypoint> WaypointFromID(WaypointID identifier);
 
 protected:
     std::map<WaypointID, std::shared_ptr<Waypoint>> waypointMap_;

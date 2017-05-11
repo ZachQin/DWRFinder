@@ -33,10 +33,22 @@ struct WorldFileInfo {
 
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
 public:
-    void prebuild(const WorldFileInfo &worldFileInfo);
+    /**
+     Build all waypoint with world file.
+
+     @param worldFileInfo <#worldFileInfo description#>
+     */
+    void Prebuild(const WorldFileInfo &worldFileInfo);
+    
+    /**
+     Build single waypoint if necessary after prebuilding.
+
+     @param identifier waypoint ID.
+     */
+    void Build(WaypointID identifier);
     // mask包含0或1，1表示有阻塞，0表示无阻塞
     void UpdateBlock(const std::shared_ptr<const char> &mask, int width, int height);
-    std::vector<std::shared_ptr<Waypoint>> GetDynamicFullPath(WaypointID originIdentity, WaypointID destinIdentity);
+    std::vector<std::shared_ptr<Waypoint>> GetDynamicFullPath(WaypointID originIdentifier, WaypointID destinIdentifier);
     //Debug
 //    void LogBlockAirpointSegment();
 

@@ -11,11 +11,11 @@
 
 namespace dwr {
     
-std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::GetDynamicPath(WaypointID originIdentity, WaypointID destinIdentity) {
-    auto canSearch = [&](const WaypointPair &pair) {
+std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::GetDynamicPath(WaypointID originIdentifier, WaypointID destinIdentifier) {
+    auto canSearch = [&](const WaypointPair &pair, std::vector<std::shared_ptr<Waypoint>> &insertedWaypoints) {
         return blockSet_.find(UndirectedWaypointPair(pair)) == blockSet_.end();
     };
-    return GetPath(originIdentity, destinIdentity, canSearch);
+    return GetPath(originIdentifier, destinIdentifier, canSearch);
 }
 
 void DynamicAirwayGraph::ForEachBlock(std::function<void (const Waypoint &, const Waypoint &)> &traverseFunction) {

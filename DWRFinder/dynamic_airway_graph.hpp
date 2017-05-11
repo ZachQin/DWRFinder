@@ -29,7 +29,7 @@ struct UndirectedWaypointPair {
     
 class DynamicAirwayGraph: public AirwayGraph {
 public:
-    std::vector<std::shared_ptr<Waypoint>> GetDynamicPath(WaypointID originIdentity, WaypointID destinIdentity);
+    std::vector<std::shared_ptr<Waypoint>> GetDynamicPath(WaypointID originIdentifier, WaypointID destinIdentifier);
     void ForEachBlock(std::function<void(const Waypoint &, const Waypoint &)> &traverseFunction);
     
 protected:

@@ -13,7 +13,9 @@
 
 typedef int Level;
 typedef double PixelDistance;
+
 const PixelDistance max_distance = std::numeric_limits<PixelDistance>::max();
+const int kNoPixel = -1;
 
 struct Pixel {
     int x;
@@ -44,7 +46,7 @@ struct NodeInfo {
     PixelDistance heuristic;
     Level level;
     Pixel pixel;
-    NodeInfo *previous;
+    NodeInfo *previous = nullptr;
     
     NodeInfo(PixelDistance dist, PixelDistance heur, Level l, Pixel px, NodeInfo *pre): distance(dist), heuristic(heur), level(l), pixel(px), previous(pre){};
     
@@ -54,5 +56,7 @@ struct NodeInfo {
         return distance + heuristic > p.distance + p.heuristic;
     }
 };
+
+typedef std::pair<NodeInfo, NodeInfo> NodeInfoPair;
 
 #endif /* raster_type_h */

@@ -19,10 +19,11 @@ namespace dwr {
 class RasterGraph {
 public:
     RasterGraph() : rasterData_(nullptr), width_(0), height_(0) {};
-    RasterGraph(const char *rasterData, int width, int height): rasterData_(rasterData), width_(width), height_(height) {};
+    RasterGraph(const std::shared_ptr<const char> &rasterData, int width, int height): rasterData_(rasterData), width_(width), height_(height) {};
     void ResetRaster(const std::shared_ptr<const char> &rasterData, int width, int height) {rasterData_ = rasterData; width_ = width; height_ = height;};
     std::vector<std::vector<Pixel>> GetNodes(const Pixel &origin, const Pixel &destin, int segmentNumber, double verticalFactor = 0.5) const;
-    std::vector<NodeInfo> GetPath(Pixel origin, Pixel destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfo &info)> canSearch = [](const NodeInfo &info){return true;}) const;
+    std::vector<NodeInfo> GetPath(const Pixel &origin, const Pixel &destin, const std::vector<std::vector<Pixel>> &nodeLevels, std::function<bool(const NodeInfoPair &info)> canSearch = [](const NodeInfoPair &info){return true;}) const;
+    std::vector<NodeInfo> GetPathWithAngle(const Pixel &origin, const Pixel &destin, const Pixel &previousOrigin = {kNoPixel, kNoPixel}) const;
     char GetPixelValue(const Pixel &pixel) const;
     void SetRasterData(std::shared_ptr<const char> rasterData, int width, int height) {
         rasterData_ = rasterData;
