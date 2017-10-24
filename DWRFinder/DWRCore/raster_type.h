@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Zach. All rights reserved.
 //
 
-#ifndef raster_type_hpp
-#define raster_type_hpp
+#ifndef raster_type_h
+#define raster_type_h
 
 #include <math.h>
 

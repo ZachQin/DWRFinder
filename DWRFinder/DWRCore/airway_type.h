@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Zach. All rights reserved.
 //
 
-#ifndef airway_type_hpp
-#define airway_type_hpp
+#ifndef airway_type_h
+#define airway_type_h
 
 #include <string>
 #include <set>
@@ -15,7 +15,7 @@
 
 namespace dwr {
 
-typedef int WaypointID;
+typedef int WaypointIdentifier;
 typedef double GeoDistance;
 typedef double GeoRad;
 
@@ -42,12 +42,12 @@ struct GeoProj {
     GeoDistance y;
 };
     
-const WaypointID kNoAirwaypointID = -1;
+const WaypointIdentifier kNoWaypointIdentifier = -1;
 const GeoDistance kEarthRadius = 6378137.0;
 const GeoDistance kNoCoordinate = std::numeric_limits<GeoDistance>::infinity();
     
 struct Waypoint {
-    WaypointID waypointID;
+    WaypointIdentifier waypoint_identifier;
     std::string name;
     GeoPoint location;
     
@@ -55,21 +55,21 @@ struct Waypoint {
     std::set<Neighbor> neibors;
     
     Waypoint() {};
-    Waypoint(int waypointID, const std::string &name, double lon, double lat) : waypointID(waypointID), name(name), location({lon, lat}) {};
+    Waypoint(int waypoint_identifier, const std::string &name, double lon, double lat) : waypoint_identifier(waypoint_identifier), name(name), location({lon, lat}) {};
     
     bool operator < (const Waypoint &p) const {
-        return waypointID < p.waypointID;
+        return waypoint_identifier < p.waypoint_identifier;
     }
     
     // Cache
     std::weak_ptr<Waypoint> previous;
-    GeoDistance actualDistance = std::numeric_limits<GeoDistance>::max();
-    GeoDistance heuristicDistance = std::numeric_limits<GeoDistance>::max();
+    GeoDistance actual_distance = std::numeric_limits<GeoDistance>::max();
+    GeoDistance heuristic_distance = std::numeric_limits<GeoDistance>::max();
     GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
     
     void ResetCache() {
-        actualDistance = std::numeric_limits<GeoDistance>::max();
-        heuristicDistance = std::numeric_limits<GeoDistance>::max();
+        actual_distance = std::numeric_limits<GeoDistance>::max();
+        heuristic_distance = std::numeric_limits<GeoDistance>::max();
         previous.reset();
     };
     

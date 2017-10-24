@@ -1,5 +1,5 @@
 //
-//  main.cpp
+//  main.cc
 //  DWRFinder
 //
 //  Created by ZachQin on 2017/3/8.
@@ -7,8 +7,8 @@
 //
 
 #include <iostream>
-#include "airway_graph.hpp"
-#include "dynamic_radar_airway_graph.hpp"
+#include "airway_graph.h"
+#include "dynamic_radar_airway_graph.h"
 #include "radar_image_process.h"
 #include <fstream>
 
@@ -16,9 +16,9 @@
 #include <algorithm>
 
 using namespace std;
-void FullPath(dwr::DynamicRadarAirwayGraph &g);
-void FullPathTest(dwr::DynamicRadarAirwayGraph &g);
-void BatchTest(dwr::DynamicRadarAirwayGraph &g, int batchCount, const std::string &path);
+void FullPath(dwr::DynamicRadarAirwayGraph &graph);
+void FullPathTest(dwr::DynamicRadarAirwayGraph &graph);
+void BatchTest(dwr::DynamicRadarAirwayGraph &graph, int batch_count, const std::string &path);
 int PathLength(const std::vector<std::shared_ptr<dwr::Waypoint>> &path);
 
 
@@ -31,53 +31,53 @@ struct Statistics {
 int main(int argc, const char * argv[]) {
     // insert code here...
     
-    dwr::DynamicRadarAirwayGraph g;
-    g.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
+    dwr::DynamicRadarAirwayGraph graph;
+    graph.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
     
     dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/WorldFile.wld");
-    g.Prebuild(worldInfo);
+    graph.Prebuild(worldInfo);
     
     // Raster start
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/radar.png");
     CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
     int width, height;
     
-    clock_t tStart = clock();
+    clock_t start_clock = clock();
     std::shared_ptr<const char> mask(CreateMaskFromCGImage(image, &width, &height));
-    g.UpdateBlock(mask, width, height);
-    printf("Data process Time taken: %.4fms\n", (double)(clock() - tStart) * 1000.0 / CLOCKS_PER_SEC);
+    graph.UpdateBlock(mask, width, height);
+    printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
     
 //    FullPath(g);
-    BatchTest(g, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
+    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
     return 0;
 }
 
-std::vector<dwr::WaypointID> randomWaypointVector(dwr::AirwayGraph &g, int size);
+std::vector<dwr::WaypointIdentifier> RandomWaypointVector(dwr::AirwayGraph &graph, int size);
 
 Statistics DoSomeStatistics(const std::function<std::vector<std::shared_ptr<dwr::Waypoint>>()> &func) {
     Statistics s;
-    clock_t tStart = clock();
+    clock_t start_clock = clock();
     auto path = func();
-    s.time_consuming = (double)(clock() - tStart) * 1000 / CLOCKS_PER_SEC;
+    s.time_consuming = (double)(clock() - start_clock) * 1000 / CLOCKS_PER_SEC;
     s.sum_length = PathLength(path) / 1000.0;
     s.node_count = path.size();
     return s;
 }
 
-void BatchTest(dwr::DynamicRadarAirwayGraph &g, int batchCount, const std::string &path) {
+void BatchTest(dwr::DynamicRadarAirwayGraph &graph, int batch_count, const std::string &path) {
     ofstream of(path, ios::binary);
-    auto randomStart = randomWaypointVector(g, batchCount);
-    auto randomEnd = randomWaypointVector(g, batchCount);
+    auto random_start = RandomWaypointVector(graph, batch_count);
+    auto random_end = RandomWaypointVector(graph, batch_count);
     
 //    std::vector<std::tuple<bool, double, double>> results;
-    for (int i = 0; i < batchCount; i++) {
-        auto start = randomStart[i];
-        auto end = randomEnd[i];
+    for (int i = 0; i < batch_count; i++) {
+        auto start = random_start[i];
+        auto end = random_end[i];
         
-        auto distance = dwr::Waypoint::Distance(*g.WaypointFromID(start), *g.WaypointFromID(end)) / 1000.0;
-        auto normal = DoSomeStatistics([&](){return g.GetPath(start, end);});
-        auto dynamic = DoSomeStatistics([&](){return g.GetDynamicPath(start, end);});
-        auto full = DoSomeStatistics([&](){return g.GetDynamicFullPath(start, end);});
+        auto distance = dwr::Waypoint::Distance(*graph.WaypointFromIdentifier(start), *graph.WaypointFromIdentifier(end)) / 1000.0;
+        auto normal = DoSomeStatistics([&](){return graph.GetPath(start, end);});
+        auto dynamic = DoSomeStatistics([&](){return graph.GetDynamicPath(start, end);});
+        auto full = DoSomeStatistics([&](){return graph.GetDynamicFullPath(start, end);});
         
         of << distance << ",";
         of << normal.time_consuming << "," << normal.sum_length << "," << normal.node_count;
@@ -92,18 +92,18 @@ void BatchTest(dwr::DynamicRadarAirwayGraph &g, int batchCount, const std::strin
 
 
 
-void FullPath(dwr::DynamicRadarAirwayGraph &g) {
+void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
     // Case I
 //    dwr::WaypointID start = 1644;
 //    dwr::WaypointID end = 21446;
     
     // Case II
-    dwr::WaypointID start = 8071;
-    dwr::WaypointID end = 20631;
+    dwr::WaypointIdentifier start = 8071;
+    dwr::WaypointIdentifier end = 20631;
     
     clock_t tStart = clock();
-    std::vector<std::shared_ptr<dwr::Waypoint>> path = g.GetDynamicFullPath(start, end);
-    printf("Time taken: %.4fms\n", (double)(clock() - tStart) * 1000 /CLOCKS_PER_SEC);
+    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.GetDynamicFullPath(start, end);
+    printf("Time taken: %.4fms\n", (double)(clock() - tStart) * 1000 / CLOCKS_PER_SEC);
     for (auto &i: path) {
         cout << i->name << "->";
     }
@@ -111,21 +111,21 @@ void FullPath(dwr::DynamicRadarAirwayGraph &g) {
     cout << "Length:" << PathLength(path) << endl;
 }
 
-std::vector<dwr::WaypointID> randomWaypointVector(dwr::AirwayGraph &g, int count) {
-    auto allVector = g.AllWaypointID();
-    std::vector<dwr::WaypointID> randomVector;
+std::vector<dwr::WaypointIdentifier> RandomWaypointVector(dwr::AirwayGraph &graph, int count) {
+    auto all_vector = graph.AllWaypointIdentifiers();
+    assert(all_vector.size() > 0);
+    std::vector<dwr::WaypointIdentifier> random_vector;
     for (int i = 0; i < count; i++) {
-        
-        dwr::WaypointID randomWaypointID = 0;
+        dwr::WaypointIdentifier random_waypoint_identifier = 0;
         std::shared_ptr<dwr::Waypoint> randomWaypoint = nullptr;
         do {
-            int randomIndex = rand() % allVector.size();
-            randomWaypointID = allVector[randomIndex];
-            randomWaypoint = g.WaypointFromID(randomWaypointID);
+            int random_index = rand() % all_vector.size();
+            random_waypoint_identifier = all_vector[random_index];
+            randomWaypoint = graph.WaypointFromIdentifier(random_waypoint_identifier);
         } while (randomWaypoint->neibors.empty());
-        randomVector.push_back(randomWaypointID);
+        random_vector.push_back(random_waypoint_identifier);
     }
-    return randomVector;
+    return random_vector;
 }
 
 int PathLength(const std::vector<std::shared_ptr<dwr::Waypoint>> &path) {
@@ -142,18 +142,18 @@ int PathLength(const std::vector<std::shared_ptr<dwr::Waypoint>> &path) {
     return sum;
 }
 
-void FullPathTest(dwr::DynamicRadarAirwayGraph &g) {
-    std::string resultStr;
-    clock_t tStart = clock();
-    std::vector<std::shared_ptr<dwr::Waypoint>> path = g.GetDynamicFullPath(8071, 20631);
-    printf("Time taken: %.2fms\n", (double)(clock() - tStart) * 1000.0 / CLOCKS_PER_SEC);
+void FullPathTest(dwr::DynamicRadarAirwayGraph &graph) {
+    std::string result_string;
+    clock_t start_clock = clock();
+    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.GetDynamicFullPath(8071, 20631);
+    printf("Time taken: %.2fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
     for (auto &i: path) {
-        resultStr.append(i->name);
-        resultStr.append("->");
+        result_string.append(i->name);
+        result_string.append("->");
     }
-    cout << resultStr << endl;
-    string groundStr = "P130->XIVEP->ANPIG->EGEBI->长治->P106->P279->济源->洛阳->P320->P339->南阳->襄阳->112.18E32.01N->112.18E32.01N->P38->临澧->常德->老粮仓->111.52E27.71N->111.42E27.66N->P347->P378->P246->110.70E25.99N->110.51E25.78N->ONEMI->大榕江->奇峰岭->二塘->MUBEL->高要->P50->";
-    if (resultStr == groundStr) {
+    cout << result_string << endl;
+    string ground_string = "P130->XIVEP->ANPIG->EGEBI->长治->P106->P279->济源->洛阳->P320->P339->南阳->襄阳->112.18E32.01N->112.18E32.01N->P38->临澧->常德->老粮仓->111.52E27.71N->111.42E27.66N->P347->P378->P246->110.70E25.99N->110.51E25.78N->ONEMI->大榕江->奇峰岭->二塘->MUBEL->高要->P50->";
+    if (result_string == ground_string) {
         cout << "Pass!" << endl;
     } else {
         cout << "Not Pass!" << endl;

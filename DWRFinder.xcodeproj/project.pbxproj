@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */; };
+		8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cc */; };
 		8723584F1E704363002D19B8 /* radar_image_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 8723584D1E704363002D19B8 /* radar_image_process.c */; };
 		873C063F1E6F9E34004DE01C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C063E1E6F9E34004DE01C /* main.cpp */; };
-		873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C06481E6F9E44004DE01C /* airway_graph.cpp */; };
-		873C06511E6F9E44004DE01C /* dynamic_airway_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */; };
+		873C06501E6F9E44004DE01C /* airway_graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 873C06481E6F9E44004DE01C /* airway_graph.cc */; };
+		873C06511E6F9E44004DE01C /* dynamic_airway_graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cc */; };
 		877E88D31E821C3A001B1F00 /* coordinate_convert.c in Sources */ = {isa = PBXBuildFile; fileRef = 877E88D11E821C3A001B1F00 /* coordinate_convert.c */; };
-		87D402DF1E7A40BB00041DCA /* graphics_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87D402DE1E7A40BB00041DCA /* graphics_utils.cpp */; };
-		87D402E51E7AAD5100041DCA /* raster_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87D402E31E7AAD5100041DCA /* raster_graph.cpp */; };
+		87D402DF1E7A40BB00041DCA /* graphics_utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = 87D402DE1E7A40BB00041DCA /* graphics_utils.cc */; };
+		87D402E51E7AAD5100041DCA /* raster_graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 87D402E31E7AAD5100041DCA /* raster_graph.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,27 +30,27 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_radar_airway_graph.cpp; sourceTree = "<group>"; };
-		8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_radar_airway_graph.hpp; sourceTree = "<group>"; };
+		8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_radar_airway_graph.cc; sourceTree = "<group>"; };
+		8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_radar_airway_graph.h; sourceTree = "<group>"; };
 		8723584D1E704363002D19B8 /* radar_image_process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = radar_image_process.c; sourceTree = "<group>"; };
 		8723584E1E704363002D19B8 /* radar_image_process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = radar_image_process.h; sourceTree = "<group>"; };
 		873C063B1E6F9E34004DE01C /* DWRFinder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DWRFinder; sourceTree = BUILT_PRODUCTS_DIR; };
 		873C063E1E6F9E34004DE01C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		873C06451E6F9E44004DE01C /* airway_type.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_type.hpp; sourceTree = "<group>"; };
-		873C06481E6F9E44004DE01C /* airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = airway_graph.cpp; sourceTree = "<group>"; };
-		873C06491E6F9E44004DE01C /* airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = airway_graph.hpp; sourceTree = "<group>"; };
-		873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_airway_graph.cpp; sourceTree = "<group>"; };
-		873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_airway_graph.hpp; sourceTree = "<group>"; };
+		873C06451E6F9E44004DE01C /* airway_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = airway_type.h; sourceTree = "<group>"; };
+		873C06481E6F9E44004DE01C /* airway_graph.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = airway_graph.cc; sourceTree = "<group>"; };
+		873C06491E6F9E44004DE01C /* airway_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = airway_graph.h; sourceTree = "<group>"; };
+		873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_airway_graph.cc; sourceTree = "<group>"; };
+		873C064C1E6F9E44004DE01C /* dynamic_airway_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_airway_graph.h; sourceTree = "<group>"; };
 		877E88D11E821C3A001B1F00 /* coordinate_convert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coordinate_convert.c; sourceTree = "<group>"; };
 		877E88D21E821C3A001B1F00 /* coordinate_convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coordinate_convert.h; sourceTree = "<group>"; };
 		879AAA381F9EE33400FC4C58 /* radar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radar.png; sourceTree = "<group>"; };
 		879AAA391F9EE33400FC4C58 /* WorldFile.wld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WorldFile.wld; sourceTree = "<group>"; };
 		879AAA3A1F9EE33400FC4C58 /* AirwayGraph.ag */ = {isa = PBXFileReference; lastKnownFileType = file; path = AirwayGraph.ag; sourceTree = "<group>"; };
-		87B85D881EBB09D2008323F4 /* raster_type.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster_type.hpp; sourceTree = "<group>"; };
-		87D402DC1E7A3E5A00041DCA /* graphics_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = graphics_utils.hpp; sourceTree = "<group>"; };
-		87D402DE1E7A40BB00041DCA /* graphics_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphics_utils.cpp; sourceTree = "<group>"; };
-		87D402E31E7AAD5100041DCA /* raster_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = raster_graph.cpp; sourceTree = "<group>"; };
-		87D402E41E7AAD5100041DCA /* raster_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = raster_graph.hpp; sourceTree = "<group>"; };
+		87B85D881EBB09D2008323F4 /* raster_type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = raster_type.h; sourceTree = "<group>"; };
+		87D402DC1E7A3E5A00041DCA /* graphics_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graphics_utils.h; sourceTree = "<group>"; };
+		87D402DE1E7A40BB00041DCA /* graphics_utils.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphics_utils.cc; sourceTree = "<group>"; };
+		87D402E31E7AAD5100041DCA /* raster_graph.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = raster_graph.cc; sourceTree = "<group>"; };
+		87D402E41E7AAD5100041DCA /* raster_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raster_graph.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,16 +102,16 @@
 			isa = PBXGroup;
 			children = (
 				879AAA371F9EE2CD00FC4C58 /* Utils */,
-				873C06451E6F9E44004DE01C /* airway_type.hpp */,
-				873C06481E6F9E44004DE01C /* airway_graph.cpp */,
-				873C06491E6F9E44004DE01C /* airway_graph.hpp */,
-				873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cpp */,
-				873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */,
-				8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp */,
-				8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.hpp */,
-				87D402E31E7AAD5100041DCA /* raster_graph.cpp */,
-				87D402E41E7AAD5100041DCA /* raster_graph.hpp */,
-				87B85D881EBB09D2008323F4 /* raster_type.hpp */,
+				873C06451E6F9E44004DE01C /* airway_type.h */,
+				873C06481E6F9E44004DE01C /* airway_graph.cc */,
+				873C06491E6F9E44004DE01C /* airway_graph.h */,
+				873C064B1E6F9E44004DE01C /* dynamic_airway_graph.cc */,
+				873C064C1E6F9E44004DE01C /* dynamic_airway_graph.h */,
+				8723584A1E7022E1002D19B8 /* dynamic_radar_airway_graph.cc */,
+				8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.h */,
+				87D402E31E7AAD5100041DCA /* raster_graph.cc */,
+				87D402E41E7AAD5100041DCA /* raster_graph.h */,
+				87B85D881EBB09D2008323F4 /* raster_type.h */,
 			);
 			path = DWRCore;
 			sourceTree = "<group>";
@@ -121,8 +121,8 @@
 			children = (
 				8723584D1E704363002D19B8 /* radar_image_process.c */,
 				8723584E1E704363002D19B8 /* radar_image_process.h */,
-				87D402DC1E7A3E5A00041DCA /* graphics_utils.hpp */,
-				87D402DE1E7A40BB00041DCA /* graphics_utils.cpp */,
+				87D402DC1E7A3E5A00041DCA /* graphics_utils.h */,
+				87D402DE1E7A40BB00041DCA /* graphics_utils.cc */,
 				877E88D11E821C3A001B1F00 /* coordinate_convert.c */,
 				877E88D21E821C3A001B1F00 /* coordinate_convert.h */,
 			);
@@ -165,7 +165,7 @@
 		873C06331E6F9E34004DE01C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = Zach;
 				TargetAttributes = {
 					873C063A1E6F9E34004DE01C = {
@@ -198,14 +198,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87D402DF1E7A40BB00041DCA /* graphics_utils.cpp in Sources */,
+				87D402DF1E7A40BB00041DCA /* graphics_utils.cc in Sources */,
 				873C063F1E6F9E34004DE01C /* main.cpp in Sources */,
-				873C06501E6F9E44004DE01C /* airway_graph.cpp in Sources */,
-				87D402E51E7AAD5100041DCA /* raster_graph.cpp in Sources */,
+				873C06501E6F9E44004DE01C /* airway_graph.cc in Sources */,
+				87D402E51E7AAD5100041DCA /* raster_graph.cc in Sources */,
 				877E88D31E821C3A001B1F00 /* coordinate_convert.c in Sources */,
-				8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cpp in Sources */,
+				8723584C1E7022E1002D19B8 /* dynamic_radar_airway_graph.cc in Sources */,
 				8723584F1E704363002D19B8 /* radar_image_process.c in Sources */,
-				873C06511E6F9E44004DE01C /* dynamic_airway_graph.cpp in Sources */,
+				873C06511E6F9E44004DE01C /* dynamic_airway_graph.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +221,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -229,7 +231,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -268,7 +274,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -276,7 +284,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
