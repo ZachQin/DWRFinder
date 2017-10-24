@@ -6,10 +6,11 @@
 //  Copyright © 2017年 Zach. All rights reserved.
 //
 
+#include "airway_graph.hpp"
+#include <assert.h>
 #include <string>
 #include <queue>
 #include <fstream>
-#include "airway_graph.hpp"
 
 namespace dwr {
     
@@ -17,7 +18,7 @@ AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
 
-void AirwayGraph::AddWaypoint(WaypointID identifier, std::string name, GeoRad lon, GeoRad lat) {
+void AirwayGraph::AddWaypoint(WaypointID identifier, const std::string &name, GeoRad lon, GeoRad lat) {
     std::shared_ptr<Waypoint> point(new Waypoint(identifier, name, lon, lat));
     waypointMap_.insert(std::make_pair(identifier, point));
 }
@@ -236,6 +237,14 @@ void AirwayGraph::ForEach(std::function<void (const std::shared_ptr<Waypoint> &,
         }
     }
 }
+    
+std::vector<WaypointID> AirwayGraph::AllWaypointID() {
+    std::vector<WaypointID> allWaypointIDVector;
+    for (auto &pair : waypointMap_) {
+        allWaypointIDVector.push_back(pair.first);
+    }
+    return allWaypointIDVector;
+}
 
 std::shared_ptr<Waypoint> AirwayGraph:: WaypointFromID(WaypointID identifier) {
     auto iterator = waypointMap_.find(identifier);
@@ -244,6 +253,17 @@ std::shared_ptr<Waypoint> AirwayGraph:: WaypointFromID(WaypointID identifier) {
     } else {
         return nullptr;
     }
-};
+}
+    
+double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next) {
+    assert(previous->coordinate.x != kNoCoordinate);
+    assert(current->coordinate.x != kNoCoordinate);
+    assert(next->coordinate.x != kNoCoordinate);
+    double pc_x = current->coordinate.x - previous->coordinate.x;
+    double pc_y = current->coordinate.y - previous->coordinate.y;
+    double cn_x = next->coordinate.x - current->coordinate.x;
+    double cn_y = next->coordinate.y - current->coordinate.y;
+    return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
+}
     
 }

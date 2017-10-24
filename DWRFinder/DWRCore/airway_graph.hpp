@@ -31,7 +31,7 @@ public:
      @param lon Waypoint longitude.
      @param lat Waypoint latitude.
      */
-    void AddWaypoint(WaypointID identifier, std::string name, GeoRad lon, GeoRad lat);
+    void AddWaypoint(WaypointID identifier, const std::string &name, GeoRad lon, GeoRad lat);
     
     /**
      Remove a waypoint and all of its connections.
@@ -81,6 +81,13 @@ public:
     void ForEach(std::function<void(const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> traverseFunction);
     
     /**
+     Get All WaypointID
+
+     @return Waypoints' ID vector.
+     */
+    std::vector<WaypointID> AllWaypointID();
+    
+    /**
      Get waypoint from waypoint ID.
      
      @param identifier Waypoint ID.
@@ -92,5 +99,7 @@ protected:
     std::map<WaypointID, std::shared_ptr<Waypoint>> waypointMap_;
 };
 
+double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next);
+    
 }
 #endif /* AirwayGraph_hpp */

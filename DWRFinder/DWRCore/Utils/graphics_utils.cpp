@@ -5,8 +5,9 @@
 //  Created by ZachQin on 2017/3/16.
 //  Copyright © 2017年 Zach. All rights reserved.
 //
-#include <stdlib.h>
+
 #include "graphics_utils.hpp"
+#include <stdlib.h>
 
 namespace dwr {
 std::vector<Pixel> BresenhamLine(const Pixel &startPoint, const Pixel &endPoint) {

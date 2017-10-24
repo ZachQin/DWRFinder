@@ -12,8 +12,8 @@
 #include <sstream>
 #include <iomanip>
 #include <cassert>
-#include "raster_graph.hpp"
 #include "coordinate_convert.h"
+#include "raster_graph.hpp"
 
 namespace dwr {
     
@@ -40,17 +40,6 @@ namespace dwr {
         xy.x = w.A * pixel.x + w.B * pixel.y + w.C;
         xy.y = w.D * pixel.x + w.E * pixel.y + w.F;
         return xy;
-    }
-    
-    double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next) {
-        assert(previous->coordinate.x != kNoCoordinate);
-        assert(current->coordinate.x != kNoCoordinate);
-        assert(next->coordinate.x != kNoCoordinate);
-        double pc_x = current->coordinate.x - previous->coordinate.x;
-        double pc_y = current->coordinate.y - previous->coordinate.y;
-        double cn_x = next->coordinate.x - current->coordinate.x;
-        double cn_y = next->coordinate.y - current->coordinate.y;
-        return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
     }
     
     std::string LonlatToString(double lon, double lat) {

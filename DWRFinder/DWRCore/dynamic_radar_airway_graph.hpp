@@ -36,7 +36,7 @@ public:
     /**
      Build all waypoint with world file.
 
-     @param worldFileInfo <#worldFileInfo description#>
+     @param worldFileInfo world file.
      */
     void Prebuild(const WorldFileInfo &worldFileInfo);
     

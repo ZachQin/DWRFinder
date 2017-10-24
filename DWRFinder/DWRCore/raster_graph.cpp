@@ -7,9 +7,9 @@
 //
 
 #include "raster_graph.hpp"
-#include "graphics_utils.hpp"
 #include <queue>
 #include <algorithm>
+#include "graphics_utils.hpp"
 
 namespace dwr {
 

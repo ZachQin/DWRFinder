@@ -43,6 +43,9 @@
 		873C064C1E6F9E44004DE01C /* dynamic_airway_graph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dynamic_airway_graph.hpp; sourceTree = "<group>"; };
 		877E88D11E821C3A001B1F00 /* coordinate_convert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coordinate_convert.c; sourceTree = "<group>"; };
 		877E88D21E821C3A001B1F00 /* coordinate_convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coordinate_convert.h; sourceTree = "<group>"; };
+		879AAA381F9EE33400FC4C58 /* radar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radar.png; sourceTree = "<group>"; };
+		879AAA391F9EE33400FC4C58 /* WorldFile.wld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WorldFile.wld; sourceTree = "<group>"; };
+		879AAA3A1F9EE33400FC4C58 /* AirwayGraph.ag */ = {isa = PBXFileReference; lastKnownFileType = file; path = AirwayGraph.ag; sourceTree = "<group>"; };
 		87B85D881EBB09D2008323F4 /* raster_type.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster_type.hpp; sourceTree = "<group>"; };
 		87D402DC1E7A3E5A00041DCA /* graphics_utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = graphics_utils.hpp; sourceTree = "<group>"; };
 		87D402DE1E7A40BB00041DCA /* graphics_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphics_utils.cpp; sourceTree = "<group>"; };
@@ -80,16 +83,25 @@
 		873C063D1E6F9E34004DE01C /* DWRFinder */ = {
 			isa = PBXGroup;
 			children = (
-				873C07A31E6FCA5C004DE01C /* DWR */,
-				873C063E1E6F9E34004DE01C /* main.cpp */,
+				879AAA361F9EE28F00FC4C58 /* DWRCore */,
+				879AAA351F9EE24A00FC4C58 /* Test */,
 			);
 			path = DWRFinder;
 			sourceTree = "<group>";
 		};
-		873C07A31E6FCA5C004DE01C /* DWR */ = {
+		879AAA351F9EE24A00FC4C58 /* Test */ = {
 			isa = PBXGroup;
 			children = (
-				87D402DA1E7A3DC200041DCA /* Utils */,
+				879AAA3B1F9EE33E00FC4C58 /* Resource */,
+				873C063E1E6F9E34004DE01C /* main.cpp */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
+		879AAA361F9EE28F00FC4C58 /* DWRCore */ = {
+			isa = PBXGroup;
+			children = (
+				879AAA371F9EE2CD00FC4C58 /* Utils */,
 				873C06451E6F9E44004DE01C /* airway_type.hpp */,
 				873C06481E6F9E44004DE01C /* airway_graph.cpp */,
 				873C06491E6F9E44004DE01C /* airway_graph.hpp */,
@@ -101,10 +113,10 @@
 				87D402E41E7AAD5100041DCA /* raster_graph.hpp */,
 				87B85D881EBB09D2008323F4 /* raster_type.hpp */,
 			);
-			name = DWR;
+			path = DWRCore;
 			sourceTree = "<group>";
 		};
-		87D402DA1E7A3DC200041DCA /* Utils */ = {
+		879AAA371F9EE2CD00FC4C58 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
 				8723584D1E704363002D19B8 /* radar_image_process.c */,
@@ -114,7 +126,17 @@
 				877E88D11E821C3A001B1F00 /* coordinate_convert.c */,
 				877E88D21E821C3A001B1F00 /* coordinate_convert.h */,
 			);
-			name = Utils;
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		879AAA3B1F9EE33E00FC4C58 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				879AAA3A1F9EE33400FC4C58 /* AirwayGraph.ag */,
+				879AAA381F9EE33400FC4C58 /* radar.png */,
+				879AAA391F9EE33400FC4C58 /* WorldFile.wld */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,6 +181,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 873C06321E6F9E34004DE01C;
 			productRefGroup = 873C063C1E6F9E34004DE01C /* Products */;

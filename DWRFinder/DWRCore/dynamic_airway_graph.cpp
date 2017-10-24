@@ -13,7 +13,18 @@ namespace dwr {
     
 std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::GetDynamicPath(WaypointID originIdentifier, WaypointID destinIdentifier) {
     auto canSearch = [&](const WaypointPair &pair, std::vector<std::shared_ptr<Waypoint>> &insertedWaypoints) {
-        return blockSet_.find(UndirectedWaypointPair(pair)) == blockSet_.end();
+        // 90° limit
+        if (blockSet_.find(UndirectedWaypointPair(pair)) == blockSet_.end()) {
+            if (pair.first->previous.lock() == nullptr) {
+                return true;
+            } else if (CosinTurnAngle(pair.first->previous.lock(), pair.first, pair.second) > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     };
     return GetPath(originIdentifier, destinIdentifier, canSearch);
 }
