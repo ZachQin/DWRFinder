@@ -9,7 +9,6 @@
 #ifndef dynamic_radar_airway_graph_h
 #define dynamic_radar_airway_graph_h
 
-#include <stdio.h>
 #include <map>
 #include "dynamic_airway_graph.h"
 #include "graphics_utils.h"
@@ -34,21 +33,34 @@ struct WorldFileInfo {
 class DynamicRadarAirwayGraph: public DynamicAirwayGraph {
 public:
     /**
-     Build all waypoint with world file.
+     SingleBuild all waypoint with world file.
 
-     @param world_file_info world file.
+     @param world_file_info World file.
      */
-    void Prebuild(const WorldFileInfo &world_file_info);
+    void Build(const WorldFileInfo &world_file_info);
     
     /**
-     Build single waypoint if necessary after prebuilding.
+     SingleBuild single waypoint if necessary after prebuilding.
 
-     @param identifier waypoint ID.
+     @param identifier Waypoint ID.
      */
-    void Build(WaypointIdentifier identifier);
-    // mask包含0或1，1表示有阻塞，0表示无阻塞
+    void SingleBuild(WaypointIdentifier identifier);
+    /**
+     Update the mask.
+
+     @param mask Bitmap that 1 means block and 0 means non-block.
+     @param width Width of mask pixel
+     @param height Height of mask pixel
+     */
     void UpdateBlock(const std::shared_ptr<const char> &mask, int width, int height);
-    std::vector<std::shared_ptr<Waypoint>> GetDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier);
+    /**
+     Find path with double scale A* search.
+
+     @param origin_identifier Origin waypoint identifier.
+     @param destination_identifier Destination waypoint identifier.
+     @return Path consists of waypoints.
+     */
+    std::vector<std::shared_ptr<Waypoint>> FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier);
     //Debug
 //    void LogBlockAirpointSegment();
 

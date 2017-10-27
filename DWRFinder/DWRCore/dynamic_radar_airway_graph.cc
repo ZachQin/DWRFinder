@@ -72,7 +72,7 @@ namespace dwr {
         return userWaypoint;
     }
     
-    void DynamicRadarAirwayGraph::Prebuild(const WorldFileInfo &world_file_info) {
+    void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
         world_file_info_ = world_file_info;
         auto traverse_function = [&](const std::shared_ptr<Waypoint> &start_waypoint, const std::shared_ptr<Waypoint> &end_waypoint, GeoDistance d) {
             // 更新坐标
@@ -86,13 +86,13 @@ namespace dwr {
             Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info);
             std::vector<Pixel> linePixels = BresenhamLine(start_pixel, end_pixel);
             for (auto &point : linePixels) {
-                pixel_to_edge_table_.insert(std::make_pair(point, UndirectedWaypointPair(start_waypoint, end_waypoint)));
+                pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
             }
         };
         this->ForEach(traverse_function);
     }
     
-    void DynamicRadarAirwayGraph::Build(WaypointIdentifier identifier) {
+    void DynamicRadarAirwayGraph::SingleBuild(WaypointIdentifier identifier) {
         auto start_waypoint = WaypointFromIdentifier(identifier);
         if (start_waypoint == nullptr) {
             return;
@@ -103,14 +103,14 @@ namespace dwr {
         Pixel start_pixel = CoordinateToPixel(start_waypoint->coordinate, world_file_info_);
         for (auto &neibor : start_waypoint->neibors) {
             auto end_waypoint = neibor.target.lock();
-            // 如果是Prebuild前end_waypoint是孤立的节点，则在Prebuild中会遗漏该节点的坐标计算
+            // 如果是Build前end_waypoint是孤立的节点，则在Build中会遗漏该节点的坐标计算
             if (end_waypoint->coordinate.x == kNoCoordinate) {
                 LonLatToMerc(end_waypoint->location.longitude, end_waypoint->location.latitude, &end_waypoint->coordinate.x, &end_waypoint->coordinate.y);
             }
             Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info_);
             std::vector<Pixel> linePixels = BresenhamLine(start_pixel, end_pixel);
             for (auto &point : linePixels) {
-                pixel_to_edge_table_.insert(std::make_pair(point, UndirectedWaypointPair(start_waypoint, end_waypoint)));
+                pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
             }
         }
     }
@@ -132,7 +132,7 @@ namespace dwr {
         }
     }
     
-    std::vector<std::shared_ptr<Waypoint>> DynamicRadarAirwayGraph::GetDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) {
+    std::vector<std::shared_ptr<Waypoint>> DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) {
         auto can_search = [&](const WaypointPair &pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
             if (block_set_.find(UndirectedWaypointPair(pair)) == block_set_.end()) {
                 if (pair.first->previous.lock() == nullptr) {
@@ -148,7 +148,7 @@ namespace dwr {
             Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
             Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
             Pixel previous_origin = waypoint1->previous.lock() != nullptr ? CoordinateToPixel(waypoint1->previous.lock()->coordinate, world_file_info_) : Pixel(kNoPixel, kNoPixel);
-            std::vector<NodeInfo> infos = raster_graph_.GetPathWithAngle(origin, destination, previous_origin);
+            std::vector<NodeInfo> infos = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
             if (infos.empty()) {
                 return false;
             } else {
@@ -160,7 +160,7 @@ namespace dwr {
                 return true;
             }
         };
-        return GetPath(origin_identifier, destination_identifier, can_search);
+        return FindPath(origin_identifier, destination_identifier, can_search);
     };
     
     //void DynamicRadarAirwayGraph::LogBlockAirpointSegment() {

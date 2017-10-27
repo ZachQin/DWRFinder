@@ -56,7 +56,7 @@ public:
      @param can_search The Lambda expression using to determine whether the edge can be access.
      @return The shortest path.
      */
-    std::vector<std::shared_ptr<Waypoint>> GetPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier, const std::function<bool(const WaypointPair &, std::vector<std::shared_ptr<Waypoint>> &)> can_search = [](const WaypointPair &p, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints){return true;});
+    std::vector<std::shared_ptr<Waypoint>> FindPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier, const std::function<bool(const WaypointPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search = [](const WaypointPair &p, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints){return true;});
     
     /**
      Save the graph as a file.
@@ -78,7 +78,7 @@ public:
      
      @param  traverse_function The Lambda expression applied to all edge in the graph.
      */
-    void ForEach(std::function<void(const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> traverse_function);
+    void ForEach(const std::function<void(const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> &traverse_function);
     
     /**
      Get All WaypointID

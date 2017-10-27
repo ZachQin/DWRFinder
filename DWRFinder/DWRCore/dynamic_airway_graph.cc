@@ -11,7 +11,7 @@
 
 namespace dwr {
     
-std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::GetDynamicPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) {
+std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::FindDynamicPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) {
     auto can_search = [&](const WaypointPair &pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
         // 90° limit
         if (block_set_.find(UndirectedWaypointPair(pair)) == block_set_.end()) {
@@ -26,7 +26,7 @@ std::vector<std::shared_ptr<Waypoint>> DynamicAirwayGraph::GetDynamicPath(Waypoi
             return false;
         }
     };
-    return GetPath(origin_identifier, destination_identifier, can_search);
+    return FindPath(origin_identifier, destination_identifier, can_search);
 }
 
 void DynamicAirwayGraph::ForEachBlock(std::function<void (const Waypoint &, const Waypoint &)> &traverse_function) {

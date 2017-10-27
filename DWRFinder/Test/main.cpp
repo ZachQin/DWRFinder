@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
     graph.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
     
     dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/WorldFile.wld");
-    graph.Prebuild(worldInfo);
+    graph.Build(worldInfo);
     
     // Raster start
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/radar.png");
@@ -75,9 +75,9 @@ void BatchTest(dwr::DynamicRadarAirwayGraph &graph, int batch_count, const std::
         auto end = random_end[i];
         
         auto distance = dwr::Waypoint::Distance(*graph.WaypointFromIdentifier(start), *graph.WaypointFromIdentifier(end)) / 1000.0;
-        auto normal = DoSomeStatistics([&](){return graph.GetPath(start, end);});
-        auto dynamic = DoSomeStatistics([&](){return graph.GetDynamicPath(start, end);});
-        auto full = DoSomeStatistics([&](){return graph.GetDynamicFullPath(start, end);});
+        auto normal = DoSomeStatistics([&](){return graph.FindPath(start, end);});
+        auto dynamic = DoSomeStatistics([&](){return graph.FindDynamicPath(start, end);});
+        auto full = DoSomeStatistics([&](){return graph.FindDynamicFullPath(start, end);});
         
         of << distance << ",";
         of << normal.time_consuming << "," << normal.sum_length << "," << normal.node_count;
@@ -102,7 +102,7 @@ void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
     dwr::WaypointIdentifier end = 20631;
     
     clock_t tStart = clock();
-    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.GetDynamicFullPath(start, end);
+    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.FindDynamicFullPath(start, end);
     printf("Time taken: %.4fms\n", (double)(clock() - tStart) * 1000 / CLOCKS_PER_SEC);
     for (auto &i: path) {
         cout << i->name << "->";
@@ -145,7 +145,7 @@ int PathLength(const std::vector<std::shared_ptr<dwr::Waypoint>> &path) {
 void FullPathTest(dwr::DynamicRadarAirwayGraph &graph) {
     std::string result_string;
     clock_t start_clock = clock();
-    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.GetDynamicFullPath(8071, 20631);
+    std::vector<std::shared_ptr<dwr::Waypoint>> path = graph.FindDynamicFullPath(8071, 20631);
     printf("Time taken: %.2fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
     for (auto &i: path) {
         result_string.append(i->name);
