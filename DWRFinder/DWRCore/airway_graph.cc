@@ -204,6 +204,7 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
         double latitude = 0.0;
         inf.read(reinterpret_cast<char *>(&latitude), sizeof(latitude));
         waypoint->location.latitude = static_cast<double>(latitude);
+
         waypoint_map_.emplace(identifier, waypoint);
     }
     for (int i = 0; i < n; i++) {
