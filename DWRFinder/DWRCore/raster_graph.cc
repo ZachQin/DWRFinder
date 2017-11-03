@@ -6,10 +6,11 @@
 //  Copyright © 2017年 Zach. All rights reserved.
 //
 
+#include "raster_graph.h"
+
 #include <queue>
 #include <algorithm>
 #include "graphics_utils.h"
-#include "raster_graph.h"
 
 namespace dwr {
 

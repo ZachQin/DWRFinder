@@ -47,8 +47,9 @@ int main(int argc, const char * argv[]) {
     graph.UpdateBlock(mask, width, height);
     printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
     
-//    FullPath(g);
-    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
+    FullPathTest(graph);
+//    FullPath(graph);
+//    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
     return 0;
 }
 

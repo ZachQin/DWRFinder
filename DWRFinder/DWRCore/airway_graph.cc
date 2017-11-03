@@ -7,8 +7,8 @@
 //
 
 #include "airway_graph.h"
+
 #include <assert.h>
-#include <string>
 #include <queue>
 #include <fstream>
 
@@ -23,35 +23,65 @@ void AirwayGraph::AddWaypoint(WaypointIdentifier identifier, const std::string &
     waypoint_map_.emplace(identifier, point);
 }
     
-void AirwayGraph::RemoveWaypoint(WaypointIdentifier identifier) {
-    auto waypoint_iterator = waypoint_map_.find(identifier);
-    if (waypoint_iterator == waypoint_map_.end()) {
-        return;
-    }
-    auto waypoint = waypoint_iterator->second;
+void AirwayGraph::RemoveAirwaySegments(const std::shared_ptr<Waypoint> &waypoint) {
+    // Delete self from neibors.
     for (auto &neibor : waypoint->neibors) {
         auto target = neibor.target.lock();
         Neighbor deleted_neibor(waypoint, neibor.distance);
         target->neibors.erase(deleted_neibor);
     }
+    waypoint->neibors.clear();
+}
+    
+void AirwayGraph::RemoveWaypoint(WaypointIdentifier identifier) {
+    auto waypoint_iterator = waypoint_map_.find(identifier);
+    if (waypoint_iterator == waypoint_map_.end()) {
+        return;
+    }
+    RemoveAirwaySegments(waypoint_iterator->second);
     waypoint_map_.erase(identifier);
 }
 
+void AirwayGraph::AddAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2) {
+    GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
+    Neighbor neibor1(waypoint2, distance);
+    Neighbor neibor2(waypoint1, distance);
+    waypoint1->neibors.insert(std::move(neibor1));
+    waypoint2->neibors.insert(std::move(neibor2));
+}
+    
 void AirwayGraph::AddAirwaySegment(WaypointIdentifier identifier1, WaypointIdentifier identifier2) {
     auto waypoint_iterator1 = waypoint_map_.find(identifier1);
     auto waypoint_iterator2 = waypoint_map_.find(identifier2);
     if (waypoint_iterator1 == waypoint_map_.end() || waypoint_iterator2 == waypoint_map_.end()) {
         return;
     }
-    GeoDistance distance = Waypoint::Distance(*waypoint_iterator1->second, *waypoint_iterator2->second);
-    Neighbor neibor1(waypoint_iterator2->second, distance);
-    Neighbor neibor2(waypoint_iterator1->second, distance);
-    waypoint_iterator1->second->neibors.insert(std::move(neibor1));
-    waypoint_iterator2->second->neibors.insert(std::move(neibor2));
+    AddAirwaySegment(waypoint_iterator1->second, waypoint_iterator2->second);
 }
 
-std::vector<std::shared_ptr<Waypoint>> AirwayGraph::FindPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier, const std::function<bool(const WaypointPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search) {
-    std::vector<std::shared_ptr<Waypoint>> result;
+void AirwayGraph::RemoveAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2) {
+    GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
+    Neighbor neibor1(waypoint2, distance);
+    Neighbor neibor2(waypoint1, distance);
+    waypoint1->neibors.erase(neibor1);
+    waypoint2->neibors.erase(neibor2);
+}
+
+void AirwayGraph::RemoveAirwaySegment(WaypointIdentifier identifier1, WaypointIdentifier identifier2) {
+    auto waypoint_iterator1 = waypoint_map_.find(identifier1);
+    auto waypoint_iterator2 = waypoint_map_.find(identifier2);
+    if (waypoint_iterator1 == waypoint_map_.end() || waypoint_iterator2 == waypoint_map_.end()) {
+        return;
+    }
+    RemoveAirwaySegment(waypoint_iterator1->second, waypoint_iterator2->second);
+}
+    
+WaypointPath
+AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
+                      WaypointIdentifier destination_identifier,
+                      const std::function<bool(const WaypointPair &,
+                                               WaypointPath &)> &can_search) const {
+    WaypointPath result;
     auto origin_iterator = waypoint_map_.find(origin_identifier);
     auto destination_iterator = waypoint_map_.find(destination_identifier);
     if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
@@ -63,7 +93,7 @@ std::vector<std::shared_ptr<Waypoint>> AirwayGraph::FindPath(WaypointIdentifier 
     for (auto &p : waypoint_map_) {
         p.second->ResetCache();
     }
-    std::vector<std::shared_ptr<Waypoint>> inserted_waypoint_vector;
+    WaypointPath inserted_waypoint_vector;
     // Init priority queue.
     auto waypoint_compare = [](const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2) {
         return waypoint1->actual_distance + waypoint1->heuristic_distance > waypoint2->actual_distance + waypoint2->heuristic_distance;
@@ -80,7 +110,7 @@ std::vector<std::shared_ptr<Waypoint>> AirwayGraph::FindPath(WaypointIdentifier 
         }
         for (auto &neibor : current_waypoint->neibors) {
             std::shared_ptr<Waypoint> neibor_waypoint = neibor.target.lock();
-            std::vector<std::shared_ptr<Waypoint>> inserted_waypoints;
+            WaypointPath inserted_waypoints;
             if (!can_search(std::make_pair(current_waypoint, neibor_waypoint), inserted_waypoints)) {
                 continue;
             }
@@ -128,6 +158,16 @@ std::vector<std::shared_ptr<Waypoint>> AirwayGraph::FindPath(WaypointIdentifier 
     }
     std::reverse(result.begin(), result.end());
     return result;
+}
+
+std::vector<WaypointPath>
+AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
+                       WaypointIdentifier destination_identifier,
+                       int k,
+                       const std::function<WaypointPath (const AirwayGraph &, WaypointIdentifier)> &find_path
+                       ) const {
+    auto copied_graph = AirwayGraph(*this);
+    return FindKPathInGraph(copied_graph, origin_identifier, destination_identifier, k, find_path);
 }
 
 bool AirwayGraph::SaveToFile(const std::string &path) const {
@@ -255,7 +295,7 @@ std::shared_ptr<Waypoint> AirwayGraph::WaypointFromIdentifier(WaypointIdentifier
         return nullptr;
     }
 }
-    
+
 double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next) {
     assert(previous->coordinate.x != kNoCoordinate);
     assert(current->coordinate.x != kNoCoordinate);
@@ -266,5 +306,5 @@ double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shar
     double cn_y = next->coordinate.y - current->coordinate.y;
     return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
 }
-    
+
 }

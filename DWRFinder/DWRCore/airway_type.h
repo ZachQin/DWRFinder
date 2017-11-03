@@ -32,6 +32,8 @@ struct Neighbor {
     }
 };
     
+typedef std::vector<std::shared_ptr<Waypoint>> WaypointPath;
+    
 struct GeoPoint {
     GeoRad longitude;
     GeoRad latitude;
@@ -55,7 +57,8 @@ struct Waypoint {
     std::set<Neighbor> neibors;
     
     Waypoint() {};
-    Waypoint(int waypoint_identifier, const std::string &name, double lon, double lat) : waypoint_identifier(waypoint_identifier), name(name), location({lon, lat}) {};
+    Waypoint(int waypoint_identifier, const std::string &name, double lon, double lat) :
+    waypoint_identifier(waypoint_identifier), name(name), location({lon, lat}) {};
     
     bool operator < (const Waypoint &p) const {
         return waypoint_identifier < p.waypoint_identifier;

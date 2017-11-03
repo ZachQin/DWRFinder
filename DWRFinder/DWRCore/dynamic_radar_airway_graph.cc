@@ -7,6 +7,7 @@
 //
 
 #include "dynamic_radar_airway_graph.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -132,8 +133,8 @@ void DynamicRadarAirwayGraph::UpdateBlock(const std::shared_ptr<const char> &mas
     }
 }
 
-std::vector<std::shared_ptr<Waypoint>> DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) {
-    auto can_search = [&](const WaypointPair &pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) const {
+    auto can_search = [&](const WaypointPair &pair, WaypointPath &inserted_waypoints) {
         if (block_set_.find(UndirectedWaypointPair(pair)) == block_set_.end()) {
             if (pair.first->previous.lock() == nullptr) {
                 return true;
@@ -162,6 +163,15 @@ std::vector<std::shared_ptr<Waypoint>> DynamicRadarAirwayGraph::FindDynamicFullP
     };
     return FindPath(origin_identifier, destination_identifier, can_search);
 };
+    
+std::vector<WaypointPath>
+DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifier,
+                                     WaypointIdentifier destination_identifier,
+                                     int k) const {
+    auto copied_graph = *this;
+    std::function<WaypointPath (const DynamicRadarAirwayGraph &, WaypointIdentifier)> find_path = std::bind(&DynamicRadarAirwayGraph::FindDynamicFullPath, std::placeholders::_1, std::placeholders::_2, destination_identifier);
+    return FindKPathInGraph(copied_graph, origin_identifier, destination_identifier, k, find_path);
+}
 
 //void DynamicRadarAirwayGraph::LogBlockAirpointSegment() {
 //    for (auto &block: block_set_) {

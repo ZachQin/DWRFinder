@@ -9,9 +9,7 @@
 #ifndef radar_image_process_h
 #define radar_image_process_h
 
-#include <stdio.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include <CoreFoundation/CoreFoundation.h>
 
 #ifdef __cplusplus
 extern "C" {

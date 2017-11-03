@@ -7,7 +7,6 @@
 //
 
 #include "graphics_utils.h"
-#include <stdlib.h>
 
 namespace dwr {
 std::vector<Pixel> BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixel) {

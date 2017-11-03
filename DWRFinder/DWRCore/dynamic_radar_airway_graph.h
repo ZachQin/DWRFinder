@@ -60,7 +60,12 @@ public:
      @param destination_identifier Destination waypoint identifier.
      @return Path consists of waypoints.
      */
-    std::vector<std::shared_ptr<Waypoint>> FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier);
+    WaypointPath FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) const;
+    
+    std::vector<WaypointPath>
+    FindKDynamicFullPath(WaypointIdentifier origin_identifier,
+                     WaypointIdentifier destination_identifier,
+                     int k) const;
     //Debug
 //    void LogBlockAirpointSegment();
 

@@ -9,7 +9,6 @@
 #ifndef raster_graph_h
 #define raster_graph_h
 
-#include <stdio.h>
 #include <functional>
 #include <math.h>
 #include "raster_type.h"
