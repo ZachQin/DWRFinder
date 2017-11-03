@@ -62,7 +62,7 @@ std::string LonlatToString(double lon, double lat) {
     return text_stream.str();
 }
 
-std::shared_ptr<Waypoint> NodeInfoToWaypoint(const NodeInfo &info, const WorldFileInfo &world_file_info) {
+std::shared_ptr<Waypoint> PixelInfoToWaypoint(const PixelInfo &info, const WorldFileInfo &world_file_info) {
     GeoProj xy = PixelToCoordinate(info.pixel, world_file_info);
     double longitude, latitude;
     MercToLonLat(xy.x, xy.y, &longitude, &latitude);
@@ -85,7 +85,7 @@ void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
         }
         Pixel start_pixel = CoordinateToPixel(start_waypoint->coordinate, world_file_info);
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info);
-        std::vector<Pixel> linePixels = BresenhamLine(start_pixel, end_pixel);
+        Line linePixels = BresenhamLine(start_pixel, end_pixel);
         for (auto &point : linePixels) {
             pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
         }
@@ -109,7 +109,7 @@ void DynamicRadarAirwayGraph::SingleBuild(WaypointIdentifier identifier) {
             LonLatToMerc(end_waypoint->location.longitude, end_waypoint->location.latitude, &end_waypoint->coordinate.x, &end_waypoint->coordinate.y);
         }
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info_);
-        std::vector<Pixel> linePixels = BresenhamLine(start_pixel, end_pixel);
+        Line linePixels = BresenhamLine(start_pixel, end_pixel);
         for (auto &point : linePixels) {
             pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
         }
@@ -149,14 +149,14 @@ WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier ori
         Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
         Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
         Pixel previous_origin = waypoint1->previous.lock() != nullptr ? CoordinateToPixel(waypoint1->previous.lock()->coordinate, world_file_info_) : Pixel(kNoPixel, kNoPixel);
-        std::vector<NodeInfo> infos = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
+        std::vector<PixelInfo> infos = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
         if (infos.empty()) {
             return false;
         } else {
             // 去掉首尾
             inserted_waypoints.resize(infos.size() - 2);
-            std::transform(infos.begin() + 1, infos.end() - 1, inserted_waypoints.begin(), [&](NodeInfo info){
-                return NodeInfoToWaypoint(info, world_file_info_);
+            std::transform(infos.begin() + 1, infos.end() - 1, inserted_waypoints.begin(), [&](PixelInfo info){
+                return PixelInfoToWaypoint(info, world_file_info_);
             });
             return true;
         }

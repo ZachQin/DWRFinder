@@ -14,15 +14,15 @@
 #include "raster_type.h"
 
 namespace dwr {
-
+    
 class RasterGraph {
 public:
     RasterGraph() : raster_data_(nullptr), width_(0), height_(0) {};
     RasterGraph(const std::shared_ptr<const char> &raster_data, int width, int height): raster_data_(raster_data), width_(width), height_(height) {};
     void ResetRaster(const std::shared_ptr<const char> &raster_data, int width, int height) {raster_data_ = raster_data; width_ = width; height_ = height;};
-    std::vector<std::vector<Pixel>> GetNodes(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor = 0.5) const;
-    std::vector<NodeInfo> FindPath(const Pixel &origin, const Pixel &destination, const std::vector<std::vector<Pixel>> &node_levels, const std::function<bool(const NodeInfoPair &info)> &can_search = [](const NodeInfoPair &info){return true;}) const;
-    std::vector<NodeInfo> FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin = {kNoPixel, kNoPixel}) const;
+    std::vector<Line> FetchCandidateLine(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor = 0.5) const;
+    std::vector<PixelInfo> FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelInfoPair &info)> &can_search = [](const PixelInfoPair &info){return true;}) const;
+    std::vector<PixelInfo> FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin = {kNoPixel, kNoPixel}) const;
     char GetPixelValue(const Pixel &pixel) const;
     void SetRasterData(std::shared_ptr<const char> raster_data, int width, int height) {
         raster_data_ = raster_data;

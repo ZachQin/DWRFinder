@@ -9,8 +9,8 @@
 #include "graphics_utils.h"
 
 namespace dwr {
-std::vector<Pixel> BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixel) {
-    std::vector<Pixel> result;
+Line BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixel) {
+    Line result;
     int x0 = start_pixel.x, x1 = end_pixel.x;
     int y0 = start_pixel.y, y1 = end_pixel.y;
     bool steep = abs(y1 - y0) > abs(x1 - x0);
@@ -46,8 +46,8 @@ std::vector<Pixel> BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixe
     return result;
 }
 
-std::vector<std::vector<Pixel>> VerticalEquantLine(const Pixel &start_pixel, const Pixel &end_pixel, int segment_number, int radius) {
-    std::vector<std::vector<Pixel>> result;
+std::vector<Line> VerticalEquantLine(const Pixel &start_pixel, const Pixel &end_pixel, int segment_number, int radius) {
+    std::vector<Line> result;
     int x0 = start_pixel.x, x1 = end_pixel.x;
     int y0 = start_pixel.y, y1 = end_pixel.y;
     bool steep = abs(y1 - y0) < abs(x1 - x0);
@@ -67,7 +67,7 @@ std::vector<std::vector<Pixel>> VerticalEquantLine(const Pixel &start_pixel, con
         Pixel point(x0 + segment_dx * i, y0 + segment_dy * i);
         Pixel vertical_start_point = steep ? Pixel(point.y - dy, point.x - dx) : Pixel(point.x - dx, point.y - dy);
         Pixel vertical_end_point = steep ? Pixel(point.y + dy, point.x + dx) : Pixel(point.x + dx, point.y + dy);
-        std::vector<Pixel> vertical_line = BresenhamLine(vertical_start_point, vertical_end_point);
+        Line vertical_line = BresenhamLine(vertical_start_point, vertical_end_point);
         result.push_back(std::move(vertical_line));
     }
     return result;

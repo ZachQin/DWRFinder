@@ -41,22 +41,24 @@ struct Pixel {
     }
 };
 
-struct NodeInfo {
+typedef std::vector<Pixel> Line;
+
+struct PixelInfo {
     PixelDistance distance;
     PixelDistance heuristic;
     Level level;
     Pixel pixel;
-    NodeInfo *previous = nullptr;
+    PixelInfo *previous = nullptr;
     
-    NodeInfo(PixelDistance dist, PixelDistance heur, Level l, Pixel px, NodeInfo *pre): distance(dist), heuristic(heur), level(l), pixel(px), previous(pre){};
+    PixelInfo(PixelDistance dist, PixelDistance heur, Level l, Pixel px, PixelInfo *pre): distance(dist), heuristic(heur), level(l), pixel(px), previous(pre){};
     
-    bool operator > (const NodeInfo &p) const {
+    bool operator > (const PixelInfo &p) const {
         if (distance == max_distance) {return true;}
         if (p.distance == max_distance) {return false;}
         return distance + heuristic > p.distance + p.heuristic;
     }
 };
 
-typedef std::pair<NodeInfo, NodeInfo> NodeInfoPair;
+typedef std::pair<PixelInfo, PixelInfo> PixelInfoPair;
 
 #endif /* raster_type_h */

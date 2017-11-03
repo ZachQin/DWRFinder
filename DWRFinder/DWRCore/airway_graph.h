@@ -142,6 +142,16 @@ public:
      @param identifier2 Second waypoint identifier.
      */
     void RemoveAirwaySegment(WaypointIdentifier identifier1, WaypointIdentifier identifier2);
+    
+    WaypointPath
+    FindPath(const std::shared_ptr<Waypoint> &origin_waypoint,
+             const std::shared_ptr<Waypoint> &destination_waypoint,
+             const std::function<bool(const WaypointPair &pair,
+                                      WaypointPath &inserted_waypoints)> &can_search
+             = [](const WaypointPair &pair,
+                  WaypointPath &inserted_waypoints) {return true;}
+             ) const;
+    
     /**
      Get the path using A* algorithm.
      
@@ -153,9 +163,9 @@ public:
     WaypointPath
     FindPath(WaypointIdentifier origin_identifier,
              WaypointIdentifier destination_identifier,
-             const std::function<bool(const WaypointPair &,
-                         WaypointPath &)> &can_search
-             = [](const WaypointPair &p,
+             const std::function<bool(const WaypointPair &pair,
+                         WaypointPath &inserted_waypoints)> &can_search
+             = [](const WaypointPair &pair,
                   WaypointPath &inserted_waypoints) {return true;}
              ) const;
     

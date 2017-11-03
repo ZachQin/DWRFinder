@@ -77,18 +77,10 @@ void AirwayGraph::RemoveAirwaySegment(WaypointIdentifier identifier1, WaypointId
 }
     
 WaypointPath
-AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
-                      WaypointIdentifier destination_identifier,
-                      const std::function<bool(const WaypointPair &,
-                                               WaypointPath &)> &can_search) const {
+AirwayGraph::FindPath(const std::shared_ptr<Waypoint> &origin_waypoint,
+                      const std::shared_ptr<Waypoint> &destination_waypoint,
+                      const std::function<bool(const WaypointPair &, WaypointPath &)> &can_search) const {
     WaypointPath result;
-    auto origin_iterator = waypoint_map_.find(origin_identifier);
-    auto destination_iterator = waypoint_map_.find(destination_identifier);
-    if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
-        return result;
-    }
-    auto origin_waypoint = origin_iterator->second;
-    auto destination_waypoint = destination_iterator->second;
     // Init Cache for waypoint.actual_distance and waypoint.heuristic_distance.
     for (auto &p : waypoint_map_) {
         p.second->ResetCache();
@@ -158,6 +150,20 @@ AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
     }
     std::reverse(result.begin(), result.end());
     return result;
+}
+    
+WaypointPath
+AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
+                      WaypointIdentifier destination_identifier,
+                      const std::function<bool(const WaypointPair &, WaypointPath &)> &can_search) const {
+    auto origin_iterator = waypoint_map_.find(origin_identifier);
+    auto destination_iterator = waypoint_map_.find(destination_identifier);
+    if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
+        return WaypointPath();
+    }
+    auto origin_waypoint = origin_iterator->second;
+    auto destination_waypoint = destination_iterator->second;
+    return FindPath(origin_waypoint, destination_waypoint, can_search);
 }
 
 std::vector<WaypointPath>

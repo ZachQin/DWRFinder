@@ -14,9 +14,9 @@
 
 namespace dwr {
 
-std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor) const {
-    std::vector<std::vector<Pixel>> result;
-    std::vector<Pixel> pixels = BresenhamLine(origin, destination);
+std::vector<Line> RasterGraph::FetchCandidateLine(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor) const {
+    std::vector<Line> result;
+    Line pixels = BresenhamLine(origin, destination);
     int head = 0, tail = (int)pixels.size() - 1;
     while (head < pixels.size() && GetPixelValue(pixels[head]) == 0) {
         head++;
@@ -38,7 +38,7 @@ std::vector<std::vector<Pixel>> RasterGraph::GetNodes(const Pixel &origin, const
 }
 
 bool RasterGraph::CheckLine(const Pixel &start_pixel, const Pixel &end_pixel) const {
-    std::vector<Pixel> pixels = BresenhamLine(start_pixel, end_pixel);
+    Line pixels = BresenhamLine(start_pixel, end_pixel);
     for (int i = 0; i < pixels.size(); i++) {
         if (GetPixelValue(pixels[i]) > 0) {
             return false;
@@ -55,25 +55,25 @@ char RasterGraph::GetPixelValue(const Pixel &pixel) const {
     }
 }
 
-std::vector<NodeInfo> RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, const std::vector<std::vector<Pixel>> &node_levels, const std::function<bool(const NodeInfoPair &pair)> &can_search) const {
-    std::vector<NodeInfo> result;
-    int level_size = (int)node_levels.size();
-    std::vector<std::vector<NodeInfo>> node_info_levels(level_size + 2);
-    node_info_levels[0] = {NodeInfo(0, Pixel::Distance(origin, destination), 0, origin, nullptr)};
-    node_info_levels[level_size + 1] = {NodeInfo(max_distance, 0, level_size + 1, destination, nullptr)};
+std::vector<PixelInfo> RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelInfoPair &pair)> &can_search) const {
+    std::vector<PixelInfo> result;
+    int level_size = static_cast<int>(node_levels.size());
+    std::vector<std::vector<PixelInfo>> node_info_levels(level_size + 2);
+    node_info_levels[0] = {PixelInfo(0, Pixel::Distance(origin, destination), 0, origin, nullptr)};
+    node_info_levels[level_size + 1] = {PixelInfo(max_distance, 0, level_size + 1, destination, nullptr)};
     
     for (int i = 0; i < node_levels.size(); i++) {
         for (auto &px: node_levels[i]) {
-            node_info_levels[i + 1].push_back(NodeInfo(max_distance, Pixel::Distance(px, destination), i + 1, px, nullptr));
+            node_info_levels[i + 1].push_back(PixelInfo(max_distance, Pixel::Distance(px, destination), i + 1, px, nullptr));
         }
     }
-    auto node_compare = [](const NodeInfo *n1, const NodeInfo *n2) {
+    auto node_compare = [](const PixelInfo *n1, const PixelInfo *n2) {
         return *n1 > *n2;
     };
-    std::priority_queue<NodeInfo *, std::vector<NodeInfo *>, decltype(node_compare)> node_queue(node_compare);
+    std::priority_queue<PixelInfo *, std::vector<PixelInfo *>, decltype(node_compare)> node_queue(node_compare);
     node_queue.push(&node_info_levels[0][0]);
     while (!node_queue.empty()) {
-        NodeInfo *current_info = node_queue.top();
+        PixelInfo *current_info = node_queue.top();
         PixelDistance dist = current_info->distance;
         Level level = current_info->level;
         Pixel u = current_info->pixel;
@@ -83,7 +83,7 @@ std::vector<NodeInfo> RasterGraph::FindPath(const Pixel &origin, const Pixel &de
             break;
         }
         
-        std::vector<NodeInfo> &next_levels = node_info_levels[level + 1];
+        std::vector<PixelInfo> &next_levels = node_info_levels[level + 1];
         for (auto &v: next_levels) {
             if (!can_search(std::make_pair(*current_info, v))) {
                 continue;
@@ -100,7 +100,7 @@ std::vector<NodeInfo> RasterGraph::FindPath(const Pixel &origin, const Pixel &de
         }
     }
     
-    NodeInfo *current_node = &node_info_levels[level_size + 1][0];
+    PixelInfo *current_node = &node_info_levels[level_size + 1][0];
     // 如果找不到路径 直接返回空
     if (current_node->previous == nullptr) {
         return result;
@@ -121,8 +121,8 @@ double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &
     return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
 }
 
-std::vector<NodeInfo> RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin) const {
-    auto can_search = [&](const NodeInfoPair &pair){
+std::vector<PixelInfo> RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin) const {
+    auto can_search = [&](const PixelInfoPair &pair){
         // 搜索第一个节点需要判断参数中传入的节点位置
         if (pair.first.previous == nullptr) {
             if (previous_origin.x == kNoPixel) {
@@ -134,7 +134,7 @@ std::vector<NodeInfo> RasterGraph::FindPathWithAngle(const Pixel &origin, const 
             return CosinTurnAngle(pair.first.previous->pixel, pair.first.pixel, pair.second.pixel) > 0;
         }
     };
-    auto nodes = GetNodes(origin, destination, 3);
+    auto nodes = FetchCandidateLine(origin, destination, 3);
     return FindPath(origin, destination, nodes, can_search);
 }
 
