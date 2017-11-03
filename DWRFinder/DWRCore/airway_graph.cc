@@ -136,12 +136,12 @@ AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
                 if (inserted_waypoints.size() == 0) {
                     neibor_waypoint->previous = current_waypoint;
                 } else {
-                    std::shared_ptr<Waypoint> current_waypoint = neibor_waypoint;
+                    std::shared_ptr<Waypoint> current_inserted_waypoint = neibor_waypoint;
                     for (auto iterator = inserted_waypoints.rbegin(); iterator != inserted_waypoints.rend(); iterator++) {
-                        current_waypoint->previous = *iterator;
-                        current_waypoint = current_waypoint->previous.lock();
+                        current_inserted_waypoint->previous = *iterator;
+                        current_inserted_waypoint = current_inserted_waypoint->previous.lock();
                     }
-                    current_waypoint->previous = current_waypoint;
+                    current_inserted_waypoint->previous = current_waypoint;
                 }
                 neibor_waypoint->heuristic_distance = Waypoint::Distance(*neibor_waypoint, *destination_waypoint);
                 waypoint_queue.push(neibor_waypoint);
