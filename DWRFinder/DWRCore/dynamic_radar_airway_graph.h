@@ -9,7 +9,7 @@
 #ifndef dynamic_radar_airway_graph_h
 #define dynamic_radar_airway_graph_h
 
-#include <map>
+#include <unordered_map>
 #include "dynamic_airway_graph.h"
 #include "graphics_utils.h"
 #include "raster_graph.h"
@@ -70,7 +70,7 @@ public:
 //    void LogBlockAirpointSegment();
 
 private:
-    std::map<Pixel, UndirectedWaypointPair> pixel_to_edge_table_;
+    std::unordered_map<Pixel, UndirectedWaypointPair> pixel_to_edge_table_;
     RasterGraph raster_graph_;
     WorldFileInfo world_file_info_;
 };

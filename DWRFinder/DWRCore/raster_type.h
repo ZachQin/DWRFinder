@@ -10,6 +10,7 @@
 #define raster_type_h
 
 #include <math.h>
+#include <functional>
 
 typedef int Level;
 typedef double PixelDistance;
@@ -24,22 +25,23 @@ struct Pixel {
     Pixel(const Pixel &other) = default;
     Pixel(int x, int y): x(x), y(y) {};
     
-    bool operator < (const Pixel &p) const {
-        return this->x < p.x ? true : (this->x > p.x ? false : this->y < p.y);
-    }
-    
     bool operator == (const Pixel &p) const {
         return this->x == p.x && this->y == p.y;
     }
-    
-    bool operator > (const Pixel &p) const {
-        return !((*this < p) || (*this == p));
-    }
-    
+
     static PixelDistance Distance(const Pixel &p1, const Pixel &p2) {
         return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
 };
+
+namespace std {
+template<>
+struct hash<Pixel> {
+    std::size_t operator()(const Pixel& p) const {
+        return std::hash<int>()(p.x) ^ std::hash<int>()(p.y);
+    }
+};
+}
 
 const Pixel kNoPixel = {-1, -1};
 
@@ -50,12 +52,11 @@ struct PixelInfo {
     PixelDistance distance;
     PixelDistance heuristic;
     Level level;
-    Pixel pixel;
     Pixel previous = kNoPixel;
     
     PixelInfo() = default;
     PixelInfo(const PixelInfo &) = default;
-    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &pixel, const Pixel &previous) : distance(distance), heuristic(heuristic), level(level), pixel(pixel), previous(previous) {};
+    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &previous) : distance(distance), heuristic(heuristic), level(level), previous(previous) {};
     
     bool operator > (const PixelInfo &p) const {
         if (distance == max_distance) {return true;}
@@ -64,6 +65,7 @@ struct PixelInfo {
     }
 };
 
+typedef std::pair<Pixel, Pixel> PixelPair;
 typedef std::pair<PixelInfo, PixelInfo> PixelInfoPair;
 
 #endif /* raster_type_h */

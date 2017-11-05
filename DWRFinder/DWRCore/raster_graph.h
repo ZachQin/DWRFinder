@@ -21,7 +21,12 @@ public:
     RasterGraph(const std::shared_ptr<const char> &raster_data, int width, int height): raster_data_(raster_data), width_(width), height_(height) {};
     void ResetRaster(const std::shared_ptr<const char> &raster_data, int width, int height) {raster_data_ = raster_data; width_ = width; height_ = height;};
     std::vector<Line> FetchCandidateLine(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor = 0.5) const;
-    PixelPath FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelInfoPair &info)> &can_search = [](const PixelInfoPair &info){return true;}) const;
+    PixelPath FindPath(const Pixel &origin,
+                       const Pixel &destination,
+                       const std::vector<Line> &node_levels,
+                       const std::function<bool(const PixelPair &pixel_pair, const PixelInfoPair &info_pair)> &can_search =
+                       [](const PixelPair &pixel_pair, const PixelInfoPair &info_pair){return true;}
+                       ) const;
     PixelPath FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin = kNoPixel) const;
     char GetPixelValue(const Pixel &pixel) const;
     void SetRasterData(std::shared_ptr<const char> raster_data, int width, int height) {

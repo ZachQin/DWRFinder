@@ -37,15 +37,15 @@ struct Statistics {
 int main(int argc, const char * argv[]) {
     dwr::DynamicRadarAirwayGraph graph;
     graph.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
-    
+
     dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/WorldFile.wld");
     graph.Build(worldInfo);
-    
+
     // Raster start
     CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/radar.png");
     CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
     int width, height;
-    
+
     clock_t start_clock = clock();
     shared_ptr<const char> mask(CreateMaskFromCGImage(image, &width, &height));
     graph.UpdateBlock(mask, width, height);
@@ -56,7 +56,7 @@ int main(int argc, const char * argv[]) {
 //    FullPathTest(graph);
 //    FullPath(graph);
 //    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
-    
+
     return 0;
 }
 
@@ -94,7 +94,7 @@ void BatchTestWithGround(const dwr::DynamicRadarAirwayGraph &graph, const string
     getline(inf, count_line);
     double time_consuming = 0;
     int batch_count = stoi(count_line);
-    bool all_pass = true;
+    int pass_count = 0;
     for (int i = 0; i < batch_count; i++) {
         string line;
         getline(inf, line);
@@ -110,20 +110,22 @@ void BatchTestWithGround(const dwr::DynamicRadarAirwayGraph &graph, const string
         time_consuming += stat.time_consuming;
         string path_description = dwr::PathDescription(stat.path);
         if (path_description == ground_path_description) {
+            pass_count++;
             cout << "Test index " << i << ":" << "Pass" << endl;
         } else {
-            all_pass = false;
             cout << "Test index " << i << ":" << "Failed!" << endl;
             cout << "origin: " << start << " destination: " << end << endl;
             cout << "Path" << endl;
             cout << path_description << endl;
             cout << "Groud Path:" << endl;
             cout << ground_path_description << endl;
-            break;
         }
     }
-    if (all_pass) {
+    if (pass_count == batch_count) {
         cout << "All Pass, Time-consuming: " << time_consuming << "ms" << endl;
+    } else {
+        cout << "Pass " << pass_count << " in " << batch_count << endl;
+        cout << "Time-consuming: " << time_consuming << "ms" << endl;
     }
 }
 
