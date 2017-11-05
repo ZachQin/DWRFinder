@@ -94,7 +94,7 @@ void BatchTestWithGround(const dwr::DynamicRadarAirwayGraph &graph, const string
     getline(inf, count_line);
     double time_consuming = 0;
     int batch_count = stoi(count_line);
-    int failure_index = -1;
+    bool all_pass = true;
     for (int i = 0; i < batch_count; i++) {
         string line;
         getline(inf, line);
@@ -105,20 +105,25 @@ void BatchTestWithGround(const dwr::DynamicRadarAirwayGraph &graph, const string
         getline(ss, item, ',');
         dwr::WaypointIdentifier end = stoi(item);
         getline(ss, item, ',');
-        string path_description = item;
+        string ground_path_description = item;
         Statistics stat = MeasurePath([&](){return graph.FindDynamicFullPath(start, end);});
         time_consuming += stat.time_consuming;
-        if (path_description == dwr::PathDescription(stat.path)) {
+        string path_description = dwr::PathDescription(stat.path);
+        if (path_description == ground_path_description) {
             cout << "Test index " << i << ":" << "Pass" << endl;
         } else {
-            failure_index = i;
+            all_pass = false;
+            cout << "Test index " << i << ":" << "Failed!" << endl;
+            cout << "origin: " << start << " destination: " << end << endl;
+            cout << "Path" << endl;
+            cout << path_description << endl;
+            cout << "Groud Path:" << endl;
+            cout << ground_path_description << endl;
             break;
         }
     }
-    if (failure_index == -1) {
+    if (all_pass) {
         cout << "All Pass, Time-consuming: " << time_consuming << "ms" << endl;
-    } else {
-        cout << "Fail at index" << failure_index << endl;
     }
 }
 
@@ -159,7 +164,7 @@ void FullPath(const dwr::DynamicRadarAirwayGraph &graph) {
     
     clock_t tStart = clock();
     vector<shared_ptr<dwr::Waypoint>> path = graph.FindDynamicFullPath(start, end);
-    printf("Time taken: %.4fms\n", (double)(clock() - tStart) * 1000 / CLOCKS_PER_SEC);
+    printf("Time-consuming: %.4fms\n", (double)(clock() - tStart) * 1000 / CLOCKS_PER_SEC);
     for (auto &i: path) {
         cout << i->name << "->";
     }
