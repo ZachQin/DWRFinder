@@ -34,6 +34,7 @@
 		8723584B1E7022E1002D19B8 /* dynamic_radar_airway_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_radar_airway_graph.h; sourceTree = "<group>"; };
 		8723584D1E704363002D19B8 /* radar_image_process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = radar_image_process.c; sourceTree = "<group>"; };
 		8723584E1E704363002D19B8 /* radar_image_process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = radar_image_process.h; sourceTree = "<group>"; };
+		872E93681FAF49FD005DF54D /* batch_test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = batch_test.txt; sourceTree = "<group>"; };
 		873C063B1E6F9E34004DE01C /* DWRFinder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DWRFinder; sourceTree = BUILT_PRODUCTS_DIR; };
 		873C063E1E6F9E34004DE01C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		873C06451E6F9E44004DE01C /* airway_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = airway_type.h; sourceTree = "<group>"; };
@@ -132,6 +133,7 @@
 		879AAA3B1F9EE33E00FC4C58 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				872E93681FAF49FD005DF54D /* batch_test.txt */,
 				879AAA3A1F9EE33400FC4C58 /* AirwayGraph.ag */,
 				879AAA381F9EE33400FC4C58 /* radar.png */,
 				879AAA391F9EE33400FC4C58 /* WorldFile.wld */,

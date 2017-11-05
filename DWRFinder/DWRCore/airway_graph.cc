@@ -311,5 +311,17 @@ double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shar
     double cn_y = next->coordinate.y - current->coordinate.y;
     return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
 }
-
+    
+std::string PathDescription(const WaypointPath &path) {
+    std::string path_description;
+    if (path.empty()) {
+        return path_description;
+    }
+    for (auto it = path.begin(); it < path.end() - 1; it++) {
+        path_description += (*it)->name;
+        path_description += "->";
+    }
+    path_description += path.back()->name;
+    return path_description;
+}
 }
