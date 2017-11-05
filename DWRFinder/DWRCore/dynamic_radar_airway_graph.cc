@@ -62,8 +62,8 @@ std::string LonlatToString(double lon, double lat) {
     return text_stream.str();
 }
 
-std::shared_ptr<Waypoint> PixelInfoToWaypoint(const PixelInfo &info, const WorldFileInfo &world_file_info) {
-    GeoProj xy = PixelToCoordinate(info.pixel, world_file_info);
+std::shared_ptr<Waypoint> PixelToWaypoint(const Pixel &pixel, const WorldFileInfo &world_file_info) {
+    GeoProj xy = PixelToCoordinate(pixel, world_file_info);
     double longitude, latitude;
     MercToLonLat(xy.x, xy.y, &longitude, &latitude);
     auto name = LonlatToString(longitude, latitude);
@@ -148,15 +148,15 @@ WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier ori
         const std::shared_ptr<Waypoint> waypoint2 = pair.second;
         Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
         Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
-        Pixel previous_origin = waypoint1->previous.lock() != nullptr ? CoordinateToPixel(waypoint1->previous.lock()->coordinate, world_file_info_) : Pixel(kNoPixel, kNoPixel);
-        std::vector<PixelInfo> infos = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
-        if (infos.empty()) {
+        Pixel previous_origin = waypoint1->previous.lock() != nullptr ? CoordinateToPixel(waypoint1->previous.lock()->coordinate, world_file_info_) : kNoPixel;
+        PixelPath pixel_path = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
+        if (pixel_path.empty()) {
             return false;
         } else {
             // 去掉首尾
-            inserted_waypoints.resize(infos.size() - 2);
-            std::transform(infos.begin() + 1, infos.end() - 1, inserted_waypoints.begin(), [&](PixelInfo info){
-                return PixelInfoToWaypoint(info, world_file_info_);
+            inserted_waypoints.resize(pixel_path.size() - 2);
+            std::transform(pixel_path.begin() + 1, pixel_path.end() - 1, inserted_waypoints.begin(), [&](const Pixel &pixel){
+                return PixelToWaypoint(pixel, world_file_info_);
             });
             return true;
         }

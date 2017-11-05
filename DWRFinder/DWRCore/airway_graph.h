@@ -214,7 +214,7 @@ public:
 
      @return Waypoints' ID vector.
      */
-    std::vector<WaypointIdentifier> AllWaypointIdentifiers();
+    std::vector<WaypointIdentifier> AllWaypointIdentifiers() const;
     
     /**
      Get waypoint from waypoint ID.
@@ -222,7 +222,7 @@ public:
      @param identifier Waypoint ID.
      @return Waypoint pointer.
      */
-    std::shared_ptr<Waypoint> WaypointFromIdentifier(WaypointIdentifier identifier);
+    std::shared_ptr<Waypoint> WaypointFromIdentifier(WaypointIdentifier identifier) const;
 
 protected:
     std::map<WaypointIdentifier, std::shared_ptr<Waypoint>> waypoint_map_;

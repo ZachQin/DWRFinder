@@ -15,13 +15,13 @@ typedef int Level;
 typedef double PixelDistance;
 
 const PixelDistance max_distance = std::numeric_limits<PixelDistance>::max();
-const int kNoPixel = -1;
 
 struct Pixel {
     int x;
     int y;
     
-    Pixel() {};
+    Pixel() = default;
+    Pixel(const Pixel &other) = default;
     Pixel(int x, int y): x(x), y(y) {};
     
     bool operator < (const Pixel &p) const {
@@ -41,16 +41,21 @@ struct Pixel {
     }
 };
 
+const Pixel kNoPixel = {-1, -1};
+
 typedef std::vector<Pixel> Line;
+typedef std::vector<Pixel> PixelPath;
 
 struct PixelInfo {
     PixelDistance distance;
     PixelDistance heuristic;
     Level level;
     Pixel pixel;
-    PixelInfo *previous = nullptr;
+    Pixel previous = kNoPixel;
     
-    PixelInfo(PixelDistance dist, PixelDistance heur, Level l, Pixel px, PixelInfo *pre): distance(dist), heuristic(heur), level(l), pixel(px), previous(pre){};
+    PixelInfo() = default;
+    PixelInfo(const PixelInfo &) = default;
+    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &pixel, const Pixel &previous) : distance(distance), heuristic(heuristic), level(level), pixel(pixel), previous(previous) {};
     
     bool operator > (const PixelInfo &p) const {
         if (distance == max_distance) {return true;}
