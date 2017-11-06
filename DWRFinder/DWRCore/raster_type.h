@@ -12,10 +12,12 @@
 #include <math.h>
 #include <functional>
 
+namespace dwr {
+
 typedef int Level;
 typedef double PixelDistance;
 
-const PixelDistance max_distance = std::numeric_limits<PixelDistance>::max();
+const PixelDistance kMaxPixelDistance = std::numeric_limits<PixelDistance>::max();
 
 struct Pixel {
     int x;
@@ -34,15 +36,6 @@ struct Pixel {
     }
 };
 
-namespace std {
-template<>
-struct hash<Pixel> {
-    std::size_t operator()(const Pixel& p) const {
-        return std::hash<int>()(p.x) ^ std::hash<int>()(p.y);
-    }
-};
-}
-
 const Pixel kNoPixel = {-1, -1};
 
 typedef std::vector<Pixel> Line;
@@ -59,8 +52,8 @@ struct PixelInfo {
     PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &previous) : distance(distance), heuristic(heuristic), level(level), previous(previous) {};
     
     bool operator > (const PixelInfo &p) const {
-        if (distance == max_distance) {return true;}
-        if (p.distance == max_distance) {return false;}
+        if (distance == kMaxPixelDistance) {return true;}
+        if (p.distance == kMaxPixelDistance) {return false;}
         return distance + heuristic > p.distance + p.heuristic;
     }
 };
@@ -68,4 +61,14 @@ struct PixelInfo {
 typedef std::pair<Pixel, Pixel> PixelPair;
 typedef std::pair<PixelInfo, PixelInfo> PixelInfoPair;
 
+}
+
+namespace std {
+    template<>
+    struct hash<dwr::Pixel> {
+        std::size_t operator()(const dwr::Pixel &p) const {
+            return std::hash<int>()(p.x) ^ std::hash<int>()(p.y);
+        }
+    };
+}
 #endif /* raster_type_h */

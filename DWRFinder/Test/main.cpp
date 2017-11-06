@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
     int width, height;
 
     clock_t start_clock = clock();
-    shared_ptr<const char> mask(CreateMaskFromCGImage(image, &width, &height));
+    char *mask = CreateMaskFromCGImage(image, &width, &height);
     graph.UpdateBlock(mask, width, height);
     printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
 

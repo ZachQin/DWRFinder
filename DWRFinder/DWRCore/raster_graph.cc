@@ -55,16 +55,38 @@ char RasterGraph::GetPixelValue(const Pixel &pixel) const {
         return 0;
     }
 }
+    
+PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin) const {
+    auto can_search = [&](const PixelPair &pixel_pair, const PixelInfoPair &info_pair){
+        bool result = true;
+        // 搜索第一个节点需要判断参数中传入的节点位置
+        if (info_pair.first.previous == kNoPixel) {
+            if (previous_origin == kNoPixel) {
+                result = true;
+            } else {
+                result = CosinTurnAngle(previous_origin, pixel_pair.first, pixel_pair.second) > 0;
+            }
+        } else {
+            result = CosinTurnAngle(info_pair.first.previous, pixel_pair.first, pixel_pair.second) > 0;
+        }
+        return result && CheckLine(pixel_pair.first, pixel_pair.second);
+    };
+    auto nodes = FetchCandidateLine(origin, destination, 3);
+    if (nodes.empty()) {
+        return Line();
+    }
+    return FindPath(origin, destination, nodes, can_search);
+}
 
-PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) const {
+PixelPath FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) {
     PixelPath result;
     int level_size = static_cast<int>(node_levels.size());
     std::unordered_map<Pixel, PixelInfo> info_map;
     info_map[origin] = PixelInfo(0, Pixel::Distance(origin, destination), 0, kNoPixel);
-    info_map[destination] = PixelInfo(max_distance, 0, level_size + 1, kNoPixel);
+    info_map[destination] = PixelInfo(kMaxPixelDistance, 0, level_size + 1, kNoPixel);
     for (int i = 0; i < node_levels.size(); i++) {
         for (auto &px: node_levels[i]) {
-            info_map[px] = PixelInfo(max_distance, Pixel::Distance(px, destination), i + 1, kNoPixel);
+            info_map[px] = PixelInfo(kMaxPixelDistance, Pixel::Distance(px, destination), i + 1, kNoPixel);
         }
     }
     auto node_compare = [&info_map](const Pixel pixel1, const Pixel pixel2) {
@@ -87,9 +109,6 @@ PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, c
         for (auto &v: next_level) {
             auto &v_info = info_map[v];
             if (!can_search(std::make_pair(u, v), std::make_pair(current_info, v_info))) {
-                continue;
-            }
-            if (!CheckLine(u, v)) {
                 continue;
             }
             PixelDistance distance_through_u = dist + Pixel::Distance(u, v);
@@ -124,26 +143,6 @@ double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &
     double cn_x = next.x - current.x;
     double cn_y = next.y - current.y;
     return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
-}
-
-PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin) const {
-    auto can_search = [&](const PixelPair &pixel_pair, const PixelInfoPair &info_pair){
-        // 搜索第一个节点需要判断参数中传入的节点位置
-        if (info_pair.first.previous == kNoPixel) {
-            if (previous_origin == kNoPixel) {
-                return true;
-            } else {
-                return CosinTurnAngle(previous_origin, pixel_pair.first, pixel_pair.second) > 0;
-            }
-        } else {
-            return CosinTurnAngle(info_pair.first.previous, pixel_pair.first, pixel_pair.second) > 0;
-        }
-    };
-    auto nodes = FetchCandidateLine(origin, destination, 3);
-    if (nodes.empty()) {
-        return Line();
-    }
-    return FindPath(origin, destination, nodes, can_search);
 }
 
 }

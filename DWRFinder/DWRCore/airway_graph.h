@@ -229,6 +229,7 @@ protected:
 };
     
 double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next);
+    
 std::string PathDescription(const WaypointPath &path);
 }
 #endif /* AirwayGraph_h */

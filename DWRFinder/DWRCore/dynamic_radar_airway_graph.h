@@ -52,7 +52,7 @@ public:
      @param width Width of mask pixel
      @param height Height of mask pixel
      */
-    void UpdateBlock(const std::shared_ptr<const char> &mask, int width, int height);
+    void UpdateBlock(char *mask, int width, int height);
     /**
      Find path with double scale A* search.
 
@@ -62,10 +62,10 @@ public:
      */
     WaypointPath FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) const;
     
-    std::vector<WaypointPath>
-    FindKDynamicFullPath(WaypointIdentifier origin_identifier,
-                     WaypointIdentifier destination_identifier,
-                     int k) const;
+//    std::vector<WaypointPath>
+//    FindKDynamicFullPath(WaypointIdentifier origin_identifier,
+//                     WaypointIdentifier destination_identifier,
+//                     int k) const;
     //Debug
 //    void LogBlockAirpointSegment();
 
