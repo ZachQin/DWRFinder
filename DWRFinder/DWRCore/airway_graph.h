@@ -17,7 +17,8 @@
 namespace dwr {
 
 typedef std::pair<const std::shared_ptr<Waypoint>, const std::shared_ptr<Waypoint>> WaypointPair;
-
+typedef std::pair<const WaypointInfo, const WaypointInfo> WaypointInfoPair;
+    
 class AirwayGraph;
 
 template <class T>
@@ -26,29 +27,29 @@ FindKPathInGraph(T &graph,
           WaypointIdentifier origin_identifier,
           WaypointIdentifier destination_identifier,
           int k,
-                 const std::function<WaypointPath (const T &temp_graph, WaypointIdentifier spur_node)> &find_path) {
+                 const std::function<WaypointPath (T &temp_graph, WaypointIdentifier spur_node)> &find_path) {
     std::vector<WaypointPath> result;
-    auto path_compare = [](WaypointPath &path1, WaypointPath &path2) {
-        return path1.back()->actual_distance > path2.back()->actual_distance;
+    auto path_compare = [](const WaypointPath &path1, const WaypointPath &path2) {
+        return path1.lengths.back() > path2.lengths.back();
     };
     std::priority_queue<WaypointPath, std::vector<WaypointPath>, decltype(path_compare)> path_queue(path_compare);
-    auto init_path = find_path(graph, origin_identifier);
-    if (init_path.size() == 0) {
+    WaypointPath init_path = find_path(graph, origin_identifier);
+    if (init_path.waypoints.size() == 0) {
         return result;
     }
     result.push_back(std::move(init_path));
-    for (int i = 1; i <= k; i++) {
-        for (int j = 0; j < result[i - 1].size(); j++) {
+    for (int kk = 1; kk < k; kk++) {
+        for (int i = 0; i < result[kk - 1].GetSize() - 1; i++) {
             std::vector<WaypointPair> removed_edges;
-            auto spur_node = result[i - 1][j];
-            auto root_path = WaypointPath(result[i - 1].begin(), result[i - 1].begin() + j + 1);
+            auto spur_node = result[kk - 1].waypoints[i];
+            WaypointPath root_path = WaypointPath(result[kk - 1], 0, i + 1);
             for (auto &path : result) {
-                if (std::equal(root_path.begin(), root_path.end(), path.begin())) {
-                    removed_edges.push_back(std::make_pair(path[j], path[j + 1]));
-                    graph.RemoveAirwaySegment(path[j], path[j + 1]);
+                if (std::equal(root_path.waypoints.begin(), root_path.waypoints.end(), path.waypoints.begin())) {
+                    removed_edges.push_back(std::make_pair(path.waypoints[i], path.waypoints[i + 1]));
+                    graph.RemoveAirwaySegment(path.waypoints[i], path.waypoints[i + 1]);
                 }
             }
-            for (auto &root_path_node : root_path) {
+            for (auto &root_path_node : root_path.waypoints) {
                 if (root_path_node != spur_node) {
                     for (auto &neibor : root_path_node->neibors) {
                         removed_edges.push_back(std::make_pair(root_path_node, neibor.target.lock()));
@@ -57,11 +58,8 @@ FindKPathInGraph(T &graph,
                 }
             }
             auto spur_path = find_path(graph, spur_node->waypoint_identifier);
-            if (spur_path.size() > 0) {
-                WaypointPath total_path;
-                total_path.reserve(root_path.size() + spur_path.size() - 1);
-                total_path.insert(total_path.end(), root_path.begin(), root_path.end() - 1);
-                total_path.insert(total_path.end(), spur_path.begin(), spur_path.end());
+            if (spur_path.GetSize() > 0) {
+                WaypointPath total_path = root_path + spur_path;
                 path_queue.push(std::move(total_path));
             }
             // Reversely restore the removed connection
@@ -77,6 +75,12 @@ FindKPathInGraph(T &graph,
     }
     return result;
 }
+
+WaypointPath
+FindPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
+         const std::shared_ptr<Waypoint> &destination_waypoint,
+         const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair,
+                                  std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search);
     
 class AirwayGraph {
 public:
@@ -143,15 +147,6 @@ public:
      */
     void RemoveAirwaySegment(WaypointIdentifier identifier1, WaypointIdentifier identifier2);
     
-    WaypointPath
-    FindPath(const std::shared_ptr<Waypoint> &origin_waypoint,
-             const std::shared_ptr<Waypoint> &destination_waypoint,
-             const std::function<bool(const WaypointPair &pair,
-                                      WaypointPath &inserted_waypoints)> &can_search
-             = [](const WaypointPair &pair,
-                  WaypointPath &inserted_waypoints) {return true;}
-             ) const;
-    
     /**
      Get the path using A* algorithm.
      
@@ -163,10 +158,9 @@ public:
     WaypointPath
     FindPath(WaypointIdentifier origin_identifier,
              WaypointIdentifier destination_identifier,
-             const std::function<bool(const WaypointPair &pair,
-                         WaypointPath &inserted_waypoints)> &can_search
-             = [](const WaypointPair &pair,
-                  WaypointPath &inserted_waypoints) {return true;}
+             const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search
+             = [](const WaypointPair &, const WaypointInfoPair &,
+                  std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return true;}
              ) const;
     
     /**
@@ -229,7 +223,5 @@ protected:
 };
     
 double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next);
-    
-std::string PathDescription(const WaypointPath &path);
 }
 #endif /* AirwayGraph_h */

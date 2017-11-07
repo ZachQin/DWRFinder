@@ -132,21 +132,24 @@ void DynamicRadarAirwayGraph::UpdateBlock(char *mask, int width, int height) {
 }
 
 WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier) const {
-    auto can_search = [&](const WaypointPair &pair, WaypointPath &inserted_waypoints) {
-        if (block_set_.find(UndirectedWaypointPair(pair)) == block_set_.end()) {
-            if (pair.first->previous.lock() == nullptr) {
+    auto can_search = [&](const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+        const std::shared_ptr<Waypoint> &waypoint1 = waypoint_pair.first;
+        const std::shared_ptr<Waypoint> &waypoint2 = waypoint_pair.second;
+        const WaypointInfo &waypoint_info1 = info_pair.first;
+        
+        if (block_set_.find(UndirectedWaypointPair(waypoint_pair)) == block_set_.end()) {
+            if (waypoint_info1.previous.lock() == nullptr) {
                 return true;
-            } else if (CosinTurnAngle(pair.first->previous.lock(), pair.first, pair.second) > 0) {
+            } else if (CosinTurnAngle(waypoint_info1.previous.lock(), waypoint1, waypoint2) > 0) {
                 return true;
             } else {
                 return false;
             }
         }
-        const std::shared_ptr<Waypoint> waypoint1 = pair.first;
-        const std::shared_ptr<Waypoint> waypoint2 = pair.second;
-        Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
-        Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
-        Pixel previous_origin = waypoint1->previous.lock() != nullptr ? CoordinateToPixel(waypoint1->previous.lock()->coordinate, world_file_info_) : kNoPixel;
+        
+        const Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
+        const Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
+        const Pixel previous_origin = waypoint_info1.previous.lock() != nullptr ? CoordinateToPixel(waypoint_info1.previous.lock()->coordinate, world_file_info_) : kNoPixel;
         PixelPath pixel_path = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
         if (pixel_path.empty()) {
             return false;

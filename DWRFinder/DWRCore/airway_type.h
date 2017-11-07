@@ -32,7 +32,9 @@ struct Neighbor {
     }
 };
     
-typedef std::vector<std::shared_ptr<Waypoint>> WaypointPath;
+const WaypointIdentifier kNoWaypointIdentifier = -1;
+const GeoDistance kEarthRadius = 6378137.0;
+const GeoDistance kNoCoordinate = std::numeric_limits<GeoDistance>::infinity();
     
 struct GeoPoint {
     GeoRad longitude;
@@ -44,14 +46,11 @@ struct GeoProj {
     GeoDistance y;
 };
     
-const WaypointIdentifier kNoWaypointIdentifier = -1;
-const GeoDistance kEarthRadius = 6378137.0;
-const GeoDistance kNoCoordinate = std::numeric_limits<GeoDistance>::infinity();
-    
 struct Waypoint {
     WaypointIdentifier waypoint_identifier;
     std::string name;
     GeoPoint location;
+    GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
     
     bool userWaypoint = false;
     std::set<Neighbor> neibors;
@@ -64,18 +63,6 @@ struct Waypoint {
         return waypoint_identifier < p.waypoint_identifier;
     }
     
-    // Cache
-    std::weak_ptr<Waypoint> previous;
-    GeoDistance actual_distance = std::numeric_limits<GeoDistance>::max();
-    GeoDistance heuristic_distance = std::numeric_limits<GeoDistance>::max();
-    GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
-    
-    void ResetCache() {
-        actual_distance = std::numeric_limits<GeoDistance>::max();
-        heuristic_distance = std::numeric_limits<GeoDistance>::max();
-        previous.reset();
-    };
-    
     static GeoDistance Distance(const Waypoint &p1, const Waypoint &p2) {
         double FI1 = p1.location.latitude;
         double FI2 = p2.location.latitude;
@@ -87,6 +74,56 @@ struct Waypoint {
     };
 };
 
+struct WaypointInfo {
+    std::weak_ptr<Waypoint> previous;
+    GeoDistance actual_distance = std::numeric_limits<GeoDistance>::max();
+    GeoDistance heuristic_distance = std::numeric_limits<GeoDistance>::max();
+};
+    
+struct WaypointPath {
+    std::vector<std::shared_ptr<Waypoint>> waypoints;
+    std::vector<GeoDistance> lengths;
+    
+    WaypointPath() = default;
+    
+    WaypointPath(const WaypointPath &other, int start, int node_count) {
+        waypoints.reserve(node_count);
+        lengths.reserve(node_count);
+        waypoints.insert(waypoints.end(), other.waypoints.begin() + start, other.waypoints.begin() + start + node_count);
+        lengths.insert(lengths.end(), other.lengths.begin() + start, other.lengths.begin() + start + node_count);
+        std::for_each(lengths.begin(), lengths.end(), [&](GeoDistance &distance){distance -= lengths[0];});
+    };
+    
+    int GetSize() const {return static_cast<int>(waypoints.size());};
+    
+    WaypointPath operator+ (const WaypointPath &path) const {
+        if (waypoints.back() != path.waypoints.front()) {
+            throw std::invalid_argument("back of left path not same as front of right path");
+        }
+        WaypointPath result(*this, 0, GetSize());
+        int sum_size = GetSize() + path.GetSize() - 1;
+        result.waypoints.reserve(sum_size);
+        result.lengths.reserve(sum_size);
+        result.waypoints.insert(result.waypoints.end(), path.waypoints.begin() + 1, path.waypoints.end());
+        result.lengths.insert(result.lengths.end(), path.lengths.begin() + 1, path.lengths.end());
+        std::for_each(result.lengths.begin() + GetSize(), result.lengths.end(), [&](GeoDistance &distance){distance += lengths.back();});
+        return result;
+    };
+    
+    std::string ToString() const {
+        std::string path_description;
+        if (waypoints.empty()) {
+            return path_description;
+        }
+        for (auto it = waypoints.begin(); it < waypoints.end() - 1; it++) {
+            path_description += (*it)->name;
+            path_description += "->";
+        }
+        path_description += waypoints.back()->name;
+        return path_description;
+    }
+};
+    
 } //Namespace dwr
 
 #endif /* Waypoint_h */
