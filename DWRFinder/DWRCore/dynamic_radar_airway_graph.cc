@@ -19,7 +19,6 @@
 namespace dwr {
     
 const double kRadToDeg = 57.29577951308232;
-//const double kDegToRad = .0174532925199432958;
     
 WorldFileInfo::WorldFileInfo(const char* path) {
     std::ifstream inf(path);
@@ -69,7 +68,7 @@ std::shared_ptr<Waypoint> PixelToWaypoint(const Pixel &pixel, const WorldFileInf
     auto name = LonlatToString(longitude, latitude);
     std::shared_ptr<Waypoint> userWaypoint(new Waypoint(kNoWaypointIdentifier, name, longitude, latitude));
     userWaypoint->coordinate = xy;
-    userWaypoint->userWaypoint = true;
+    userWaypoint->user_waypoint = true;
     return userWaypoint;
 }
 
@@ -164,15 +163,6 @@ WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier ori
     };
     return FindPath(origin_identifier, destination_identifier, can_search);
 };
-    
-//std::vector<WaypointPath>
-//DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifier,
-//                                     WaypointIdentifier destination_identifier,
-//                                     int k) const {
-//    auto copied_graph = *this;
-//    std::function<WaypointPath (const DynamicRadarAirwayGraph &, WaypointIdentifier)> find_path = std::bind(&DynamicRadarAirwayGraph::FindDynamicFullPath, std::placeholders::_1, std::placeholders::_2, destination_identifier);
-//    return FindKPathInGraph(copied_graph, origin_identifier, destination_identifier, k, find_path);
-//}
 
 //void DynamicRadarAirwayGraph::LogBlockAirpointSegment() {
 //    for (auto &block: block_set_) {

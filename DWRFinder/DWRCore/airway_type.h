@@ -52,10 +52,14 @@ struct Waypoint {
     GeoPoint location;
     GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
     
-    bool userWaypoint = false;
+    bool user_waypoint = false;
     std::set<Neighbor> neibors;
     
     Waypoint() {};
+    
+    Waypoint(const Waypoint &other) :
+    waypoint_identifier(other.waypoint_identifier), name(other.name), location(other.location), coordinate(other.coordinate), user_waypoint(other.user_waypoint) {};
+    
     Waypoint(int waypoint_identifier, const std::string &name, double lon, double lat) :
     waypoint_identifier(waypoint_identifier), name(name), location({lon, lat}) {};
     

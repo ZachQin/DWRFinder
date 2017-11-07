@@ -158,13 +158,14 @@ void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
     dwr::WaypointIdentifier start = 8071;
     dwr::WaypointIdentifier end = 20631;
     
-//    dwr::WaypointPath path = graph.FindDynamicFullPath(start, end);
-//    auto path = graph.FindPath(start, end);
-//    const std::function<WaypointPath (const T &, WaypointIdentifier)> &find_path
-    const std::function<dwr::WaypointPath (dwr::DynamicRadarAirwayGraph &, dwr::WaypointIdentifier)> &search = [end](dwr::DynamicRadarAirwayGraph &graph, dwr::WaypointIdentifier spur) {
-        return graph.FindPath(spur, end);
-    };
-    auto paths = dwr::FindKPathInGraph(graph, start, end, 10, search);
+    auto paths = graph.FindKPath(start, end, 10, [](const std::shared_ptr<dwr::Waypoint> &spur_waypoint,
+                                                    const std::shared_ptr<dwr::Waypoint> &destination_waypoint) {
+        return dwr::AirwayGraph::FindPathInGraph(spur_waypoint,
+                                                 destination_waypoint,
+                                                 [](const dwr::WaypointPair &,
+                                                    const dwr::WaypointInfoPair &,
+                                                    std::vector<std::shared_ptr<dwr::Waypoint>> &inserted_waypoints) {return true;});
+    });
     int index = 1;
     for (auto &path : paths) {
         cout << index++ << ":" << endl;

@@ -17,6 +17,19 @@ namespace dwr {
 AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
+    
+AirwayGraph::AirwayGraph(const AirwayGraph &other) {
+    for (auto &pair : other.waypoint_map_) {
+        auto copied_waypoint = std::shared_ptr<Waypoint>(new Waypoint(*pair.second));
+        waypoint_map_[pair.first] = copied_waypoint;
+    }
+    for (auto &pair : other.waypoint_map_) {
+        auto &waypoint = waypoint_map_[pair.first];
+        for (auto &neib : pair.second->neibors) {
+            waypoint->neibors.insert(Neighbor(waypoint_map_[neib.target.lock()->waypoint_identifier], neib.distance));
+        }
+    }
+}
 
 void AirwayGraph::AddWaypoint(WaypointIdentifier identifier, const std::string &name, GeoRad longitude, GeoRad latitude) {
     std::shared_ptr<Waypoint> point(new Waypoint(identifier, name, longitude, latitude));
@@ -90,15 +103,22 @@ AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
     return FindPathInGraph(origin_waypoint, destination_waypoint, can_search);
 }
 
-//std::vector<WaypointPath>
-//AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
-//                       WaypointIdentifier destination_identifier,
-//                       int k,
-//                       const std::function<WaypointPath (const AirwayGraph &, WaypointIdentifier)> &find_path
-//                       ) const {
-//    auto copied_graph = AirwayGraph(*this);
-//    return FindKPathInGraph(copied_graph, origin_identifier, destination_identifier, k, find_path);
-//}
+std::vector<WaypointPath>
+AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
+                       WaypointIdentifier destination_identifier,
+                       int k,
+                       const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &)> &find_path
+                       ) const {
+    auto copied_graph = AirwayGraph(*this);
+    auto origin_iterator = copied_graph.waypoint_map_.find(origin_identifier);
+    auto destination_iterator = copied_graph.waypoint_map_.find(destination_identifier);
+    if (origin_iterator == copied_graph.waypoint_map_.end() || destination_iterator == copied_graph.waypoint_map_.end()) {
+        return std::vector<WaypointPath>();
+    }
+    auto origin_waypoint = origin_iterator->second;
+    auto destination_waypoint = destination_iterator->second;
+    return FindKPathInGraph(origin_waypoint, destination_waypoint, k, find_path);
+}
 
 bool AirwayGraph::SaveToFile(const std::string &path) const {
     std::ofstream of(path, std::ios::binary);
@@ -225,7 +245,7 @@ std::shared_ptr<Waypoint> AirwayGraph::WaypointFromIdentifier(WaypointIdentifier
     }
 }
     
-WaypointPath
+WaypointPath AirwayGraph::
 FindPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
          const std::shared_ptr<Waypoint> &destination_waypoint,
                 const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search) {
@@ -305,6 +325,60 @@ FindPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
     }
     std::reverse(result.waypoints.begin(), result.waypoints.end());
     std::reverse(result.lengths.begin(), result.lengths.end());
+    return result;
+}
+    
+std::vector<WaypointPath> AirwayGraph::
+FindKPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
+                 const std::shared_ptr<Waypoint> &destination_waypoint,
+                 int k,
+                 const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &)> &find_path) {
+    std::vector<WaypointPath> result;
+    auto path_compare = [](const WaypointPath &path1, const WaypointPath &path2) {
+        return path1.lengths.back() > path2.lengths.back();
+    };
+    std::priority_queue<WaypointPath, std::vector<WaypointPath>, decltype(path_compare)> path_queue(path_compare);
+    WaypointPath init_path = find_path(origin_waypoint, destination_waypoint);
+    if (init_path.waypoints.size() == 0) {
+        return result;
+    }
+    result.push_back(std::move(init_path));
+    for (int kk = 1; kk < k; kk++) {
+        for (int i = 0; i < result[kk - 1].GetSize() - 1; i++) {
+            std::vector<WaypointPair> removed_edges;
+            auto spur_waypoint = result[kk - 1].waypoints[i];
+            WaypointPath root_path = WaypointPath(result[kk - 1], 0, i + 1);
+            for (auto &path : result) {
+                if (std::equal(root_path.waypoints.begin(), root_path.waypoints.end(), path.waypoints.begin())) {
+                    removed_edges.push_back(std::make_pair(path.waypoints[i], path.waypoints[i + 1]));
+                    RemoveAirwaySegment(path.waypoints[i], path.waypoints[i + 1]);
+                }
+            }
+            for (auto &root_path_node : root_path.waypoints) {
+                if (root_path_node != spur_waypoint) {
+                    for (auto &neibor : root_path_node->neibors) {
+                        removed_edges.push_back(std::make_pair(root_path_node, neibor.target.lock()));
+                    }
+                    RemoveAirwaySegments(root_path_node);
+                }
+            }
+            
+            auto spur_path = find_path(spur_waypoint, destination_waypoint);
+            if (spur_path.GetSize() > 0) {
+                WaypointPath total_path = root_path + spur_path;
+                path_queue.push(std::move(total_path));
+            }
+            // Reversely restore the removed connection
+            for (auto it = removed_edges.rbegin(); it != removed_edges.rend(); it++) {
+                AddAirwaySegment(it->first, it->second);
+            }
+        }
+        if (path_queue.empty()) {
+            break;
+        }
+        result.push_back(std::move(path_queue.top()));
+        path_queue.pop();
+    }
     return result;
 }
 

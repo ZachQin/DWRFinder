@@ -20,78 +20,14 @@ typedef std::pair<const std::shared_ptr<Waypoint>, const std::shared_ptr<Waypoin
 typedef std::pair<const WaypointInfo, const WaypointInfo> WaypointInfoPair;
     
 class AirwayGraph;
-
-template <class T>
-std::vector<WaypointPath>
-FindKPathInGraph(T &graph,
-          WaypointIdentifier origin_identifier,
-          WaypointIdentifier destination_identifier,
-          int k,
-                 const std::function<WaypointPath (T &temp_graph, WaypointIdentifier spur_node)> &find_path) {
-    std::vector<WaypointPath> result;
-    auto path_compare = [](const WaypointPath &path1, const WaypointPath &path2) {
-        return path1.lengths.back() > path2.lengths.back();
-    };
-    std::priority_queue<WaypointPath, std::vector<WaypointPath>, decltype(path_compare)> path_queue(path_compare);
-    WaypointPath init_path = find_path(graph, origin_identifier);
-    if (init_path.waypoints.size() == 0) {
-        return result;
-    }
-    result.push_back(std::move(init_path));
-    for (int kk = 1; kk < k; kk++) {
-        for (int i = 0; i < result[kk - 1].GetSize() - 1; i++) {
-            std::vector<WaypointPair> removed_edges;
-            auto spur_node = result[kk - 1].waypoints[i];
-            WaypointPath root_path = WaypointPath(result[kk - 1], 0, i + 1);
-            for (auto &path : result) {
-                if (std::equal(root_path.waypoints.begin(), root_path.waypoints.end(), path.waypoints.begin())) {
-                    removed_edges.push_back(std::make_pair(path.waypoints[i], path.waypoints[i + 1]));
-                    graph.RemoveAirwaySegment(path.waypoints[i], path.waypoints[i + 1]);
-                }
-            }
-            for (auto &root_path_node : root_path.waypoints) {
-                if (root_path_node != spur_node) {
-                    for (auto &neibor : root_path_node->neibors) {
-                        removed_edges.push_back(std::make_pair(root_path_node, neibor.target.lock()));
-                    }
-                    graph.RemoveAirwaySegments(root_path_node);
-                }
-            }
-            auto spur_path = find_path(graph, spur_node->waypoint_identifier);
-            if (spur_path.GetSize() > 0) {
-                WaypointPath total_path = root_path + spur_path;
-                path_queue.push(std::move(total_path));
-            }
-            // Reversely restore the removed connection
-            for (auto it = removed_edges.rbegin(); it != removed_edges.rend(); it++) {
-                graph.AddAirwaySegment(it->first, it->second);
-            }
-        }
-        if (path_queue.empty()) {
-            break;
-        }
-        result.push_back(std::move(path_queue.top()));
-        path_queue.pop();
-    }
-    return result;
-}
-
-WaypointPath
-FindPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
-         const std::shared_ptr<Waypoint> &destination_waypoint,
-         const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair,
-                                  std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search);
     
 class AirwayGraph {
 public:
     AirwayGraph() = default;
+    
     AirwayGraph(const char *path);
-    AirwayGraph(const AirwayGraph &other) {
-        for (auto &pair : other.waypoint_map_) {
-            auto copied_waypoint = std::shared_ptr<Waypoint>(new Waypoint(*pair.second));
-            waypoint_map_.emplace(pair.first, copied_waypoint);
-        }
-    }
+    
+    AirwayGraph(const AirwayGraph &other);
     
     /**
      Add a waypoint to the graph.
@@ -116,7 +52,7 @@ public:
      @param waypoint1 First waypoint pointer.
      @param waypoint2 Second waypoint pointer.
      */
-    void AddAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
+    static void AddAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
     
     /**
      Add the connection between two waypoint.
@@ -131,14 +67,16 @@ public:
      
      @param waypoint Waypoint pointer.
      */
-    void RemoveAirwaySegments(const std::shared_ptr<Waypoint> &waypoint);
+    static void RemoveAirwaySegments(const std::shared_ptr<Waypoint> &waypoint);
+    
     /**
      Remove the connection between two waypoint.
 
      @param waypoint1 First waypoint pointer.
      @param waypoint2 Second waypoint pointer.
      */
-    void RemoveAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
+    static void RemoveAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
+    
     /**
      Remove the connection between two waypoint.
 
@@ -177,7 +115,7 @@ public:
     FindKPath(WaypointIdentifier origin_identifier,
               WaypointIdentifier destination_identifier,
               int k,
-              const std::function<WaypointPath (const AirwayGraph &temp_graph, WaypointIdentifier spur_node)> &find_path
+              const std::function<WaypointPath (const std::shared_ptr<Waypoint> &spur_waypoint, const std::shared_ptr<Waypoint> &destination_waypoint)> &find_path
               ) const;
     /**
      Save the graph as a file.
@@ -194,6 +132,7 @@ public:
      @return True when succeed, otherwise false.
      */
     bool LoadFromFile(const std::string &path);
+    
     /**
      Applies the given Lambda expression to all edge in the graph.
      
@@ -217,6 +156,19 @@ public:
      @return Waypoint pointer.
      */
     std::shared_ptr<Waypoint> WaypointFromIdentifier(WaypointIdentifier identifier) const;
+    
+    static WaypointPath
+    FindPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
+                    const std::shared_ptr<Waypoint> &destination_waypoint,
+                    const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair,
+                                             std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search);
+    
+    static std::vector<WaypointPath>
+    FindKPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
+                     const std::shared_ptr<Waypoint> &destination_waypoint,
+                     int k,
+                     const std::function<WaypointPath (const std::shared_ptr<Waypoint> &spur_waypoint,
+                                                       const std::shared_ptr<Waypoint> &destination_waypoint)> &find_path);
 
 protected:
     std::map<WaypointIdentifier, std::shared_ptr<Waypoint>> waypoint_map_;

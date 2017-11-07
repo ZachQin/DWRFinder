@@ -47,6 +47,12 @@ bool RasterGraph::CheckLine(const Pixel &start_pixel, const Pixel &end_pixel) co
     }
     return true;
 }
+
+void RasterGraph::ForEach(const std::function<void(int x, int y, char value)> &traverse_function) const {
+    for (int i = 0; i < height_; i++)
+        for (int j = 0; j < width_; j++)
+            traverse_function(j, i, raster_data_.get()[i * width_ + j]);
+}
     
 char RasterGraph::GetPixelValue(const Pixel &pixel) const {
     if (pixel.x >= 0 && pixel.x < width_ && pixel.y >= 0 && pixel.y < height_) {
@@ -78,7 +84,7 @@ PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &desti
     return FindPath(origin, destination, nodes, can_search);
 }
 
-PixelPath FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) {
+PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) {
     PixelPath result;
     int level_size = static_cast<int>(node_levels.size());
     std::unordered_map<Pixel, PixelInfo> info_map;
