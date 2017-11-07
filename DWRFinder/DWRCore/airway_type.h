@@ -34,7 +34,6 @@ struct Neighbor {
     
 const WaypointIdentifier kNoWaypointIdentifier = -1;
 const GeoDistance kEarthRadius = 6378137.0;
-const GeoDistance kNoCoordinate = std::numeric_limits<GeoDistance>::infinity();
     
 struct GeoPoint {
     GeoRad longitude;
@@ -44,13 +43,19 @@ struct GeoPoint {
 struct GeoProj {
     GeoDistance x;
     GeoDistance y;
+    
+    bool operator == (const GeoProj &other) const {
+        return x == other.x && y == other.y;
+    };
 };
+
+constexpr GeoProj kNoCoordinate = {std::numeric_limits<GeoDistance>::infinity(), std::numeric_limits<GeoDistance>::infinity()};
     
 struct Waypoint {
     WaypointIdentifier waypoint_identifier;
     std::string name;
     GeoPoint location;
-    GeoProj coordinate = {kNoCoordinate, kNoCoordinate};
+    GeoProj coordinate = kNoCoordinate;
     
     bool user_waypoint = false;
     std::set<Neighbor> neibors;
@@ -76,6 +81,19 @@ struct Waypoint {
         double c = 2 * atan2(sqrt(a), sqrt(1-a));
         return kEarthRadius * c;
     };
+    
+    static double CosinTurnAngle(const Waypoint &previous, const Waypoint &current, const Waypoint &next) {
+        if (previous.coordinate == kNoCoordinate ||
+            current.coordinate == kNoCoordinate ||
+            next.coordinate == kNoCoordinate) {
+            throw std::invalid_argument("no coordinate");
+        }
+        double pc_x = current.coordinate.x - previous.coordinate.x;
+        double pc_y = current.coordinate.y - previous.coordinate.y;
+        double cn_x = next.coordinate.x - current.coordinate.x;
+        double cn_y = next.coordinate.y - current.coordinate.y;
+        return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
+    }
 };
 
 struct WaypointInfo {

@@ -49,9 +49,9 @@ int main(int argc, const char * argv[]) {
     printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
 
 //    GenerateBatchTestGround(graph, 200, "/Users/ZkTsin/Desktop/temp_test/test.txt");
-//    BatchTestWithGround(graph, "/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/batch_test.txt");
+    BatchTestWithGround(graph, "/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/batch_test.txt");
 //    FullPathTest(graph);
-    FullPath(graph);
+//    FullPath(graph);
 //    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
     return 0;
 }
@@ -150,22 +150,10 @@ void BatchTest(const dwr::DynamicRadarAirwayGraph &graph, int batch_count, const
 
 
 void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
-    // Case I
-//    dwr::WaypointID start = 1644;
-//    dwr::WaypointID end = 21446;
-    
-    // Case II
     dwr::WaypointIdentifier start = 8071;
     dwr::WaypointIdentifier end = 20631;
     
-    auto paths = graph.FindKPath(start, end, 10, [](const std::shared_ptr<dwr::Waypoint> &spur_waypoint,
-                                                    const std::shared_ptr<dwr::Waypoint> &destination_waypoint) {
-        return dwr::AirwayGraph::FindPathInGraph(spur_waypoint,
-                                                 destination_waypoint,
-                                                 [](const dwr::WaypointPair &,
-                                                    const dwr::WaypointInfoPair &,
-                                                    std::vector<std::shared_ptr<dwr::Waypoint>> &inserted_waypoints) {return true;});
-    });
+    auto paths = graph.FindKDynamicFullPath(start, end, 10);
     int index = 1;
     for (auto &path : paths) {
         cout << index++ << ":" << endl;
@@ -188,19 +176,4 @@ vector<dwr::WaypointIdentifier> RandomWaypointVector(const dwr::AirwayGraph &gra
         random_vector.push_back(random_waypoint_identifier);
     }
     return random_vector;
-}
-
-void FullPathTest(const dwr::DynamicRadarAirwayGraph &graph) {
-    Statistics statistics = MeasurePath([&graph](){
-        return graph.FindDynamicFullPath(8071, 20631);
-    });
-    cout << "Time taken: " << statistics.time_consuming << "ms" << endl;
-    auto path_description = statistics.path.ToString();
-    cout << path_description << endl;
-    string ground_description = "P130->P430->OKVUM->NUGLA->觅子->三原->烟庄->宁陕->P40->P322->P374->SULEP->合流水->统景场->XOLAL->UNRIX->BONSA->UPKUS->P440->P441->MEMAG->IGLIT->LIKRI->XINSU->KAGRA->ESNIB->ELKAL->永福->110.23E24.98N->110.33E24.89N->MUBEL->高要->P50";
-    if (path_description == ground_description) {
-        cout << "Pass!" << endl;
-    } else {
-        cout << "Not Pass!" << endl;
-    }
 }

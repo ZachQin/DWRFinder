@@ -19,7 +19,7 @@ DynamicAirwayGraph::FindDynamicPath(WaypointIdentifier origin_identifier,
             // 90° limit
             if (info_pair.first.previous.lock() == nullptr) {
                 return true;
-            } else if (CosinTurnAngle(info_pair.first.previous.lock(), waypoint_pair.first, waypoint_pair.second) > 0) {
+            } else if (Waypoint::CosinTurnAngle(*info_pair.first.previous.lock(), *waypoint_pair.first, *waypoint_pair.second) > 0) {
                 return true;
             } else {
                 return false;
@@ -30,15 +30,6 @@ DynamicAirwayGraph::FindDynamicPath(WaypointIdentifier origin_identifier,
     };
     return FindPath(origin_identifier, destination_identifier, can_search);
 }
-    
-//std::vector<WaypointPath>
-//DynamicAirwayGraph::FindKDynamicPath(WaypointIdentifier origin_identifier,
-//                                     WaypointIdentifier destination_identifier,
-//                                     int k) const {
-//    auto copied_graph = *this;
-//    std::function<WaypointPath (const DynamicAirwayGraph &, WaypointIdentifier)> find_path = std::bind(&DynamicAirwayGraph::FindDynamicPath, std::placeholders::_1, std::placeholders::_2, destination_identifier);
-//    return FindKPathInGraph(copied_graph, origin_identifier, destination_identifier, k, find_path);
-//}
 
 void DynamicAirwayGraph::ForEachBlock(std::function<void (const Waypoint &, const Waypoint &)> &traverse_function) const {
     for (auto &block: block_set_) {

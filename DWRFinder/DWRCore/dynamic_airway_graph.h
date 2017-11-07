@@ -24,11 +24,6 @@ public:
     WaypointPath FindDynamicPath(WaypointIdentifier origin_identifier,
                                  WaypointIdentifier destination_identifier) const;
     
-    std::vector<WaypointPath>
-    FindKDynamicPath(WaypointIdentifier origin_identifier,
-                     WaypointIdentifier destination_identifier,
-                     int k) const;
-    
     void ForEachBlock(std::function<void(const Waypoint &, const Waypoint &)> &traverse_function) const;
 protected:
     std::set<UndirectedWaypointPair> block_set_;

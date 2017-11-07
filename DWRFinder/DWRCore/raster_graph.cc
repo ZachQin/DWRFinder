@@ -70,10 +70,10 @@ PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &desti
             if (previous_origin == kNoPixel) {
                 result = true;
             } else {
-                result = CosinTurnAngle(previous_origin, pixel_pair.first, pixel_pair.second) > 0;
+                result = Pixel::CosinTurnAngle(previous_origin, pixel_pair.first, pixel_pair.second) > 0;
             }
         } else {
-            result = CosinTurnAngle(info_pair.first.previous, pixel_pair.first, pixel_pair.second) > 0;
+            result = Pixel::CosinTurnAngle(info_pair.first.previous, pixel_pair.first, pixel_pair.second) > 0;
         }
         return result && CheckLine(pixel_pair.first, pixel_pair.second);
     };
@@ -141,14 +141,6 @@ PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, c
     }
     std::reverse(result.begin(), result.end());
     return result;
-}
-
-double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &next) {
-    double pc_x = current.x - previous.x;
-    double pc_y = current.y - previous.y;
-    double cn_x = next.x - current.x;
-    double cn_y = next.y - current.y;
-    return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
 }
 
 }

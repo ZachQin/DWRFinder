@@ -56,7 +56,6 @@ private:
     int height_;
     bool CheckLine(const Pixel &start_pixel, const Pixel &end_pixel) const;
 };
-    
-double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &next);
+
 }
 #endif /* raster_graph_h */

@@ -110,12 +110,18 @@ public:
      @param find_path The function using to find a single path.
      @return The vector of shortest path.
      */
-
     std::vector<WaypointPath>
     FindKPath(WaypointIdentifier origin_identifier,
               WaypointIdentifier destination_identifier,
               int k,
-              const std::function<WaypointPath (const std::shared_ptr<Waypoint> &spur_waypoint, const std::shared_ptr<Waypoint> &destination_waypoint)> &find_path
+              const std::function<WaypointPath (const std::shared_ptr<Waypoint> &spur_waypoint, const std::shared_ptr<Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set)> &find_path
+              = [](const std::shared_ptr<dwr::Waypoint> &spur_waypoint, const std::shared_ptr<dwr::Waypoint> &destination_waypoint, const std::set<dwr::WaypointPair> &block_set) {
+                  return dwr::AirwayGraph::FindPathInGraph(spur_waypoint,
+                                                           destination_waypoint,
+                                                           [block_set](const dwr::WaypointPair &p,
+                                                                       const dwr::WaypointInfoPair &,
+                                                                       std::vector<std::shared_ptr<dwr::Waypoint>> &inserted_waypoints) {return block_set.find(p) == block_set.end();});
+              }
               ) const;
     /**
      Save the graph as a file.
@@ -168,12 +174,13 @@ public:
                      const std::shared_ptr<Waypoint> &destination_waypoint,
                      int k,
                      const std::function<WaypointPath (const std::shared_ptr<Waypoint> &spur_waypoint,
-                                                       const std::shared_ptr<Waypoint> &destination_waypoint)> &find_path);
+                                                       const std::shared_ptr<Waypoint> &destination_waypoint,
+                                                       const std::set<WaypointPair> &block_set
+                                                       )> &find_path);
 
 protected:
     std::map<WaypointIdentifier, std::shared_ptr<Waypoint>> waypoint_map_;
 };
     
-double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next);
 }
 #endif /* AirwayGraph_h */

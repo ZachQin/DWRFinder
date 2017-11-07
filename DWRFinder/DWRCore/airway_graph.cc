@@ -8,7 +8,6 @@
 
 #include "airway_graph.h"
 
-#include <assert.h>
 #include <queue>
 #include <fstream>
 
@@ -107,7 +106,8 @@ std::vector<WaypointPath>
 AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
                        WaypointIdentifier destination_identifier,
                        int k,
-                       const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &)> &find_path
+                       const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &,
+                                                         const std::set<WaypointPair> &)> &find_path
                        ) const {
     auto copied_graph = AirwayGraph(*this);
     auto origin_iterator = copied_graph.waypoint_map_.find(origin_identifier);
@@ -332,45 +332,39 @@ std::vector<WaypointPath> AirwayGraph::
 FindKPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
                  const std::shared_ptr<Waypoint> &destination_waypoint,
                  int k,
-                 const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &)> &find_path) {
+                 const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, const std::set<WaypointPair> &)> &find_path) {
     std::vector<WaypointPath> result;
     auto path_compare = [](const WaypointPath &path1, const WaypointPath &path2) {
         return path1.lengths.back() > path2.lengths.back();
     };
     std::priority_queue<WaypointPath, std::vector<WaypointPath>, decltype(path_compare)> path_queue(path_compare);
-    WaypointPath init_path = find_path(origin_waypoint, destination_waypoint);
+    WaypointPath init_path = find_path(origin_waypoint, destination_waypoint, std::set<WaypointPair>());
     if (init_path.waypoints.size() == 0) {
         return result;
     }
     result.push_back(std::move(init_path));
     for (int kk = 1; kk < k; kk++) {
         for (int i = 0; i < result[kk - 1].GetSize() - 1; i++) {
-            std::vector<WaypointPair> removed_edges;
+            std::set<WaypointPair> removed_edges;
             auto spur_waypoint = result[kk - 1].waypoints[i];
             WaypointPath root_path = WaypointPath(result[kk - 1], 0, i + 1);
             for (auto &path : result) {
                 if (std::equal(root_path.waypoints.begin(), root_path.waypoints.end(), path.waypoints.begin())) {
-                    removed_edges.push_back(std::make_pair(path.waypoints[i], path.waypoints[i + 1]));
-                    RemoveAirwaySegment(path.waypoints[i], path.waypoints[i + 1]);
+                    removed_edges.insert(std::make_pair(path.waypoints[i], path.waypoints[i + 1]));
                 }
             }
             for (auto &root_path_node : root_path.waypoints) {
                 if (root_path_node != spur_waypoint) {
                     for (auto &neibor : root_path_node->neibors) {
-                        removed_edges.push_back(std::make_pair(root_path_node, neibor.target.lock()));
+                        removed_edges.insert(std::make_pair(root_path_node, neibor.target.lock()));
                     }
-                    RemoveAirwaySegments(root_path_node);
                 }
             }
             
-            auto spur_path = find_path(spur_waypoint, destination_waypoint);
+            auto spur_path = find_path(spur_waypoint, destination_waypoint, removed_edges);
             if (spur_path.GetSize() > 0) {
                 WaypointPath total_path = root_path + spur_path;
                 path_queue.push(std::move(total_path));
-            }
-            // Reversely restore the removed connection
-            for (auto it = removed_edges.rbegin(); it != removed_edges.rend(); it++) {
-                AddAirwaySegment(it->first, it->second);
             }
         }
         if (path_queue.empty()) {
@@ -380,17 +374,6 @@ FindKPathInGraph(const std::shared_ptr<Waypoint> &origin_waypoint,
         path_queue.pop();
     }
     return result;
-}
-
-double CosinTurnAngle(const std::shared_ptr<Waypoint> &previous, const std::shared_ptr<Waypoint> &current, const std::shared_ptr<Waypoint> &next) {
-    assert(previous->coordinate.x != kNoCoordinate);
-    assert(current->coordinate.x != kNoCoordinate);
-    assert(next->coordinate.x != kNoCoordinate);
-    double pc_x = current->coordinate.x - previous->coordinate.x;
-    double pc_y = current->coordinate.y - previous->coordinate.y;
-    double cn_x = next->coordinate.x - current->coordinate.x;
-    double cn_y = next->coordinate.y - current->coordinate.y;
-    return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
 }
     
 }

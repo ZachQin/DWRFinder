@@ -34,6 +34,14 @@ struct Pixel {
     static PixelDistance Distance(const Pixel &p1, const Pixel &p2) {
         return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
+    
+    static double CosinTurnAngle(const Pixel &previous, const Pixel &current, const Pixel &next) {
+        double pc_x = current.x - previous.x;
+        double pc_y = current.y - previous.y;
+        double cn_x = next.x - current.x;
+        double cn_y = next.y - current.y;
+        return (pc_x * cn_x + pc_y * cn_y) / (sqrt(pc_x * pc_x + pc_y * pc_y) * sqrt(cn_x * cn_x + cn_y * cn_y));
+    }
 };
 
 const Pixel kNoPixel = {-1, -1};
