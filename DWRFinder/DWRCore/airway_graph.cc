@@ -16,19 +16,6 @@ namespace dwr {
 AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
-    
-AirwayGraph::AirwayGraph(const AirwayGraph &other) {
-    for (auto &pair : other.waypoint_map_) {
-        auto copied_waypoint = std::shared_ptr<Waypoint>(new Waypoint(*pair.second));
-        waypoint_map_[pair.first] = copied_waypoint;
-    }
-    for (auto &pair : other.waypoint_map_) {
-        auto &waypoint = waypoint_map_[pair.first];
-        for (auto &neib : pair.second->neibors) {
-            waypoint->neibors.insert(Neighbor(waypoint_map_[neib.target.lock()->waypoint_identifier], neib.distance));
-        }
-    }
-}
 
 void AirwayGraph::AddWaypoint(WaypointIdentifier identifier, const std::string &name, GeoRad longitude, GeoRad latitude) {
     std::shared_ptr<Waypoint> point(new Waypoint(identifier, name, longitude, latitude));
@@ -109,10 +96,9 @@ AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
                        const std::function<WaypointPath (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &,
                                                          const std::set<WaypointPair> &)> &find_path
                        ) const {
-    auto copied_graph = AirwayGraph(*this);
-    auto origin_iterator = copied_graph.waypoint_map_.find(origin_identifier);
-    auto destination_iterator = copied_graph.waypoint_map_.find(destination_identifier);
-    if (origin_iterator == copied_graph.waypoint_map_.end() || destination_iterator == copied_graph.waypoint_map_.end()) {
+    auto origin_iterator = waypoint_map_.find(origin_identifier);
+    auto destination_iterator = waypoint_map_.find(destination_identifier);
+    if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
         return std::vector<WaypointPath>();
     }
     auto origin_waypoint = origin_iterator->second;
