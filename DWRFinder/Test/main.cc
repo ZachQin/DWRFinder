@@ -15,46 +15,14 @@
 #include "radar_image_process.h"
 
 #include <time.h>
-#include <algorithm>
 
 using namespace std;
-void FullPath(dwr::DynamicRadarAirwayGraph &graph);
-void FullPathTest(const dwr::DynamicRadarAirwayGraph &graph);
-void BatchTest(const dwr::DynamicRadarAirwayGraph &graph, int batch_count, const string &path);
-vector<dwr::WaypointIdentifier> RandomWaypointVector(const dwr::AirwayGraph &graph, int size);
-void GenerateBatchTestGround(const dwr::DynamicRadarAirwayGraph &graph, int batch_count, const string &path);
-void BatchTestWithGround(const dwr::DynamicRadarAirwayGraph &graph, const string &path);
 
 struct Statistics {
     double time_consuming;
     double node_count;
     dwr::WaypointPath path;
 };
-
-int main(int argc, const char * argv[]) {
-    dwr::DynamicRadarAirwayGraph graph;
-    graph.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
-
-    dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/WorldFile.wld");
-    graph.Build(worldInfo);
-
-    // Raster start
-    CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/radar.png");
-    CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
-    int width, height;
-
-    clock_t start_clock = clock();
-    char *mask = CreateMaskFromCGImage(image, &width, &height);
-    graph.UpdateBlock(mask, width, height);
-    printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
-
-//    GenerateBatchTestGround(graph, 200, "/Users/ZkTsin/Desktop/temp_test/test.txt");
-    BatchTestWithGround(graph, "/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/batch_test.txt");
-//    FullPathTest(graph);
-//    FullPath(graph);
-//    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
-    return 0;
-}
 
 Statistics MeasurePath(const function<dwr::WaypointPath()> &func) {
     Statistics s;
@@ -63,6 +31,23 @@ Statistics MeasurePath(const function<dwr::WaypointPath()> &func) {
     s.time_consuming = (double)(clock() - start_clock) * 1000 / CLOCKS_PER_SEC;
     s.node_count = s.path.waypoints.size();
     return s;
+}
+
+vector<dwr::WaypointIdentifier> RandomWaypointVector(const dwr::AirwayGraph &graph, int count) {
+    auto all_vector = graph.AllWaypointIdentifiers();
+    assert(all_vector.size() > 0);
+    vector<dwr::WaypointIdentifier> random_vector;
+    for (int i = 0; i < count; i++) {
+        dwr::WaypointIdentifier random_waypoint_identifier = 0;
+        shared_ptr<dwr::Waypoint> random_waypoint = nullptr;
+        do {
+            int random_index = rand() % all_vector.size();
+            random_waypoint_identifier = all_vector[random_index];
+            random_waypoint = graph.WaypointFromIdentifier(random_waypoint_identifier);
+        } while (random_waypoint->neibors.empty());
+        random_vector.push_back(random_waypoint_identifier);
+    }
+    return random_vector;
 }
 
 void GenerateBatchTestGround(const dwr::DynamicRadarAirwayGraph &graph, int batch_count, const string &path) {
@@ -149,7 +134,7 @@ void BatchTest(const dwr::DynamicRadarAirwayGraph &graph, int batch_count, const
 
 
 
-void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
+void FullPath(const dwr::DynamicRadarAirwayGraph &graph) {
     dwr::WaypointIdentifier start = 8071;
     dwr::WaypointIdentifier end = 20631;
     
@@ -161,19 +146,27 @@ void FullPath(dwr::DynamicRadarAirwayGraph &graph) {
     }
 }
 
-vector<dwr::WaypointIdentifier> RandomWaypointVector(const dwr::AirwayGraph &graph, int count) {
-    auto all_vector = graph.AllWaypointIdentifiers();
-    assert(all_vector.size() > 0);
-    vector<dwr::WaypointIdentifier> random_vector;
-    for (int i = 0; i < count; i++) {
-        dwr::WaypointIdentifier random_waypoint_identifier = 0;
-        shared_ptr<dwr::Waypoint> random_waypoint = nullptr;
-        do {
-            int random_index = rand() % all_vector.size();
-            random_waypoint_identifier = all_vector[random_index];
-            random_waypoint = graph.WaypointFromIdentifier(random_waypoint_identifier);
-        } while (random_waypoint->neibors.empty());
-        random_vector.push_back(random_waypoint_identifier);
-    }
-    return random_vector;
+int main(int argc, const char * argv[]) {
+    dwr::DynamicRadarAirwayGraph graph;
+    graph.LoadFromFile("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/AirwayGraph.ag");
+    
+    dwr::WorldFileInfo worldInfo("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/WorldFile.wld");
+    graph.Build(worldInfo);
+    
+    // Raster start
+    CGDataProviderRef provider = CGDataProviderCreateWithFilename("/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/radar.png");
+    CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
+    int width, height;
+    
+    clock_t start_clock = clock();
+    char *mask = CreateMaskFromCGImage(image, &width, &height);
+    graph.UpdateBlock(mask, width, height);
+    printf("Data process Time taken: %.4fms\n", (double)(clock() - start_clock) * 1000.0 / CLOCKS_PER_SEC);
+    
+    //    GenerateBatchTestGround(graph, 200, "/Users/ZkTsin/Desktop/temp_test/test.txt");
+    BatchTestWithGround(graph, "/Users/ZkTsin/Developer/GraduationDesign/DWRFinder/DWRFinder/Test/Resource/batch_test.txt");
+    //    FullPath(graph);
+    //    FullPath(graph);
+    //    BatchTest(graph, 10000, "/Users/ZkTsin/Desktop/test_result.txt");
+    return 0;
 }
