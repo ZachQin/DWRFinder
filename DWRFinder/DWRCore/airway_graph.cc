@@ -18,8 +18,7 @@ AirwayGraph::AirwayGraph(const char *path) {
 }
 
 void AirwayGraph::AddWaypoint(WaypointIdentifier identifier, const std::string &name, GeoRad longitude, GeoRad latitude) {
-    std::shared_ptr<Waypoint> point(new Waypoint(identifier, name, longitude, latitude));
-    waypoint_map_[identifier] = point;
+    waypoint_map_[identifier] = std::make_shared<Waypoint>(identifier, name, longitude, latitude);
 }
     
 void AirwayGraph::RemoveAirwaySegments(const std::shared_ptr<Waypoint> &waypoint) {
@@ -160,7 +159,7 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
     uint32_t n = 0;
     inf.read(reinterpret_cast<char *>(&n), sizeof(n));
     for (int i = 0; i < n; i++) {
-        std::shared_ptr<Waypoint> waypoint(new Waypoint);
+        auto waypoint = std::make_shared<Waypoint>();
         // 反序列化ID
         uint32_t identifier = 0;
         inf.read(reinterpret_cast<char *>(&identifier), sizeof(identifier));

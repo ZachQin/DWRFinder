@@ -65,7 +65,7 @@ std::shared_ptr<Waypoint> PixelToWaypoint(const Pixel &pixel, const WorldFileInf
     double longitude, latitude;
     MercToLonLat(xy.x, xy.y, &longitude, &latitude);
     auto name = LonlatToString(longitude, latitude);
-    std::shared_ptr<Waypoint> userWaypoint(new Waypoint(kNoWaypointIdentifier, name, longitude, latitude));
+    auto userWaypoint = std::make_shared<Waypoint>(kNoWaypointIdentifier, name, longitude, latitude);
     userWaypoint->coordinate = xy;
     userWaypoint->user_waypoint = true;
     return userWaypoint;
@@ -73,7 +73,8 @@ std::shared_ptr<Waypoint> PixelToWaypoint(const Pixel &pixel, const WorldFileInf
 
 void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
     world_file_info_ = world_file_info;
-    auto traverse_function = [&](const std::shared_ptr<Waypoint> &start_waypoint, const std::shared_ptr<Waypoint> &end_waypoint, GeoDistance d) {
+    auto traverse_function = [&](const std::shared_ptr<Waypoint> &start_waypoint,
+                                 const std::shared_ptr<Waypoint> &end_waypoint, GeoDistance d) {
         // 更新坐标
         if (start_waypoint->coordinate == kNoCoordinate) {
             LonLatToMerc(start_waypoint->location.longitude, start_waypoint->location.latitude, &start_waypoint->coordinate.x, &start_waypoint->coordinate.y);
@@ -129,8 +130,15 @@ void DynamicRadarAirwayGraph::UpdateBlock(char *mask, int width, int height) {
     });
 }
 
-WaypointPath DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier, WaypointIdentifier destination_identifier, const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search) const {
-    auto inner_can_search = [&](const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+WaypointPath
+DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifier,
+                                             WaypointIdentifier destination_identifier,
+                                             const std::function<bool(const WaypointPair &waypoint_pair,
+                                                                      const WaypointInfoPair &info_pair,
+                                                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search) const {
+    auto inner_can_search = [&](const WaypointPair &waypoint_pair,
+                                const WaypointInfoPair &info_pair,
+                                std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
         if (!can_search(waypoint_pair, info_pair, inserted_waypoints)) {
             return false;
         }
