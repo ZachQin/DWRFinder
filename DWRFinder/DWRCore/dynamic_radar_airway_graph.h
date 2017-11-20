@@ -63,14 +63,18 @@ public:
     WaypointPath
     FindDynamicFullPath(WaypointIdentifier origin_identifier,
                         WaypointIdentifier destination_identifier,
-                        const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search
-                        = [](const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return true;}
+                        const std::function<bool(const WaypointPair &waypoint_pair,
+                                                 const WaypointInfoPair &info_pair,
+                                                 std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search
+                        = [](const WaypointPair &,
+                             const WaypointInfoPair &,
+                             std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return true;}
                         ) const;
     
     std::vector<WaypointPath>
     FindKDynamicFullPath(WaypointIdentifier origin_identifier,
-                     WaypointIdentifier destination_identifier,
-                     int k) const;
+                         WaypointIdentifier destination_identifier,
+                         int k) const;
 
 private:
     std::unordered_map<Pixel, UndirectedWaypointPair> pixel_to_edge_table_;

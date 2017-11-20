@@ -17,7 +17,10 @@ AirwayGraph::AirwayGraph(const char *path) {
     this->LoadFromFile(path);
 }
 
-void AirwayGraph::AddWaypoint(WaypointIdentifier identifier, const std::string &name, GeoRad longitude, GeoRad latitude) {
+void AirwayGraph::AddWaypoint(WaypointIdentifier identifier,
+                              const std::string &name,
+                              GeoRad longitude,
+                              GeoRad latitude) {
     waypoint_map_[identifier] = std::make_shared<Waypoint>(identifier, name, longitude, latitude);
 }
     
@@ -77,7 +80,9 @@ void AirwayGraph::RemoveAirwaySegment(WaypointIdentifier identifier1, WaypointId
 WaypointPath
 AirwayGraph::FindPath(WaypointIdentifier origin_identifier,
                       WaypointIdentifier destination_identifier,
-                      const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search) const {
+                      const std::function<bool(const WaypointPair &,
+                                               const WaypointInfoPair &,
+                                               std::vector<std::shared_ptr<Waypoint>> &)> &can_search) const {
     auto origin_iterator = waypoint_map_.find(origin_identifier);
     auto destination_iterator = waypoint_map_.find(destination_identifier);
     if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
@@ -93,8 +98,7 @@ AirwayGraph::FindKPath(WaypointIdentifier origin_identifier,
                        WaypointIdentifier destination_identifier,
                        int k,
                        const std::function<WaypointPath (const std::shared_ptr<const Waypoint> &, const std::shared_ptr<const Waypoint> &,
-                                                         const std::set<WaypointPair> &)> &find_path
-                       ) const {
+                                                         const std::set<WaypointPair> &)> &find_path) const {
     auto origin_iterator = waypoint_map_.find(origin_identifier);
     auto destination_iterator = waypoint_map_.find(destination_identifier);
     if (origin_iterator == waypoint_map_.end() || destination_iterator == waypoint_map_.end()) {
@@ -204,7 +208,9 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
     return true;
 }
 
-void AirwayGraph::ForEach(const std::function<void (const std::shared_ptr<Waypoint> &, const std::shared_ptr<Waypoint> &, GeoDistance)> &traverse_function) {
+void AirwayGraph::ForEach(const std::function<void (const std::shared_ptr<Waypoint> &,
+                                                    const std::shared_ptr<Waypoint> &,
+                                                    GeoDistance)> &traverse_function) {
     for (auto &pair : waypoint_map_) {
         auto waypoint = pair.second;
         for (auto &neibor : waypoint->neibors) {
@@ -230,13 +236,14 @@ std::shared_ptr<Waypoint> AirwayGraph::WaypointFromIdentifier(WaypointIdentifier
     }
 }
     
-WaypointPath AirwayGraph::
-FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
-         const std::shared_ptr<const Waypoint> &destination_waypoint,
-                const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search) {
+WaypointPath
+AirwayGraph::FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
+                             const std::shared_ptr<const Waypoint> &destination_waypoint,
+                             const std::function<bool(const WaypointPair &,
+                                                      const WaypointInfoPair &,
+                                                      std::vector<std::shared_ptr<Waypoint>> &)> &can_search) {
     WaypointPath result;
     std::map<std::shared_ptr<const Waypoint>, WaypointInfo> waypoint_info_map;
-    std::vector<std::shared_ptr<Waypoint>> inserted_waypoint_vector;
     // Init priority queue.
     auto waypoint_compare = [&waypoint_info_map](const std::shared_ptr<const Waypoint> &waypoint1, const std::shared_ptr<const Waypoint> &waypoint2) {
         auto &waypoint_info1 = waypoint_info_map[waypoint1];
@@ -261,10 +268,6 @@ FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
             std::vector<std::shared_ptr<Waypoint>> inserted_waypoints;
             if (!can_search(std::make_pair(current_waypoint, neibor_waypoint), std::make_pair(current_info, neibor_info), inserted_waypoints)) {
                 continue;
-            }
-            // Store the strong pointer to prevent the inserted waypoints released.
-            for (auto &inserted_waypoint : inserted_waypoints) {
-                inserted_waypoint_vector.push_back(inserted_waypoint);
             }
             GeoDistance distance_through_current = current_info.actual_distance;
             if (inserted_waypoints.size() > 0) {
@@ -313,11 +316,13 @@ FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
     return result;
 }
     
-std::vector<WaypointPath> AirwayGraph::
-FindKPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
+std::vector<WaypointPath>
+AirwayGraph::FindKPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
                  const std::shared_ptr<const Waypoint> &destination_waypoint,
                  int k,
-                 const std::function<WaypointPath (const std::shared_ptr<const Waypoint> &, const std::shared_ptr<const Waypoint> &, const std::set<WaypointPair> &)> &find_path) {
+                 const std::function<WaypointPath (const std::shared_ptr<const Waypoint> &,
+                                                   const std::shared_ptr<const Waypoint> &,
+                                                   const std::set<WaypointPair> &)> &find_path) {
     std::vector<WaypointPath> result;
     auto path_compare = [](const WaypointPath &path1, const WaypointPath &path2) {
         return path1.lengths.back() > path2.lengths.back();

@@ -56,8 +56,11 @@ struct PixelInfo {
     Pixel previous = kNoPixel;
     
     PixelInfo() = default;
+    
     PixelInfo(const PixelInfo &) = default;
-    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &previous) : distance(distance), heuristic(heuristic), level(level), previous(previous) {};
+    
+    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &previous) :
+    distance(distance), heuristic(heuristic), level(level), previous(previous) {};
     
     bool operator > (const PixelInfo &p) const {
         if (distance == kMaxPixelDistance) {return true;}

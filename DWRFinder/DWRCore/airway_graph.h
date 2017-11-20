@@ -114,8 +114,12 @@ public:
     FindKPath(WaypointIdentifier origin_identifier,
               WaypointIdentifier destination_identifier,
               int k,
-              const std::function<WaypointPath (const std::shared_ptr<const Waypoint> &spur_waypoint, const std::shared_ptr<const Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set)> &find_path
-              = [](const std::shared_ptr<const Waypoint> &spur_waypoint, const std::shared_ptr<const Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set) {
+              const std::function<WaypointPath (const std::shared_ptr<const Waypoint> &spur_waypoint,
+                                                const std::shared_ptr<const Waypoint> &destination_waypoint,
+                                                const std::set<WaypointPair> &block_set)> &find_path
+              = [](const std::shared_ptr<const Waypoint> &spur_waypoint,
+                   const std::shared_ptr<const Waypoint> &destination_waypoint,
+                   const std::set<WaypointPair> &block_set) {
                   return dwr::AirwayGraph::FindPathInGraph(spur_waypoint,
                                                            destination_waypoint,
                                                            [block_set](const WaypointPair &p,
