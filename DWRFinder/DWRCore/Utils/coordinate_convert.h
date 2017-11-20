@@ -12,10 +12,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 void MercToLonLat(double x, double y, double *lon, double *lat);
 void LonLatToMerc(double lon, double lat, double *x, double *y);
-    
+
 #ifdef __cplusplus
 }
 #endif

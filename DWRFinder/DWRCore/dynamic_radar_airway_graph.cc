@@ -12,13 +12,19 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-#include "coordinate_convert.h"
+#include <memory>
+#include <string>
+#include <algorithm>
+#include <vector>
+#include <set>
+
+#include "Utils/coordinate_convert.h"
 #include "raster_graph.h"
 
 namespace dwr {
-    
+
 const double kRadToDeg = 57.29577951308232;
-    
+
 WorldFileInfo::WorldFileInfo(const char* path) {
     std::ifstream inf(path);
     if (!inf.is_open()) {
@@ -145,7 +151,6 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
         const std::shared_ptr<const Waypoint> &waypoint1 = waypoint_pair.first;
         const std::shared_ptr<const Waypoint> &waypoint2 = waypoint_pair.second;
         const WaypointInfo &waypoint_info1 = info_pair.first;
-        
         if (block_set_.find(UndirectedWaypointPair(waypoint_pair)) == block_set_.end()) {
             if (waypoint_info1.previous.lock() == nullptr) {
                 return true;
@@ -155,7 +160,6 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
                 return false;
             }
         }
-        
         const Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
         const Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
         const Pixel previous_origin = waypoint_info1.previous.lock() != nullptr ? CoordinateToPixel(waypoint_info1.previous.lock()->coordinate, world_file_info_) : kNoPixel;
@@ -172,19 +176,23 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
         }
     };
     return FindPath(origin_identifier, destination_identifier, inner_can_search);
-};
-    
+}
+
 std::vector<WaypointPath>
 DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifier,
-                     WaypointIdentifier destination_identifier,
-                     int k) const {
-    auto find_path = [&](const std::shared_ptr<const Waypoint> &spur_waypoint, const std::shared_ptr<const Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set) {
+                                              WaypointIdentifier destination_identifier,
+                                              int k) const {
+    auto find_path = [&](const std::shared_ptr<const Waypoint> &spur_waypoint,
+                         const std::shared_ptr<const Waypoint> &destination_waypoint,
+                         const std::set<WaypointPair> &block_set) {
         auto can_search = [block_set](const WaypointPair &p,
                                       const WaypointInfoPair &,
-                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return block_set.find(p) == block_set.end();};
+                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+            return block_set.find(p) == block_set.end();
+        };
         return FindDynamicFullPath(spur_waypoint->waypoint_identifier, destination_waypoint->waypoint_identifier, can_search);
     };
     return FindKPath(origin_identifier, destination_identifier, k, find_path);
 }
-    
-}
+
+}  // namespace dwr

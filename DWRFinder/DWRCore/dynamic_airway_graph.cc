@@ -8,8 +8,11 @@
 
 #include "dynamic_airway_graph.h"
 
+#include <memory>
+#include <vector>
+
 namespace dwr {
-    
+
 WaypointPath
 DynamicAirwayGraph::FindDynamicPath(WaypointIdentifier origin_identifier,
                                     WaypointIdentifier destination_identifier) const {
@@ -31,10 +34,10 @@ DynamicAirwayGraph::FindDynamicPath(WaypointIdentifier origin_identifier,
     return FindPath(origin_identifier, destination_identifier, can_search);
 }
 
-void DynamicAirwayGraph::ForEachBlock(std::function<void (const Waypoint &, const Waypoint &)> &traverse_function) const {
-    for (auto &block: block_set_) {
+void DynamicAirwayGraph::ForEachBlock(const std::function<void(const Waypoint &, const Waypoint &)> &traverse_function) const {
+    for (auto &block : block_set_) {
         traverse_function(*block.first, *block.second);
     }
 }
 
-}
+}  // namespace dwr

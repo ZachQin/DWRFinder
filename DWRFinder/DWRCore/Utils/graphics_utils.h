@@ -13,8 +13,13 @@
 #include "raster_type.h"
 
 namespace dwr {
+
 Line BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixel);
-std::vector<Line> VerticalEquantLine(const Pixel &start_pixel, const Pixel &end_pixel, int segment_number, int radius);
-}
+
+std::vector<Line> VerticalEquantLine(const Pixel &start_pixel,
+                                     const Pixel &end_pixel,
+                                     int segment_number,
+                                     int radius);
+}  // namespace dwr
 
 #endif /* graphics_utils_h */

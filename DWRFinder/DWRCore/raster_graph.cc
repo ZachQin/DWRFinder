@@ -11,14 +11,17 @@
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
-#include "graphics_utils.h"
+#include <utility>
+#include <vector>
+
+#include "Utils/graphics_utils.h"
 
 namespace dwr {
 
 std::vector<Line> RasterGraph::FetchCandidateLine(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor) const {
     std::vector<Line> result;
     Line pixels = BresenhamLine(origin, destination);
-    int head = 0, tail = (int)pixels.size() - 1;
+    int head = 0, tail = static_cast<int>(pixels.size()) - 1;
     while (head < pixels.size() && GetPixelValue(pixels[head]) == 0) {
         head++;
     }
@@ -30,7 +33,7 @@ std::vector<Line> RasterGraph::FetchCandidateLine(const Pixel &origin, const Pix
     }
     PixelDistance direct_distance = Pixel::Distance(origin, destination);
     result = VerticalEquantLine(pixels[head], pixels[tail], segment_number, direct_distance * vertical_factor);
-    for (auto &node: result) {
+    for (auto &node : result) {
         node.erase(std::remove_if(node.begin(), node.end(), [=](Pixel &p){
             return GetPixelValue(p) > 0;
         }), node.end());
@@ -53,7 +56,7 @@ void RasterGraph::ForEach(const std::function<void(int x, int y, char value)> &t
         for (int j = 0; j < width_; j++)
             traverse_function(j, i, raster_data_.get()[i * width_ + j]);
 }
-    
+
 char RasterGraph::GetPixelValue(const Pixel &pixel) const {
     if (pixel.x >= 0 && pixel.x < width_ && pixel.y >= 0 && pixel.y < height_) {
         return raster_data_.get()[pixel.y * width_ + pixel.x];
@@ -61,8 +64,11 @@ char RasterGraph::GetPixelValue(const Pixel &pixel) const {
         return 0;
     }
 }
-    
-PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &destination, const Pixel &previous_origin) const {
+
+PixelPath
+RasterGraph::FindPathWithAngle(const Pixel &origin,
+                               const Pixel &destination,
+                               const Pixel &previous_origin) const {
     auto can_search = [&](const PixelPair &pixel_pair, const PixelInfoPair &info_pair){
         bool result = true;
         // 搜索第一个节点需要判断参数中传入的节点位置
@@ -84,14 +90,18 @@ PixelPath RasterGraph::FindPathWithAngle(const Pixel &origin, const Pixel &desti
     return FindPath(origin, destination, nodes, can_search);
 }
 
-PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, const std::vector<Line> &node_levels, const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) {
+PixelPath
+RasterGraph::FindPath(const Pixel &origin,
+                      const Pixel &destination,
+                      const std::vector<Line> &node_levels,
+                      const std::function<bool(const PixelPair &, const PixelInfoPair &)> &can_search) {
     PixelPath result;
     int level_size = static_cast<int>(node_levels.size());
     std::unordered_map<Pixel, PixelInfo> info_map;
     info_map[origin] = PixelInfo(0, Pixel::Distance(origin, destination), 0, kNoPixel);
     info_map[destination] = PixelInfo(kMaxPixelDistance, 0, level_size + 1, kNoPixel);
     for (int i = 0; i < node_levels.size(); i++) {
-        for (auto &px: node_levels[i]) {
+        for (auto &px : node_levels[i]) {
             info_map[px] = PixelInfo(kMaxPixelDistance, Pixel::Distance(px, destination), i + 1, kNoPixel);
         }
     }
@@ -106,13 +116,11 @@ PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, c
         PixelDistance dist = current_info.distance;
         Level level = current_info.level;
         node_queue.pop();
-        
         if (u == destination) {
             break;
         }
-        
         const Line &next_level = level != level_size ? node_levels[level] : Line{destination};
-        for (auto &v: next_level) {
+        for (auto &v : next_level) {
             auto &v_info = info_map[v];
             if (!can_search(std::make_pair(u, v), std::make_pair(current_info, v_info))) {
                 continue;
@@ -125,7 +133,6 @@ PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, c
             }
         }
     }
-    
     Pixel current_pixel = destination;
     // 如果找不到路径 直接返回空
     if (info_map[current_pixel].previous == kNoPixel) {
@@ -143,4 +150,4 @@ PixelPath RasterGraph::FindPath(const Pixel &origin, const Pixel &destination, c
     return result;
 }
 
-}
+}  // namespace dwr

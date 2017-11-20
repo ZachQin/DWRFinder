@@ -10,6 +10,7 @@
 #define dynamic_radar_airway_graph_h
 
 #include <unordered_map>
+
 #include "dynamic_airway_graph.h"
 #include "graphics_utils.h"
 #include "raster_graph.h"

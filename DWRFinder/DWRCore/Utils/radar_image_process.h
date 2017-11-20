@@ -22,5 +22,5 @@ char *CreateMaskFromCGImage(CGImageRef image, int *width, int *height);
 #ifdef __cplusplus
 }
 #endif
-    
+
 #endif /* radar_image_process_h */

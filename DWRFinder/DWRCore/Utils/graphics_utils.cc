@@ -8,6 +8,8 @@
 
 #include "graphics_utils.h"
 
+#include <utility>
+
 namespace dwr {
 Line BresenhamLine(const Pixel &start_pixel, const Pixel &end_pixel) {
     Line result;
@@ -56,13 +58,10 @@ std::vector<Line> VerticalEquantLine(const Pixel &start_pixel, const Pixel &end_
         std::swap(x1, y1);
     }
     double k = -static_cast<double>(x1 - x0) / (y1 - y0);
-    
     int dx = round(sqrt(1.0 / (k * k + 1)) * radius);
     int dy = round(k * dx);
-    
     double segment_dx = static_cast<double>(x1 - x0) / segment_number;
     double segment_dy = static_cast<double>(y1 - y0) / segment_number;
-    
     for (int i = 1; i < segment_number; i++) {
         Pixel point(x0 + segment_dx * i, y0 + segment_dy * i);
         Pixel vertical_start_point = steep ? Pixel(point.y - dy, point.x - dx) : Pixel(point.x - dx, point.y - dy);
@@ -71,6 +70,6 @@ std::vector<Line> VerticalEquantLine(const Pixel &start_pixel, const Pixel &end_
         result.push_back(std::move(vertical_line));
     }
     return result;
-};
-    
 }
+
+}  // namespace dwr
