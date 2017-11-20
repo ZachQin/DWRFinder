@@ -66,27 +66,33 @@ std::string LonlatToString(double lon, double lat) {
     return text_stream.str();
 }
 
-std::shared_ptr<Waypoint> PixelToWaypoint(const Pixel &pixel, const WorldFileInfo &world_file_info) {
+WaypointPtr PixelToWaypoint(const Pixel &pixel, const WorldFileInfo &world_file_info) {
     GeoProj xy = PixelToCoordinate(pixel, world_file_info);
     double longitude, latitude;
     MercToLonLat(xy.x, xy.y, &longitude, &latitude);
     auto name = LonlatToString(longitude, latitude);
-    auto userWaypoint = std::make_shared<Waypoint>(kNoWaypointIdentifier, name, longitude, latitude);
-    userWaypoint->coordinate = xy;
-    userWaypoint->user_waypoint = true;
-    return userWaypoint;
+    auto user_waypoint = std::make_shared<Waypoint>(kNoWaypointIdentifier, name, longitude, latitude);
+    user_waypoint->coordinate = xy;
+    user_waypoint->user_waypoint = true;
+    return user_waypoint;
 }
 
 void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
     world_file_info_ = world_file_info;
-    auto traverse_function = [&](const std::shared_ptr<Waypoint> &start_waypoint,
-                                 const std::shared_ptr<Waypoint> &end_waypoint, GeoDistance d) {
+    auto traverse_function = [&](const WaypointPtr &start_waypoint,
+                                 const WaypointPtr &end_waypoint, GeoDistance d) {
         // 更新坐标
         if (start_waypoint->coordinate == kNoCoordinate) {
-            LonLatToMerc(start_waypoint->location.longitude, start_waypoint->location.latitude, &start_waypoint->coordinate.x, &start_waypoint->coordinate.y);
+            LonLatToMerc(start_waypoint->location.longitude,
+                         start_waypoint->location.latitude,
+                         &start_waypoint->coordinate.x,
+                         &start_waypoint->coordinate.y);
         }
         if (end_waypoint->coordinate == kNoCoordinate) {
-            LonLatToMerc(end_waypoint->location.longitude, end_waypoint->location.latitude, &end_waypoint->coordinate.x, &end_waypoint->coordinate.y);
+            LonLatToMerc(end_waypoint->location.longitude,
+                         end_waypoint->location.latitude,
+                         &end_waypoint->coordinate.x,
+                         &end_waypoint->coordinate.y);
         }
         Pixel start_pixel = CoordinateToPixel(start_waypoint->coordinate, world_file_info);
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info);
@@ -104,14 +110,20 @@ void DynamicRadarAirwayGraph::SingleBuild(WaypointIdentifier identifier) {
         return;
     }
     if (start_waypoint->coordinate == kNoCoordinate) {
-        LonLatToMerc(start_waypoint->location.longitude, start_waypoint->location.latitude, &start_waypoint->coordinate.x, &start_waypoint->coordinate.y);
+        LonLatToMerc(start_waypoint->location.longitude,
+                     start_waypoint->location.latitude,
+                     &start_waypoint->coordinate.x,
+                     &start_waypoint->coordinate.y);
     }
     Pixel start_pixel = CoordinateToPixel(start_waypoint->coordinate, world_file_info_);
     for (auto &neibor : start_waypoint->neibors) {
         auto end_waypoint = neibor.target.lock();
         // 如果是Build前end_waypoint是孤立的节点，则在Build中会遗漏该节点的坐标计算
         if (end_waypoint->coordinate == kNoCoordinate) {
-            LonLatToMerc(end_waypoint->location.longitude, end_waypoint->location.latitude, &end_waypoint->coordinate.x, &end_waypoint->coordinate.y);
+            LonLatToMerc(end_waypoint->location.longitude,
+                         end_waypoint->location.latitude,
+                         &end_waypoint->coordinate.x,
+                         &end_waypoint->coordinate.y);
         }
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info_);
         Line linePixels = BresenhamLine(start_pixel, end_pixel);
@@ -141,10 +153,10 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
                                              WaypointIdentifier destination_identifier,
                                              const std::function<bool(const WaypointPair &waypoint_pair,
                                                                       const WaypointInfoPair &info_pair,
-                                                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search) const {
+                                                                      std::vector<WaypointPtr> &inserted_waypoints)> &can_search) const {
     auto inner_can_search = [&](const WaypointPair &waypoint_pair,
                                 const WaypointInfoPair &info_pair,
-                                std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+                                std::vector<WaypointPtr> &inserted_waypoints) {
         if (!can_search(waypoint_pair, info_pair, inserted_waypoints)) {
             return false;
         }
@@ -162,14 +174,18 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
         }
         const Pixel origin = CoordinateToPixel(waypoint1->coordinate, world_file_info_);
         const Pixel destination = CoordinateToPixel(waypoint2->coordinate, world_file_info_);
-        const Pixel previous_origin = waypoint_info1.previous.lock() != nullptr ? CoordinateToPixel(waypoint_info1.previous.lock()->coordinate, world_file_info_) : kNoPixel;
+        const Pixel previous_origin = waypoint_info1.previous.lock() != nullptr ?
+        CoordinateToPixel(waypoint_info1.previous.lock()->coordinate, world_file_info_) : kNoPixel;
         PixelPath pixel_path = raster_graph_.FindPathWithAngle(origin, destination, previous_origin);
         if (pixel_path.empty()) {
             return false;
         } else {
             // 去掉首尾
             inserted_waypoints.resize(pixel_path.size() - 2);
-            std::transform(pixel_path.begin() + 1, pixel_path.end() - 1, inserted_waypoints.begin(), [&](const Pixel &pixel){
+            std::transform(pixel_path.begin() + 1,
+                           pixel_path.end() - 1,
+                           inserted_waypoints.begin(),
+                           [&](const Pixel &pixel){
                 return PixelToWaypoint(pixel, world_file_info_);
             });
             return true;
@@ -187,10 +203,12 @@ DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifi
                          const std::set<WaypointPair> &block_set) {
         auto can_search = [block_set](const WaypointPair &p,
                                       const WaypointInfoPair &,
-                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {
+                                      std::vector<WaypointPtr> &inserted_waypoints) {
             return block_set.find(p) == block_set.end();
         };
-        return FindDynamicFullPath(spur_waypoint->waypoint_identifier, destination_waypoint->waypoint_identifier, can_search);
+        return FindDynamicFullPath(spur_waypoint->waypoint_identifier,
+                                   destination_waypoint->waypoint_identifier,
+                                   can_search);
     };
     return FindKPath(origin_identifier, destination_identifier, k, find_path);
 }

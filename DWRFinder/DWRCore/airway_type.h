@@ -24,13 +24,16 @@ typedef double GeoDistance;
 typedef double GeoRad;
 
 struct Waypoint;
+
+typedef std::shared_ptr<Waypoint> WaypointPtr;
+
 struct Neighbor {
     std::weak_ptr<Waypoint> target;
     GeoDistance distance;
 
     Neighbor() {}
 
-    Neighbor(const std::shared_ptr<Waypoint> &arg_target, GeoDistance arg_distance) :
+    Neighbor(const WaypointPtr &arg_target, GeoDistance arg_distance) :
     target(arg_target), distance(arg_distance) {}
 
     bool operator < (const Neighbor &p) const {

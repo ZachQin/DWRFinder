@@ -57,7 +57,7 @@ class AirwayGraph {
      @param waypoint1 First waypoint pointer.
      @param waypoint2 Second waypoint pointer.
      */
-    static void AddAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
+    static void AddAirwaySegment(const WaypointPtr &waypoint1, const WaypointPtr &waypoint2);
 
     /**
      Add the connection between two waypoint.
@@ -72,7 +72,7 @@ class AirwayGraph {
      
      @param waypoint Waypoint pointer.
      */
-    static void RemoveAirwaySegments(const std::shared_ptr<Waypoint> &waypoint);
+    static void RemoveAirwaySegments(const WaypointPtr &waypoint);
 
     /**
      Remove the connection between two waypoint.
@@ -80,7 +80,7 @@ class AirwayGraph {
      @param waypoint1 First waypoint pointer.
      @param waypoint2 Second waypoint pointer.
      */
-    static void RemoveAirwaySegment(const std::shared_ptr<Waypoint> &waypoint1, const std::shared_ptr<Waypoint> &waypoint2);
+    static void RemoveAirwaySegment(const WaypointPtr &waypoint1, const WaypointPtr &waypoint2);
 
     /**
      Remove the connection between two waypoint.
@@ -101,9 +101,9 @@ class AirwayGraph {
     WaypointPath
     FindPath(WaypointIdentifier origin_identifier,
              WaypointIdentifier destination_identifier,
-             const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<std::shared_ptr<Waypoint>> &)> &can_search
+             const std::function<bool(const WaypointPair &, const WaypointInfoPair &, std::vector<WaypointPtr> &)> &can_search
              = [](const WaypointPair &, const WaypointInfoPair &,
-                  std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return true;}) const;
+                  std::vector<WaypointPtr> &inserted_waypoints) {return true;}) const;
 
     /**
      Get k shortest paths using Yen's algorithm.
@@ -128,7 +128,7 @@ class AirwayGraph {
                                                            destination_waypoint,
                                                            [block_set](const WaypointPair &p,
                                                                        const WaypointInfoPair &,
-                                                                       std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return block_set.find(p) == block_set.end();});
+                                                                       std::vector<WaypointPtr> &inserted_waypoints) {return block_set.find(p) == block_set.end();});
               }) const;
     /**
      Save the graph as a file.
@@ -151,8 +151,8 @@ class AirwayGraph {
      
      @param  traverse_function The Lambda expression applied to all edge in the graph.
      */
-    void ForEach(const std::function<void(const std::shared_ptr<Waypoint> &waypoint1,
-                                          const std::shared_ptr<Waypoint> &waypoint2,
+    void ForEach(const std::function<void(const WaypointPtr &waypoint1,
+                                          const WaypointPtr &waypoint2,
                                           GeoDistance distance)> &traverse_function);
 
     /**
@@ -168,13 +168,13 @@ class AirwayGraph {
      @param identifier Waypoint ID.
      @return Waypoint pointer.
      */
-    std::shared_ptr<Waypoint> WaypointFromIdentifier(WaypointIdentifier identifier) const;
+    WaypointPtr WaypointFromIdentifier(WaypointIdentifier identifier) const;
 
     static WaypointPath
     FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
                     const std::shared_ptr<const Waypoint> &destination_waypoint,
                     const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair,
-                                             std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints)> &can_search);
+                                             std::vector<WaypointPtr> &inserted_waypoints)> &can_search);
 
     static std::vector<WaypointPath>
     FindKPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
@@ -185,7 +185,7 @@ class AirwayGraph {
                                                       const std::set<WaypointPair> &block_set)> &find_path);
 
  protected:
-    std::map<WaypointIdentifier, std::shared_ptr<Waypoint>> waypoint_map_;
+    std::map<WaypointIdentifier, WaypointPtr> waypoint_map_;
 };
 
 }  // namespace dwr

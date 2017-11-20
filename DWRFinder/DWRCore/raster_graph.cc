@@ -18,7 +18,11 @@
 
 namespace dwr {
 
-std::vector<Line> RasterGraph::FetchCandidateLine(const Pixel &origin, const Pixel &destination, int segment_number, double vertical_factor) const {
+std::vector<Line>
+RasterGraph::FetchCandidateLine(const Pixel &origin,
+                                const Pixel &destination,
+                                int segment_number,
+                                double vertical_factor) const {
     std::vector<Line> result;
     Line pixels = BresenhamLine(origin, destination);
     int head = 0, tail = static_cast<int>(pixels.size()) - 1;
@@ -32,7 +36,10 @@ std::vector<Line> RasterGraph::FetchCandidateLine(const Pixel &origin, const Pix
         return result;
     }
     PixelDistance direct_distance = Pixel::Distance(origin, destination);
-    result = VerticalEquantLine(pixels[head], pixels[tail], segment_number, direct_distance * vertical_factor);
+    result = VerticalEquantLine(pixels[head],
+                                pixels[tail],
+                                segment_number,
+                                direct_distance * vertical_factor);
     for (auto &node : result) {
         node.erase(std::remove_if(node.begin(), node.end(), [=](Pixel &p){
             return GetPixelValue(p) > 0;

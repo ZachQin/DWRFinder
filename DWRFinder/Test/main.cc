@@ -39,7 +39,7 @@ vector<dwr::WaypointIdentifier> RandomWaypointVector(const dwr::AirwayGraph &gra
     vector<dwr::WaypointIdentifier> random_vector;
     for (int i = 0; i < count; i++) {
         dwr::WaypointIdentifier random_waypoint_identifier = 0;
-        shared_ptr<dwr::Waypoint> random_waypoint = nullptr;
+        dwr::WaypointPtr random_waypoint = nullptr;
         do {
             int random_index = rand() % all_vector.size();
             random_waypoint_identifier = all_vector[random_index];

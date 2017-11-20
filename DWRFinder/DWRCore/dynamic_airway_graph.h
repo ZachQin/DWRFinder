@@ -21,8 +21,8 @@ struct UndirectedWaypointPair : public WaypointPair {
     explicit UndirectedWaypointPair(const WaypointPair &pair) :
     WaypointPair(std::min(pair.first, pair.second), std::max(pair.first, pair.second)) {}
 
-    UndirectedWaypointPair(const std::shared_ptr<Waypoint> &waypoint1,
-                           const std::shared_ptr<Waypoint> &waypoint2) :
+    UndirectedWaypointPair(const WaypointPtr &waypoint1,
+                           const WaypointPtr &waypoint2) :
     WaypointPair(std::min(waypoint1, waypoint2), std::max(waypoint1, waypoint2)) {}
 };
 
