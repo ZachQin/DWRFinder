@@ -142,8 +142,8 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
         if (!can_search(waypoint_pair, info_pair, inserted_waypoints)) {
             return false;
         }
-        const std::shared_ptr<Waypoint> &waypoint1 = waypoint_pair.first;
-        const std::shared_ptr<Waypoint> &waypoint2 = waypoint_pair.second;
+        const std::shared_ptr<const Waypoint> &waypoint1 = waypoint_pair.first;
+        const std::shared_ptr<const Waypoint> &waypoint2 = waypoint_pair.second;
         const WaypointInfo &waypoint_info1 = info_pair.first;
         
         if (block_set_.find(UndirectedWaypointPair(waypoint_pair)) == block_set_.end()) {
@@ -178,10 +178,10 @@ std::vector<WaypointPath>
 DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifier,
                      WaypointIdentifier destination_identifier,
                      int k) const {
-    auto find_path = [&](const std::shared_ptr<Waypoint> &spur_waypoint, const std::shared_ptr<Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set) {
-        auto can_search = [block_set](const dwr::WaypointPair &p,
-                                      const dwr::WaypointInfoPair &,
-                                      std::vector<std::shared_ptr<dwr::Waypoint>> &inserted_waypoints) {return block_set.find(p) == block_set.end();};
+    auto find_path = [&](const std::shared_ptr<const Waypoint> &spur_waypoint, const std::shared_ptr<const Waypoint> &destination_waypoint, const std::set<WaypointPair> &block_set) {
+        auto can_search = [block_set](const WaypointPair &p,
+                                      const WaypointInfoPair &,
+                                      std::vector<std::shared_ptr<Waypoint>> &inserted_waypoints) {return block_set.find(p) == block_set.end();};
         return FindDynamicFullPath(spur_waypoint->waypoint_identifier, destination_waypoint->waypoint_identifier, can_search);
     };
     return FindKPath(origin_identifier, destination_identifier, k, find_path);

@@ -97,13 +97,13 @@ struct Waypoint {
 };
 
 struct WaypointInfo {
-    std::weak_ptr<Waypoint> previous;
+    std::weak_ptr<const Waypoint> previous;
     GeoDistance actual_distance = std::numeric_limits<GeoDistance>::max();
     GeoDistance heuristic_distance = std::numeric_limits<GeoDistance>::max();
 };
     
 struct WaypointPath {
-    std::vector<std::shared_ptr<Waypoint>> waypoints;
+    std::vector<std::shared_ptr<const Waypoint>> waypoints;
     std::vector<GeoDistance> lengths;
     
     WaypointPath() = default;
