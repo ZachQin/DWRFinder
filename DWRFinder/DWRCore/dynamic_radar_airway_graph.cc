@@ -160,8 +160,8 @@ DynamicRadarAirwayGraph::FindDynamicFullPath(WaypointIdentifier origin_identifie
         if (!can_search(waypoint_pair, info_pair, inserted_waypoints)) {
             return false;
         }
-        const std::shared_ptr<const Waypoint> &waypoint1 = waypoint_pair.first;
-        const std::shared_ptr<const Waypoint> &waypoint2 = waypoint_pair.second;
+        const ConstWaypointPtr &waypoint1 = waypoint_pair.first;
+        const ConstWaypointPtr &waypoint2 = waypoint_pair.second;
         const WaypointInfo &waypoint_info1 = info_pair.first;
         if (block_set_.find(UndirectedWaypointPair(waypoint_pair)) == block_set_.end()) {
             if (waypoint_info1.previous.lock() == nullptr) {
@@ -198,8 +198,8 @@ std::vector<WaypointPath>
 DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifier,
                                               WaypointIdentifier destination_identifier,
                                               int k) const {
-    auto find_path = [&](const std::shared_ptr<const Waypoint> &spur_waypoint,
-                         const std::shared_ptr<const Waypoint> &destination_waypoint,
+    auto find_path = [&](const ConstWaypointPtr &spur_waypoint,
+                         const ConstWaypointPtr &destination_waypoint,
                          const std::set<WaypointPair> &block_set) {
         auto can_search = [block_set](const WaypointPair &p,
                                       const WaypointInfoPair &,

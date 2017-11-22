@@ -21,7 +21,7 @@
 
 namespace dwr {
 
-typedef std::pair<std::shared_ptr<const Waypoint>, std::shared_ptr<const Waypoint>> WaypointPair;
+typedef std::pair<ConstWaypointPtr, ConstWaypointPtr> WaypointPair;
 typedef std::pair<const WaypointInfo, const WaypointInfo> WaypointInfoPair;
 
 class AirwayGraph;
@@ -118,11 +118,11 @@ class AirwayGraph {
     FindKPath(WaypointIdentifier origin_identifier,
               WaypointIdentifier destination_identifier,
               int k,
-              const std::function<WaypointPath(const std::shared_ptr<const Waypoint> &spur_waypoint,
-                                               const std::shared_ptr<const Waypoint> &destination_waypoint,
+              const std::function<WaypointPath(const ConstWaypointPtr &spur_waypoint,
+                                               const ConstWaypointPtr &destination_waypoint,
                                                const std::set<WaypointPair> &block_set)> &find_path
-              = [](const std::shared_ptr<const Waypoint> &spur_waypoint,
-                   const std::shared_ptr<const Waypoint> &destination_waypoint,
+              = [](const ConstWaypointPtr &spur_waypoint,
+                   const ConstWaypointPtr &destination_waypoint,
                    const std::set<WaypointPair> &block_set) {
                   return dwr::AirwayGraph::FindPathInGraph(spur_waypoint,
                                                            destination_waypoint,
@@ -171,17 +171,17 @@ class AirwayGraph {
     WaypointPtr WaypointFromIdentifier(WaypointIdentifier identifier) const;
 
     static WaypointPath
-    FindPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
-                    const std::shared_ptr<const Waypoint> &destination_waypoint,
+    FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
+                    const ConstWaypointPtr &destination_waypoint,
                     const std::function<bool(const WaypointPair &waypoint_pair, const WaypointInfoPair &info_pair,
                                              std::vector<WaypointPtr> &inserted_waypoints)> &can_search);
 
     static std::vector<WaypointPath>
-    FindKPathInGraph(const std::shared_ptr<const Waypoint> &origin_waypoint,
-                     const std::shared_ptr<const Waypoint> &destination_waypoint,
+    FindKPathInGraph(const ConstWaypointPtr &origin_waypoint,
+                     const ConstWaypointPtr &destination_waypoint,
                      int k,
-                     const std::function<WaypointPath(const std::shared_ptr<const Waypoint> &spur_waypoint,
-                                                      const std::shared_ptr<const Waypoint> &destination_waypoint,
+                     const std::function<WaypointPath(const ConstWaypointPtr &spur_waypoint,
+                                                      const ConstWaypointPtr &destination_waypoint,
                                                       const std::set<WaypointPair> &block_set)> &find_path);
 
  protected:

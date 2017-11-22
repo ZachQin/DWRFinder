@@ -26,6 +26,7 @@ typedef double GeoRad;
 struct Waypoint;
 
 typedef std::shared_ptr<Waypoint> WaypointPtr;
+typedef std::shared_ptr<const Waypoint> ConstWaypointPtr;
 
 struct Neighbor {
     std::weak_ptr<Waypoint> target;
@@ -116,7 +117,7 @@ struct WaypointInfo {
 };
 
 struct WaypointPath {
-    std::vector<std::shared_ptr<const Waypoint>> waypoints;
+    std::vector<ConstWaypointPtr> waypoints;
     std::vector<GeoDistance> lengths;
 
     WaypointPath() = default;
