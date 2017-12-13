@@ -21,8 +21,8 @@
 
 namespace dwr {
 
-typedef std::pair<ConstWaypointPtr, ConstWaypointPtr> WaypointPair;
-typedef std::pair<const WaypointInfo, const WaypointInfo> WaypointInfoPair;
+using WaypointPair = std::pair<ConstWaypointPtr, ConstWaypointPtr>;
+using WaypointInfoPair = std::pair<const WaypointInfo, const WaypointInfo>;
 
 class AirwayGraph;
 

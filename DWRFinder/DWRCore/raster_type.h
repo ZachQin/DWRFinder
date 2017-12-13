@@ -18,8 +18,8 @@
 
 namespace dwr {
 
-typedef int Level;
-typedef double PixelDistance;
+using Level = int;
+using PixelDistance = double;
 
 const PixelDistance kMaxPixelDistance = std::numeric_limits<PixelDistance>::max();
 
@@ -52,8 +52,8 @@ struct Pixel {
 
 const Pixel kNoPixel = {-1, -1};
 
-typedef std::vector<Pixel> Line;
-typedef std::vector<Pixel> PixelPath;
+using Line = std::vector<Pixel>;
+using PixelPath = std::vector<Pixel>;
 
 struct PixelInfo {
     PixelDistance distance;
@@ -75,8 +75,8 @@ struct PixelInfo {
     }
 };
 
-typedef std::pair<Pixel, Pixel> PixelPair;
-typedef std::pair<PixelInfo, PixelInfo> PixelInfoPair;
+using PixelPair = std::pair<Pixel, Pixel>;
+using PixelInfoPair = std::pair<PixelInfo, PixelInfo>;
 
 }  // namespace dwr
 

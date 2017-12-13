@@ -19,14 +19,14 @@
 
 namespace dwr {
 
-typedef int WaypointIdentifier;
-typedef double GeoDistance;
-typedef double GeoRad;
+using WaypointIdentifier = int;
+using GeoDistance = double;
+using GeoRad = double;
 
 struct Waypoint;
 
-typedef std::shared_ptr<Waypoint> WaypointPtr;
-typedef std::shared_ptr<const Waypoint> ConstWaypointPtr;
+using WaypointPtr = std::shared_ptr<Waypoint>;
+using ConstWaypointPtr = std::shared_ptr<const Waypoint>;
 
 struct Neighbor {
     std::weak_ptr<Waypoint> target;
