@@ -64,7 +64,7 @@ constexpr GeoProj kNoCoordinate = {
     std::numeric_limits<GeoDistance>::infinity()};
 
 struct Waypoint {
-    WaypointIdentifier waypoint_identifier;
+    WaypointIdentifier identifier;
     std::string name;
     GeoPoint location;
     GeoProj coordinate = kNoCoordinate;
@@ -75,15 +75,15 @@ struct Waypoint {
     Waypoint() {}
 
     Waypoint(const Waypoint &other) :
-    waypoint_identifier(other.waypoint_identifier),
+    identifier(other.identifier),
     name(other.name), location(other.location), coordinate(other.coordinate),
     user_waypoint(other.user_waypoint) {}
 
     Waypoint(int waypoint_identifier, const std::string &name, double lon, double lat) :
-    waypoint_identifier(waypoint_identifier), name(name), location({lon, lat}) {}
+    identifier(waypoint_identifier), name(name), location({lon, lat}) {}
 
     bool operator < (const Waypoint &p) const {
-        return waypoint_identifier < p.waypoint_identifier;
+        return identifier < p.identifier;
     }
 
     static GeoDistance Distance(const Waypoint &p1,

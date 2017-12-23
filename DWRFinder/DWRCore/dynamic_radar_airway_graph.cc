@@ -206,8 +206,8 @@ DynamicRadarAirwayGraph::FindKDynamicFullPath(WaypointIdentifier origin_identifi
                                       std::vector<WaypointPtr> &inserted_waypoints) {
             return block_set.find(p) == block_set.end();
         };
-        return FindDynamicFullPath(spur_waypoint->waypoint_identifier,
-                                   destination_waypoint->waypoint_identifier,
+        return FindDynamicFullPath(spur_waypoint->identifier,
+                                   destination_waypoint->identifier,
                                    can_search);
     };
     return FindKPath(origin_identifier, destination_identifier, k, find_path);

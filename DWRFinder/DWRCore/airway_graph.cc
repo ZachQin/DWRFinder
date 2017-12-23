@@ -131,7 +131,7 @@ bool AirwayGraph::SaveToFile(const std::string &path) const {
     for (auto &waypoint_pair : waypoint_map_) {
         const Waypoint &waypoint = *waypoint_pair.second;
         // 序列化ID
-        uint32_t identifier = static_cast<uint32_t>(waypoint.waypoint_identifier);
+        uint32_t identifier = static_cast<uint32_t>(waypoint.identifier);
         of.write(reinterpret_cast<char *>(&identifier), sizeof(identifier));
         // 序列化名称
         uint32_t name_size = static_cast<uint32_t>(waypoint.name.size());
@@ -148,14 +148,14 @@ bool AirwayGraph::SaveToFile(const std::string &path) const {
     for (auto &waypoint_pair : waypoint_map_) {
         const Waypoint &waypoint = *waypoint_pair.second;
         // 序列化ID
-        uint32_t identifier = static_cast<uint32_t>(waypoint.waypoint_identifier);
+        uint32_t identifier = static_cast<uint32_t>(waypoint.identifier);
         of.write(reinterpret_cast<char *>(&identifier), sizeof(identifier));
         // 序列化邻接个数
         uint32_t neibor_size = static_cast<uint32_t>(waypoint.neibors.size());
         of.write(reinterpret_cast<char *>(&neibor_size), sizeof(neibor_size));
         for (auto &neibor : waypoint.neibors) {
             // 序列化相邻航路点ID
-            uint32_t neibor_identifier = static_cast<uint32_t>(neibor.target.lock()->waypoint_identifier);
+            uint32_t neibor_identifier = static_cast<uint32_t>(neibor.target.lock()->identifier);
             of.write(reinterpret_cast<char *>(&neibor_identifier), sizeof(neibor_identifier));
             // 序列化相邻航路点距离
             double neibor_distance = static_cast<double>(neibor.distance);
@@ -177,7 +177,7 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
         // 反序列化ID
         uint32_t identifier = 0;
         inf.read(reinterpret_cast<char *>(&identifier), sizeof(identifier));
-        waypoint->waypoint_identifier = static_cast<WaypointIdentifier>(identifier);
+        waypoint->identifier = static_cast<WaypointIdentifier>(identifier);
         // 反序列化名称
         uint32_t name_size = 0;
         inf.read(reinterpret_cast<char *>(&name_size), sizeof(name_size));
