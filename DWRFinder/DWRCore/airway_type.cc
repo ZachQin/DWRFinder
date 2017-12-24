@@ -8,6 +8,8 @@
 
 #include "airway_type.h"
 
+#include <cmath>
+
 namespace dwr {
 
 GeoDistance Waypoint::Distance(const dwr::Waypoint &p1,
@@ -69,6 +71,15 @@ std::string WaypointPath::ToString() const {
     }
     path_description += waypoints.back()->name;
     return path_description;
+}
+
+double WaypointPath::GetSumTurn() const {
+    double sum_turn = 0.0;
+    for (size_t i = 0; i < waypoints.size() - 2; i++) {
+        double cos_turn = Waypoint::CosinTurnAngle(*waypoints[i], *waypoints[i + 1], *waypoints[i + 2]);
+        sum_turn += acos(cos_turn);
+    }
+    return sum_turn;
 }
 
 }  // namespace dwr

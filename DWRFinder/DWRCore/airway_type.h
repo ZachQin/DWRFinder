@@ -9,8 +9,6 @@
 #ifndef airway_type_h
 #define airway_type_h
 
-#include <math.h>
-
 #include <string>
 #include <set>
 #include <memory>
@@ -109,6 +107,8 @@ struct WaypointPath {
     WaypointPath(const WaypointPath &other, int start, int node_count);
 
     int GetSize() const {return static_cast<int>(waypoints.size());}
+
+    double GetSumTurn() const;
 
     WaypointPath operator+ (const WaypointPath &path) const;
 

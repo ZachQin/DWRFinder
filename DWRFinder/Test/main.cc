@@ -21,6 +21,8 @@ using namespace std;
 struct Statistics {
     double time_consuming;
     double node_count;
+    double sum_length;
+    double sum_turning;
     dwr::WaypointPath path;
 };
 
@@ -29,7 +31,9 @@ Statistics MeasurePath(const function<dwr::WaypointPath()> &func) {
     clock_t start_clock = clock();
     s.path = func();
     s.time_consuming = (double)(clock() - start_clock) * 1000 / CLOCKS_PER_SEC;
-    s.node_count = s.path.waypoints.size();
+    s.node_count = s.path.GetSize();
+    s.sum_length = s.path.lengths.empty() ? 0 : s.path.lengths.back();
+    s.sum_turning = s.path.GetSumTurn();
     return s;
 }
 
