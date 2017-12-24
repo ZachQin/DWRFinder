@@ -10,6 +10,7 @@
 #define dynamic_radar_airway_graph_h
 
 #include <unordered_map>
+#include <vector>
 
 #include "dynamic_airway_graph.h"
 #include "graphics_utils.h"
@@ -78,7 +79,7 @@ public:
                          int k) const;
 
 private:
-    std::unordered_map<Pixel, UndirectedWaypointPair> pixel_to_edge_table_;
+    std::unordered_map<Pixel, std::vector<UndirectedWaypointPair>> pixel_to_edge_table_;
     RasterGraph raster_graph_;
     WorldFileInfo world_file_info_;
 };

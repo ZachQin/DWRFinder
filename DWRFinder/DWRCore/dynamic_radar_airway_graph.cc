@@ -98,7 +98,7 @@ void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info);
         Line linePixels = BresenhamLine(start_pixel, end_pixel);
         for (auto &point : linePixels) {
-            pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
+            pixel_to_edge_table_[point].push_back(UndirectedWaypointPair(start_waypoint, end_waypoint));
         }
     };
     this->ForEach(traverse_function);
@@ -128,7 +128,7 @@ void DynamicRadarAirwayGraph::SingleBuild(WaypointIdentifier identifier) {
         Pixel end_pixel = CoordinateToPixel(end_waypoint->coordinate, world_file_info_);
         Line linePixels = BresenhamLine(start_pixel, end_pixel);
         for (auto &point : linePixels) {
-            pixel_to_edge_table_.emplace(point, UndirectedWaypointPair(start_waypoint, end_waypoint));
+            pixel_to_edge_table_[point].push_back(UndirectedWaypointPair(start_waypoint, end_waypoint));
         }
     }
 }
@@ -140,9 +140,8 @@ void DynamicRadarAirwayGraph::UpdateBlock(char *mask, int width, int height) {
     raster_graph_.ForEach([&](int x, int y, char value){
         if (value > 0) {
             Pixel pixel = Pixel(x, y);
-            auto edge_iterator = pixel_to_edge_table_.find(pixel);
-            if (edge_iterator != pixel_to_edge_table_.end()) {
-                block_set_.insert(edge_iterator->second);
+            for (auto &edge : pixel_to_edge_table_[pixel]) {
+                block_set_.insert(edge);
             }
         }
     });
