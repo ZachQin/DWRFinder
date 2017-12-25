@@ -10,7 +10,6 @@
 #define airway_type_h
 
 #include <string>
-#include <set>
 #include <memory>
 #include <limits>
 #include <vector>
@@ -34,10 +33,6 @@ struct Neighbor {
 
     Neighbor(const WaypointPtr &arg_target, GeoDistance arg_distance) :
     target(arg_target), distance(arg_distance) {}
-
-    bool operator < (const Neighbor &p) const {
-        return target.lock() < p.target.lock();
-    }
 };
 
 const WaypointIdentifier kNoWaypointIdentifier = -1;
@@ -68,7 +63,7 @@ struct Waypoint {
     GeoProj coordinate = kNoCoordinate;
 
     bool user_waypoint = false;
-    std::set<Neighbor> neibors;
+    std::vector<Neighbor> neibors;
 
     Waypoint() {}
 

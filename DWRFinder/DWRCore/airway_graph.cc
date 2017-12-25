@@ -13,7 +13,6 @@
 #include <string>
 #include <memory>
 #include <utility>
-#include <set>
 
 namespace dwr {
 
@@ -32,8 +31,9 @@ void AirwayGraph::RemoveAirwaySegments(const WaypointPtr &waypoint) {
     // Delete self from neibors.
     for (auto &neibor : waypoint->neibors) {
         auto target = neibor.target.lock();
-        Neighbor deleted_neibor(waypoint, neibor.distance);
-        target->neibors.erase(deleted_neibor);
+        std::remove_if(target->neibors.begin(), target->neibors.end(), [&](Neighbor &neib){
+            return neib.target.lock() == waypoint;
+        });
     }
     waypoint->neibors.clear();
 }
@@ -52,8 +52,8 @@ void AirwayGraph::AddAirwaySegment(const WaypointPtr &waypoint1,
     GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
     Neighbor neibor1(waypoint2, distance);
     Neighbor neibor2(waypoint1, distance);
-    waypoint1->neibors.insert(std::move(neibor1));
-    waypoint2->neibors.insert(std::move(neibor2));
+    waypoint1->neibors.push_back(std::move(neibor1));
+    waypoint2->neibors.push_back(std::move(neibor2));
 }
 
 void AirwayGraph::AddAirwaySegment(WaypointIdentifier identifier1,
@@ -72,8 +72,12 @@ void AirwayGraph::RemoveAirwaySegment(const WaypointPtr &waypoint1,
     GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
     Neighbor neibor1(waypoint2, distance);
     Neighbor neibor2(waypoint1, distance);
-    waypoint1->neibors.erase(neibor1);
-    waypoint2->neibors.erase(neibor2);
+    std::remove_if(waypoint1->neibors.begin(), waypoint1->neibors.end(), [&](Neighbor &neib){
+        return neib.target.lock() == waypoint2;
+    });
+    std::remove_if(waypoint2->neibors.begin(), waypoint2->neibors.end(), [&](Neighbor &neib){
+        return neib.target.lock() == waypoint1;
+    });
 }
 
 void AirwayGraph::RemoveAirwaySegment(WaypointIdentifier identifier1,
@@ -212,7 +216,7 @@ bool AirwayGraph::LoadFromFile(const std::string &path) {
             double distance = 0.0;
             inf.read(reinterpret_cast<char *>(&distance), sizeof(distance));
             Neighbor neibor(waypoint_map_[neibor_identifier], static_cast<GeoDistance>(distance));
-            waypoint->neibors.insert(neibor);
+            waypoint->neibors.push_back(neibor);
         }
     }
     return true;
