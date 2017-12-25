@@ -79,6 +79,7 @@ WaypointPtr PixelToWaypoint(const Pixel &pixel, const WorldFileInfo &world_file_
 
 void DynamicRadarAirwayGraph::Build(const WorldFileInfo &world_file_info) {
     world_file_info_ = world_file_info;
+    pixel_to_edge_table_.clear();
     auto traverse_function = [&](const WaypointPtr &start_waypoint,
                                  const WaypointPtr &end_waypoint, GeoDistance d) {
         // 更新坐标

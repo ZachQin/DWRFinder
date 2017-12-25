@@ -75,8 +75,8 @@ std::string WaypointPath::ToString() const {
 
 double WaypointPath::GetSumTurn() const {
     double sum_turn = 0.0;
-    for (size_t i = 0; i < waypoints.size() - 2; i++) {
-        double cos_turn = Waypoint::CosinTurnAngle(*waypoints[i], *waypoints[i + 1], *waypoints[i + 2]);
+    for (size_t i = 2; i < waypoints.size(); i++) {
+        double cos_turn = Waypoint::CosinTurnAngle(*waypoints[i - 2], *waypoints[i - 1], *waypoints[i]);
         sum_turn += acos(cos_turn);
     }
     return sum_turn;
