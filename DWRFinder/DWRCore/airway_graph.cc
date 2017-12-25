@@ -263,14 +263,13 @@ AirwayGraph::FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
                                                  const ConstWaypointPtr &waypoint2) {
         auto &waypoint_info1 = waypoint_info_map[waypoint1];
         auto &waypoint_info2 = waypoint_info_map[waypoint2];
-        return waypoint_info1.actual_distance + waypoint_info1.heuristic_distance
-        > waypoint_info2.actual_distance + waypoint_info2.heuristic_distance;
+        return waypoint_info1.estimated_distance > waypoint_info2.estimated_distance;
     };
     std::priority_queue<ConstWaypointPtr, std::vector<ConstWaypointPtr>,
                         decltype(waypoint_compare)> waypoint_queue(waypoint_compare);
     auto &origin_info = waypoint_info_map[origin_waypoint];
     origin_info.actual_distance = 0;
-    origin_info.heuristic_distance = Waypoint::Distance(*origin_waypoint, *destination_waypoint);
+    origin_info.estimated_distance = Waypoint::Distance(*origin_waypoint, *destination_waypoint);
     waypoint_queue.push(origin_waypoint);
     while (!waypoint_queue.empty()) {
         ConstWaypointPtr current_waypoint = waypoint_queue.top();
@@ -314,7 +313,7 @@ AirwayGraph::FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
                     }
                     waypoint_info_map[current_inserted_waypoint].previous = current_waypoint;
                 }
-                neibor_info.heuristic_distance = Waypoint::Distance(*neibor_waypoint, *destination_waypoint);
+                neibor_info.estimated_distance = neibor_info.actual_distance + Waypoint::Distance(*neibor_waypoint, *destination_waypoint);
                 waypoint_queue.push(neibor_waypoint);
             }
         }

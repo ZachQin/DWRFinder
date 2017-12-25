@@ -109,18 +109,18 @@ RasterGraph::FindPath(const Pixel &origin,
     info_map[destination] = PixelInfo(kMaxPixelDistance, 0, level_size + 1, kNoPixel);
     for (int i = 0; i < node_levels.size(); i++) {
         for (auto &px : node_levels[i]) {
-            info_map[px] = PixelInfo(kMaxPixelDistance, Pixel::Distance(px, destination), i + 1, kNoPixel);
+            info_map[px] = PixelInfo(kMaxPixelDistance, kMaxPixelDistance, i + 1, kNoPixel);
         }
     }
     auto node_compare = [&info_map](const Pixel pixel1, const Pixel pixel2) {
-        return info_map[pixel1] > info_map[pixel2];
+        return info_map[pixel1].estimated_distance > info_map[pixel2].estimated_distance;
     };
     std::priority_queue<Pixel, std::vector<Pixel>, decltype(node_compare)> node_queue(node_compare);
     node_queue.push(origin);
     while (!node_queue.empty()) {
         Pixel u = node_queue.top();
         PixelInfo &current_info = info_map[u];
-        PixelDistance dist = current_info.distance;
+        PixelDistance dist = current_info.actual_distance;
         Level level = current_info.level;
         node_queue.pop();
         if (u == destination) {
@@ -133,9 +133,10 @@ RasterGraph::FindPath(const Pixel &origin,
                 continue;
             }
             PixelDistance distance_through_u = dist + Pixel::Distance(u, v);
-            if (distance_through_u < v_info.distance) {
-                v_info.distance = distance_through_u;
+            if (distance_through_u < v_info.actual_distance) {
+                v_info.actual_distance = distance_through_u;
                 v_info.previous = u;
+                v_info.estimated_distance = v_info.actual_distance + Pixel::Distance(v, destination);
                 node_queue.push(v);
             }
         }

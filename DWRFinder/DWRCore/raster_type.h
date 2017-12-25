@@ -34,7 +34,7 @@ struct Pixel {
     Pixel(int x, int y): x(x), y(y) {}
 
     bool operator == (const Pixel &p) const {
-        return this->x == p.x && this->y == p.y;
+        return std::tie(x, y) == std::tie(p.x, p.y);
     }
 
     static PixelDistance Distance(const Pixel &p1, const Pixel &p2) {
@@ -56,8 +56,8 @@ using Line = std::vector<Pixel>;
 using PixelPath = std::vector<Pixel>;
 
 struct PixelInfo {
-    PixelDistance distance;
-    PixelDistance heuristic;
+    PixelDistance actual_distance;
+    PixelDistance estimated_distance;
     Level level;
     Pixel previous = kNoPixel;
 
@@ -65,14 +65,8 @@ struct PixelInfo {
 
     PixelInfo(const PixelInfo &) = default;
 
-    PixelInfo(PixelDistance distance, PixelDistance heuristic, Level level, const Pixel &previous) :
-    distance(distance), heuristic(heuristic), level(level), previous(previous) {}
-
-    bool operator > (const PixelInfo &p) const {
-        if (distance == kMaxPixelDistance) {return true;}
-        if (p.distance == kMaxPixelDistance) {return false;}
-        return distance + heuristic > p.distance + p.heuristic;
-    }
+    PixelInfo(PixelDistance actual_distance, PixelDistance estimated_distance, Level level, const Pixel &previous) :
+    actual_distance(actual_distance), estimated_distance(estimated_distance), level(level), previous(previous) {}
 };
 
 using PixelPair = std::pair<Pixel, Pixel>;

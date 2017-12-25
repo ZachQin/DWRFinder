@@ -48,7 +48,7 @@ struct GeoProj {
     GeoDistance y;
 
     bool operator == (const GeoProj &other) const {
-        return x == other.x && y == other.y;
+        return std::tie(x, y) == std::tie(other.x, other.y);
     }
 };
 
@@ -90,7 +90,7 @@ struct Waypoint {
 struct WaypointInfo {
     std::weak_ptr<const Waypoint> previous;
     GeoDistance actual_distance = std::numeric_limits<GeoDistance>::max();
-    GeoDistance heuristic_distance = std::numeric_limits<GeoDistance>::max();
+    GeoDistance estimated_distance = std::numeric_limits<GeoDistance>::max();
 };
 
 struct WaypointPath {
