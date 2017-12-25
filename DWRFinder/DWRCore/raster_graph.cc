@@ -97,6 +97,10 @@ RasterGraph::FindPathWithAngle(const Pixel &origin,
     return FindPath(origin, destination, nodes, can_search);
 }
 
+static PixelDistance HeuristicDistance(const Pixel &p1, const Pixel &p2) {
+    return Pixel::Distance(p1, p2) * 0.9;
+}
+
 PixelPath
 RasterGraph::FindPath(const Pixel &origin,
                       const Pixel &destination,
@@ -105,7 +109,7 @@ RasterGraph::FindPath(const Pixel &origin,
     PixelPath result;
     int level_size = static_cast<int>(node_levels.size());
     std::unordered_map<Pixel, PixelInfo> info_map;
-    info_map[origin] = PixelInfo(0, Pixel::Distance(origin, destination), 0, kNoPixel);
+    info_map[origin] = PixelInfo(0, HeuristicDistance(origin, destination), 0, kNoPixel);
     info_map[destination] = PixelInfo(kMaxPixelDistance, 0, level_size + 1, kNoPixel);
     for (int i = 0; i < node_levels.size(); i++) {
         for (auto &px : node_levels[i]) {
@@ -136,7 +140,7 @@ RasterGraph::FindPath(const Pixel &origin,
             if (distance_through_u < v_info.actual_distance) {
                 v_info.actual_distance = distance_through_u;
                 v_info.previous = u;
-                v_info.estimated_distance = v_info.actual_distance + Pixel::Distance(v, destination);
+                v_info.estimated_distance = v_info.actual_distance + HeuristicDistance(v, destination);
                 node_queue.push(v);
             }
         }

@@ -69,9 +69,6 @@ void AirwayGraph::AddAirwaySegment(WaypointIdentifier identifier1,
 
 void AirwayGraph::RemoveAirwaySegment(const WaypointPtr &waypoint1,
                                       const WaypointPtr &waypoint2) {
-    GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
-    Neighbor neibor1(waypoint2, distance);
-    Neighbor neibor2(waypoint1, distance);
     std::remove_if(waypoint1->neibors.begin(), waypoint1->neibors.end(), [&](Neighbor &neib){
         return neib.target.lock() == waypoint2;
     });
@@ -250,6 +247,11 @@ WaypointPtr AirwayGraph::WaypointFromIdentifier(WaypointIdentifier identifier) c
     }
 }
 
+static GeoDistance HeuristicDistance(const ConstWaypointPtr &waypoint1,
+                                     const ConstWaypointPtr &waypoint2) {
+    return Waypoint::Distance(*waypoint1, *waypoint2) * 0.9;
+}
+
 WaypointPath
 AirwayGraph::FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
                              const ConstWaypointPtr &destination_waypoint,
@@ -269,7 +271,7 @@ AirwayGraph::FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
                         decltype(waypoint_compare)> waypoint_queue(waypoint_compare);
     auto &origin_info = waypoint_info_map[origin_waypoint];
     origin_info.actual_distance = 0;
-    origin_info.estimated_distance = Waypoint::Distance(*origin_waypoint, *destination_waypoint);
+    origin_info.estimated_distance = HeuristicDistance(origin_waypoint, destination_waypoint);
     waypoint_queue.push(origin_waypoint);
     while (!waypoint_queue.empty()) {
         ConstWaypointPtr current_waypoint = waypoint_queue.top();
@@ -313,7 +315,7 @@ AirwayGraph::FindPathInGraph(const ConstWaypointPtr &origin_waypoint,
                     }
                     waypoint_info_map[current_inserted_waypoint].previous = current_waypoint;
                 }
-                neibor_info.estimated_distance = neibor_info.actual_distance + Waypoint::Distance(*neibor_waypoint, *destination_waypoint);
+                neibor_info.estimated_distance = neibor_info.actual_distance + HeuristicDistance(neibor_waypoint, destination_waypoint);
                 waypoint_queue.push(neibor_waypoint);
             }
         }
