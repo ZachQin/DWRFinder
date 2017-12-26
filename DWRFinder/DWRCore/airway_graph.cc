@@ -31,9 +31,9 @@ void AirwayGraph::RemoveAirwaySegments(const WaypointPtr &waypoint) {
     // Delete self from neibors.
     for (auto &neibor : waypoint->neibors) {
         auto target = neibor.target.lock();
-        std::remove_if(target->neibors.begin(), target->neibors.end(), [&](Neighbor &neib){
+        target->neibors.erase(std::remove_if(target->neibors.begin(), target->neibors.end(), [&](Neighbor &neib){
             return neib.target.lock() == waypoint;
-        });
+        }), target->neibors.end());
     }
     waypoint->neibors.clear();
 }
@@ -69,12 +69,12 @@ void AirwayGraph::AddAirwaySegment(WaypointIdentifier identifier1,
 
 void AirwayGraph::RemoveAirwaySegment(const WaypointPtr &waypoint1,
                                       const WaypointPtr &waypoint2) {
-    std::remove_if(waypoint1->neibors.begin(), waypoint1->neibors.end(), [&](Neighbor &neib){
+    waypoint1->neibors.erase(std::remove_if(waypoint1->neibors.begin(), waypoint1->neibors.end(), [&](Neighbor &neib){
         return neib.target.lock() == waypoint2;
-    });
-    std::remove_if(waypoint2->neibors.begin(), waypoint2->neibors.end(), [&](Neighbor &neib){
+    }), waypoint1->neibors.end());
+    waypoint2->neibors.erase(std::remove_if(waypoint2->neibors.begin(), waypoint2->neibors.end(), [&](Neighbor &neib){
         return neib.target.lock() == waypoint1;
-    });
+    }), waypoint2->neibors.end());
 }
 
 void AirwayGraph::RemoveAirwaySegment(WaypointIdentifier identifier1,
