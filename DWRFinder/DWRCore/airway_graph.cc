@@ -52,8 +52,12 @@ void AirwayGraph::AddAirwaySegment(const WaypointPtr &waypoint1,
     GeoDistance distance = Waypoint::Distance(*waypoint1, *waypoint2);
     Neighbor neibor1(waypoint2, distance);
     Neighbor neibor2(waypoint1, distance);
-    waypoint1->neibors.push_back(std::move(neibor1));
-    waypoint2->neibors.push_back(std::move(neibor2));
+    if (std::find(waypoint1->neibors.begin(), waypoint1->neibors.end(), neibor1) == waypoint1->neibors.end()) {
+        waypoint1->neibors.push_back(std::move(neibor1));
+    }
+    if (std::find(waypoint2->neibors.begin(), waypoint2->neibors.end(), neibor2) == waypoint2->neibors.end()) {
+        waypoint2->neibors.push_back(std::move(neibor2));
+    }
 }
 
 void AirwayGraph::AddAirwaySegment(WaypointIdentifier identifier1,

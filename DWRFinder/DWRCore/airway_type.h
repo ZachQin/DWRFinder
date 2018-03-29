@@ -33,6 +33,10 @@ struct Neighbor {
 
     Neighbor(const WaypointPtr &arg_target, GeoDistance arg_distance) :
     target(arg_target), distance(arg_distance) {}
+    
+    bool operator == (const Neighbor &n) const {
+        return target.lock() == n.target.lock();
+    }
 };
 
 const WaypointIdentifier kNoWaypointIdentifier = -1;
