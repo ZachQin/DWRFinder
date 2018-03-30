@@ -19,6 +19,7 @@
 #include <set>
 
 #include "Utils/coordinate_convert.h"
+#include "Utils/graphics_utils.h"
 #include "raster_graph.h"
 
 namespace dwr {

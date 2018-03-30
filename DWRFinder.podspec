@@ -9,6 +9,6 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = "10.7"
   s.source       = { :git => "https://github.com/ZachQin/DWRFinder.git", :tag => s.version }
   s.source_files  = "DWRFinder/DWRCore/*.{h,cc}", "DWRFinder/DWRCore/Utils", "DWRFinder/DWRCore/Utils/*.{h,cc,c}"
-  s.public_header_files = "DWRFinder/DWRCore/*.h"
+  s.public_header_files = "DWRFinder/DWRCore/*.h", "DWRFinder/DWRCore/Utils/*.h"
   s.libraries           = 'c++'
 end

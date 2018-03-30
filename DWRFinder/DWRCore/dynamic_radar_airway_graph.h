@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "dynamic_airway_graph.h"
-#include "graphics_utils.h"
 #include "raster_graph.h"
 
 namespace dwr {
